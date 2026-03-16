@@ -1,0 +1,98 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+
+const menuItems = [
+  { label: 'ホーム', href: '/admin', icon: '🏠' },
+  { label: '商品マスター', href: '/admin/products', icon: '🃏' },
+  { label: 'オリパ管理', href: '/admin/events', icon: '🎴' },
+  { label: '配送管理', href: '/admin/orders', icon: '📦' },
+  { label: '顧客管理', href: '/admin/customers', icon: '👥' },
+  { label: 'マーケティング', href: '/admin/marketing', icon: '📣' },
+  { label: '設定', href: '/admin/settings', icon: '⚙️' },
+]
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    checkAuth()
+  }, [])
+
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) router.push('/auth/login')
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
+
+  const activeItem = menuItems.find(item =>
+    pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
+  )
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      <aside style={{ width: '208px', backgroundColor: 'white', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100%', zIndex: 10 }}>
+        <div style={{ padding: '16px', borderBottom: '1px solid #e5e7eb' }}>
+          <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1f2937' }}>管理画面</div>
+          <a href="/" target="_blank" style={{ fontSize: '12px', color: '#3b82f6', marginTop: '4px', display: 'block' }}>
+            サイトを見る →
+          </a>
+        </div>
+
+        <nav style={{ flex: 1, paddingTop: '16px', paddingBottom: '16px', overflowY: 'auto' }}>
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
+            return (
+              
+                key={item.href}
+                href={item.href}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 16px',
+                  fontSize: '14px',
+                  textDecoration: 'none',
+                  backgroundColor: isActive ? '#fdf2f8' : 'transparent',
+                  color: isActive ? '#db2777' : '#4b5563',
+                  fontWeight: isActive ? '600' : 'normal',
+                  borderRight: isActive ? '2px solid #db2777' : 'none',
+                }}
+              >
+                <span style={{ fontSize: '16px' }}>{item.icon}</span>
+                {item.label}
+              </a>
+            )
+          })}
+        </nav>
+
+        <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb' }}>
+          <button
+            onClick={handleLogout}
+            style={{ fontSize: '14px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            ログアウト
+          </button>
+        </div>
+      </aside>
+
+      <div style={{ flex: 1, marginLeft: '208px' }}>
+        <header style={{ backgroundColor: 'white', borderBottom: '1px solid #e5e7eb', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
+          <div style={{ fontSize: '14px', color: '#6b7280' }}>{activeItem?.label || 'ホーム'}</div>
+          <a href="/" style={{ fontSize: '12px', color: '#9ca3af', textDecoration: 'none' }}>← サイトへ戻る</a>
+        </header>
+
+        <main style={{ padding: '24px' }}>
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
