@@ -63,7 +63,7 @@ export default function AdminEventDetailPage() {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [prizeForm, setPrizeForm] = useState({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0, animation_video_id: '' })
-  const [gachaForm, setGachaForm] = useState({ label: '1回', count: 1, color: '#e67e00' })
+  const [gachaForm, setGachaForm] = useState<{ label: string; count: number; color: string; editing_id?: string }>({ label: '1回', count: 1, color: '#e67e00' })
 
   const eid = params.eid as string
 
@@ -75,7 +75,7 @@ export default function AdminEventDetailPage() {
       supabase.from('events').select('*').eq('id', eid).single(),
       supabase.from('prizes').select('*, products(*)').eq('event_id', eid).order('grade'),
       supabase.from('products').select('id, name, market_value').order('name'),
-      supabase.from('gacha_options').select('*').eq('event_id', eid).order('sort_order'),
+      supabase.from('gacha_options').select('*').eq('event_id', eid).order('count'),
       supabase.from('animation_videos').select('*').eq('is_active', true).order('sort_order'),
     ])
     if (e.data) setEvent(e.data)
@@ -136,20 +136,29 @@ export default function AdminEventDetailPage() {
 
   const handleAddGachaOption = async () => {
     if (!gachaForm.label) return
-    const maxOrder = gachaOptions.length > 0 ? Math.max(...gachaOptions.map(g => g.sort_order)) + 1 : 0
-    await supabase.from('gacha_options').insert({
-      event_id: eid,
-      label: gachaForm.label,
-      count: gachaForm.count === -1 ? 9999 : Number(gachaForm.count),
-      color: gachaForm.color,
-      sort_order: maxOrder,
-      is_active: true,
-    })
+    if (gachaForm.editing_id) {
+      await supabase.from('gacha_options').update({
+        label: gachaForm.label,
+        count: gachaForm.count === -1 ? 9999 : Number(gachaForm.count),
+        color: gachaForm.color,
+      }).eq('id', gachaForm.editing_id)
+    } else {
+      const maxOrder = gachaOptions.length > 0 ? Math.max(...gachaOptions.map(g => g.sort_order)) + 1 : 0
+      await supabase.from('gacha_options').insert({
+        event_id: eid,
+        label: gachaForm.label,
+        count: gachaForm.count === -1 ? 9999 : Number(gachaForm.count),
+        color: gachaForm.color,
+        sort_order: maxOrder,
+        is_active: true,
+      })
+    }
     setGachaForm({ label: '1回', count: 1, color: '#e67e00' })
     fetchAll()
   }
 
   const handleDeleteGachaOption = async (id: string) => {
+    if (!confirm('このガチャボタンを削除しますか？')) return
     await supabase.from('gacha_options').delete().eq('id', id)
     fetchAll()
   }
@@ -345,15 +354,16 @@ export default function AdminEventDetailPage() {
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <input type="color" style={{ width: '40px', height: '36px', border: 'none', cursor: 'pointer', borderRadius: '4px' }} value={gachaForm.color} onChange={(e) => setGachaForm({ ...gachaForm, color: e.target.value })} />
                   <div style={{ flex: 1, display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {['#e67e00', '#c0392b', '#8e44ad', '#2980b9', '#27ae60', '#1a1a2e'].map((c) => (
-                      <div key={c} onClick={() => setGachaForm({ ...gachaForm, color: c })} style={{ width: '24px', height: '24px', borderRadius: '50%', background: c, cursor: 'pointer', border: gachaForm.color === c ? '2px solid #1f2937' : '2px solid transparent' }} />
+                    {['#e67e00', '#c0392b', '#8e44ad', '#2980b9', '#27ae60', '#1a1a2e', '#f59e0b', '#ec4899', '#06b6d4', '#84cc16', 'linear-gradient(135deg, #f59e0b, #ef4444)', 'linear-gradient(135deg, #8b5cf6, #3b82f6)', 'linear-gradient(135deg, #f43f5e, #f59e0b, #84cc16, #3b82f6, #8b5cf6)'].map((c) => (
+                      <div key={c} onClick={() => setGachaForm({ ...gachaForm, color: c })} style={{ width: '24px', height: '24px', borderRadius: '50%', background: c, cursor: 'pointer', border: gachaForm.color === c ? '2px solid #1f2937' : '2px solid transparent', flexShrink: 0 }} />
                     ))}
                   </div>
                 </div>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <button onClick={handleAddGachaOption} disabled={!gachaForm.label} style={{ background: !gachaForm.label ? '#9ca3af' : '#db2777', color: 'white', padding: '8px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', border: 'none', cursor: !gachaForm.label ? 'not-allowed' : 'pointer' }}>追加</button>
+              <button onClick={handleAddGachaOption} disabled={!gachaForm.label} style={{ background: !gachaForm.label ? '#9ca3af' : gachaForm.editing_id ? '#2980b9' : '#db2777', color: 'white', padding: '8px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', border: 'none', cursor: !gachaForm.label ? 'not-allowed' : 'pointer' }}>{gachaForm.editing_id ? '更新' : '追加'}</button>
+              {gachaForm.editing_id && <button onClick={() => setGachaForm({ label: '1回', count: 1, color: '#e67e00' })} style={{ background: 'none', color: '#6b7280', border: '1px solid #d1d5db', padding: '8px 16px', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>キャンセル</button>}
               <div style={{ fontSize: '13px', color: '#6b7280' }}>
                 プレビュー：
                 <span style={{ display: 'inline-block', padding: '6px 16px', background: gachaForm.color, color: 'white', borderRadius: '6px', fontSize: '13px', fontWeight: '900', marginLeft: '8px' }}>{gachaForm.label}</span>
@@ -374,8 +384,9 @@ export default function AdminEventDetailPage() {
                   <span style={{ fontSize: '13px', color: '#6b7280' }}>{opt.count >= 9999 ? 'ラストまで全部' : opt.count + '連'}</span>
                   <span style={{ fontSize: '11px', color: opt.is_active ? '#10b981' : '#6b7280', background: opt.is_active ? '#f0fdf4' : '#f3f4f6', padding: '2px 8px', borderRadius: '999px' }}>{opt.is_active ? '表示中' : '非表示'}</span>
                   <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                    <button onClick={() => setGachaForm({ label: opt.label, count: opt.count >= 9999 ? -1 : opt.count, color: opt.color, editing_id: opt.id })} style={{ fontSize: '12px', color: '#2980b9', background: 'none', border: '1px solid #93c5fd', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>編集</button>
                     <button onClick={() => handleToggleGachaOption(opt.id, opt.is_active)} style={{ fontSize: '12px', color: '#6b7280', background: 'none', border: '1px solid #d1d5db', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>{opt.is_active ? '非表示' : '表示'}</button>
-                    <button onClick={() => handleDeleteGachaOption(opt.id)} style={{ fontSize: '12px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>削除</button>
+                    <button onClick={() => handleDeleteGachaOption(opt.id)} style={{ fontSize: '12px', color: '#ef4444', background: 'none', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
                   </div>
                 </div>
               ))}
