@@ -54,9 +54,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '賞品がありません' }, { status: 400 })
     }
 
+    // 天井カウンター取得
+    let ceilingRecord = null
+    if (event.ceiling_count > 0) {
+      const { data: existing } = await supabase
+        .from('user_ceiling')
+        .select('*')
+        .eq('user_id', user_id)
+        .eq('event_id', event_id)
+        .single()
+      ceilingRecord = existing
+    }
+
     // 複数回抽選
     const results = []
     const prizeUpdates: Record<string, number> = {}
+    let ceilingCount = ceilingRecord?.count || 0
 
     // 残り枚数プールを作成
     let pool: typeof prizes = []
@@ -69,20 +82,42 @@ export async function POST(req: NextRequest) {
     for (let i = 0; i < pullCount; i++) {
       if (pool.length === 0) break
 
-      const selectedIndex = Math.floor(Math.random() * pool.length)
-      const selectedPrize = pool[selectedIndex]
+      ceilingCount++
+
+      // 天井チェック
+      const isCeiling = event.ceiling_count > 0 && ceilingCount >= event.ceiling_count
+
+      let selectedPrize
+      if (isCeiling) {
+        // 天井：確定賞を強制抽選
+        const ceilingPrizes = pool.filter(p => p.grade === event.ceiling_grade)
+        if (ceilingPrizes.length > 0) {
+          const idx = Math.floor(Math.random() * ceilingPrizes.length)
+          selectedPrize = ceilingPrizes[idx]
+          ceilingCount = 0 // 天井リセット
+        } else {
+          const selectedIndex = Math.floor(Math.random() * pool.length)
+          selectedPrize = pool[selectedIndex]
+        }
+      } else {
+        const selectedIndex = Math.floor(Math.random() * pool.length)
+        selectedPrize = pool[selectedIndex]
+        // S賞が出たらカウントリセット
+        if (selectedPrize.grade === event.ceiling_grade) ceilingCount = 0
+      }
 
       // 選んだ賞品をプールから削除
-      pool.splice(selectedIndex, 1)
+      const poolIndex = pool.findIndex(p => p.id === selectedPrize.id && p === selectedPrize)
+      if (poolIndex !== -1) pool.splice(poolIndex, 1)
 
       results.push({
         grade: selectedPrize.grade,
         product: selectedPrize.products,
         prize_id: selectedPrize.id,
         product_id: selectedPrize.product_id,
+        is_ceiling: isCeiling,
       })
 
-      // 更新カウント
       prizeUpdates[selectedPrize.id] = (prizeUpdates[selectedPrize.id] || selectedPrize.remaining_count) - 1
     }
 
@@ -102,6 +137,16 @@ export async function POST(req: NextRequest) {
       type: 'gacha',
       description: `${event.name}を${actualCount}回開封`,
     })
+
+    // 天井カウンター更新
+    if (event.ceiling_count > 0) {
+      await supabase.from('user_ceiling').upsert({
+        user_id,
+        event_id,
+        count: ceilingCount,
+        last_ceiling_at: ceilingCount === 0 ? new Date().toISOString() : ceilingRecord?.last_ceiling_at,
+      }, { onConflict: 'user_id,event_id' })
+    }
 
     // 賞品残り枚数更新
     for (const [prizeId, newCount] of Object.entries(prizeUpdates)) {
@@ -163,7 +208,9 @@ export async function POST(req: NextRequest) {
         grade: r.grade,
         product: r.product,
         is_last_one: (r as any).is_last_one || false,
+        is_ceiling: (r as any).is_ceiling || false,
       })),
+      ceiling_count: ceilingCount,
       draw_ids: insertedDraws?.map(d => d.id) || [],
       remaining_points: profile.points - actualCost,
     })

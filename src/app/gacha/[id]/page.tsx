@@ -18,6 +18,7 @@ type Event = {
 type GachaResult = {
   grade: string
   is_last_one?: boolean
+  is_ceiling?: boolean
   product: {
     name: string
     image_url: string
@@ -52,6 +53,8 @@ function GachaPageInner() {
   const [phase, setPhase] = useState<'idle' | 'shaking' | 'opening' | 'result'>('idle')
   const [soldIds, setSoldIds] = useState<string[]>([])
   const [drawIds, setDrawIds] = useState<string[]>([])
+  const [ceilingCount, setCeilingCount] = useState(0)
+  const [userCeilingCount, setUserCeilingCount] = useState(0)
 
   useEffect(() => { fetchData() }, [])
 
@@ -67,6 +70,11 @@ function GachaPageInner() {
     if (eventData) setEvent(eventData)
     const { data: optionsData } = await supabase.from('gacha_options').select('*').eq('event_id', params.id).eq('is_active', true).order('sort_order')
     if (optionsData) setGachaOptions(optionsData)
+    // 天井カウンター取得
+    if (session?.user) {
+      const { data: ceiling } = await supabase.from('user_ceiling').select('count').eq('user_id', session.user.id).eq('event_id', params.id).single()
+      if (ceiling) setUserCeilingCount(ceiling.count)
+    }
     setLoading(false)
   }
 
@@ -95,6 +103,7 @@ function GachaPageInner() {
       setResults(data.results)
       setUserPoints(data.remaining_points)
       setDrawIds(data.draw_ids || [])
+      if (data.ceiling_count !== undefined) setUserCeilingCount(data.ceiling_count)
       setPhase('result')
       setShowResult(true)
       await fetchData()
@@ -164,6 +173,18 @@ function GachaPageInner() {
           <div style={{ background: '#1e293b', borderRadius: '999px', height: '8px', maxWidth: '400px', margin: '0 auto' }}>
             <div style={{ background: 'linear-gradient(90deg, #f59e0b, #ef4444)', borderRadius: '999px', height: '8px', width: `${(event.remaining_count / event.total_count) * 100}%`, transition: 'width 0.5s ease' }} />
           </div>
+          {event.ceiling_count > 0 && (
+            <div style={{ marginTop: '12px', background: '#1e293b', borderRadius: '10px', padding: '10px 16px', display: 'inline-block' }}>
+              <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>天井カウンター</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#60a5fa' }}>
+                {userCeilingCount} / {event.ceiling_count}
+                <span style={{ fontSize: '11px', color: '#64748b', marginLeft: '6px' }}>回で{event.ceiling_grade}確定</span>
+              </div>
+              <div style={{ background: '#0f172a', borderRadius: '999px', height: '4px', marginTop: '6px', maxWidth: '200px' }}>
+                <div style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)', borderRadius: '999px', height: '4px', width: `${Math.min((userCeilingCount / event.ceiling_count) * 100, 100)}%`, transition: 'width 0.5s ease' }} />
+              </div>
+            </div>
+          )}
         </div>
 
         {error && (
@@ -219,6 +240,14 @@ function GachaPageInner() {
       {showResult && results.length > 0 && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px', overflowY: 'auto' }}>
           <div style={{ animation: 'burst 0.5s ease-out', background: '#1e293b', borderRadius: '20px', padding: '32px 24px', textAlign: 'center', maxWidth: '560px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
+            {/* 天井確定演出 */}
+            {results.some(r => r.is_ceiling) && (
+              <div style={{ background: 'linear-gradient(135deg, #eff6ff, #dbeafe)', border: '2px solid #3b82f6', borderRadius: '12px', padding: '12px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '24px', marginBottom: '4px' }}>🔢⚡🔢</div>
+                <div style={{ fontSize: '16px', fontWeight: '900', color: '#1e40af' }}>天井確定！！</div>
+                <div style={{ fontSize: '12px', color: '#3b82f6', marginTop: '4px' }}>天井に達したため{event?.ceiling_grade}が確定しました！</div>
+              </div>
+            )}
             {/* ラストワン賞特別演出 */}
             {results.some(r => r.is_last_one) && (
               <div style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', border: '2px solid #f59e0b', borderRadius: '12px', padding: '12px', marginBottom: '16px', animation: 'bigBurst 0.6s ease-out' }}>
