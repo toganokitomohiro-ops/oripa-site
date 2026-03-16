@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -38,7 +38,7 @@ const PAYMENT_METHODS = [
   },
 ]
 
-export default function CheckoutPage() {
+function CheckoutPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planId = searchParams.get('plan_id')
@@ -247,5 +247,13 @@ export default function CheckoutPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>読み込み中...</div></div>}>
+      <CheckoutPageInner />
+    </Suspense>
   )
 }
