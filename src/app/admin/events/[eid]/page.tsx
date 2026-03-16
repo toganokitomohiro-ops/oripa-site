@@ -32,6 +32,13 @@ type Product = {
   market_value: number
 }
 
+type AnimationVideo = {
+  id: string
+  name: string
+  video_url: string
+  category: string
+}
+
 type GachaOption = {
   id: string
   count: number
@@ -50,11 +57,12 @@ export default function AdminEventDetailPage() {
   const [prizes, setPrizes] = useState<Prize[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [gachaOptions, setGachaOptions] = useState<GachaOption[]>([])
+  const [animationVideos, setAnimationVideos] = useState<AnimationVideo[]>([])
   const [activeTab, setActiveTab] = useState<'prizes' | 'gacha' | 'settings'>('prizes')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [prizeForm, setPrizeForm] = useState({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0 })
+  const [prizeForm, setPrizeForm] = useState({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0, animation_video_id: '' })
   const [gachaForm, setGachaForm] = useState({ label: '1回', count: 1, color: '#e67e00' })
 
   const eid = params.eid as string
@@ -63,16 +71,18 @@ export default function AdminEventDetailPage() {
 
   const fetchAll = async () => {
     setLoading(true)
-    const [e, pr, prod, go] = await Promise.all([
+    const [e, pr, prod, go, av] = await Promise.all([
       supabase.from('events').select('*').eq('id', eid).single(),
       supabase.from('prizes').select('*, products(*)').eq('event_id', eid).order('grade'),
       supabase.from('products').select('id, name, market_value').order('name'),
       supabase.from('gacha_options').select('*').eq('event_id', eid).order('sort_order'),
+      supabase.from('animation_videos').select('*').eq('is_active', true).order('sort_order'),
     ])
     if (e.data) setEvent(e.data)
     if (pr.data) setPrizes(pr.data)
     if (prod.data) setProducts(prod.data)
     if (go.data) setGachaOptions(go.data)
+    if (av.data) setAnimationVideos(av.data)
     setLoading(false)
   }
 
@@ -112,8 +122,9 @@ export default function AdminEventDetailPage() {
       count: Number(prizeForm.count),
       remaining_count: Number(prizeForm.count),
       pt_exchange: Number(prizeForm.pt_exchange),
+      animation_video_id: prizeForm.animation_video_id || null,
     })
-    setPrizeForm({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0 })
+    setPrizeForm({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0, animation_video_id: '' })
     fetchAll()
   }
 
