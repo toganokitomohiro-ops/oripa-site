@@ -17,6 +17,7 @@ type Event = {
 
 type GachaResult = {
   grade: string
+  is_last_one?: boolean
   product: {
     name: string
     image_url: string
@@ -49,6 +50,8 @@ function GachaPageInner() {
   const [showResult, setShowResult] = useState(false)
   const [error, setError] = useState('')
   const [phase, setPhase] = useState<'idle' | 'shaking' | 'opening' | 'result'>('idle')
+  const [soldIds, setSoldIds] = useState<string[]>([])
+  const [drawIds, setDrawIds] = useState<string[]>([])
 
   useEffect(() => { fetchData() }, [])
 
@@ -91,6 +94,7 @@ function GachaPageInner() {
       await new Promise(r => setTimeout(r, 600))
       setResults(data.results)
       setUserPoints(data.remaining_points)
+      setDrawIds(data.draw_ids || [])
       setPhase('result')
       setShowResult(true)
       await fetchData()
@@ -131,6 +135,8 @@ function GachaPageInner() {
         @keyframes fadeInUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes rainbow { 0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)} }
+        @keyframes bigBurst { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.3);opacity:1} 100%{transform:scale(1);opacity:1} }
       `}</style>
 
       <header style={{ padding: '16px 24px', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -213,6 +219,14 @@ function GachaPageInner() {
       {showResult && results.length > 0 && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px', overflowY: 'auto' }}>
           <div style={{ animation: 'burst 0.5s ease-out', background: '#1e293b', borderRadius: '20px', padding: '32px 24px', textAlign: 'center', maxWidth: '560px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
+            {/* ラストワン賞特別演出 */}
+            {results.some(r => r.is_last_one) && (
+              <div style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', border: '2px solid #f59e0b', borderRadius: '12px', padding: '12px', marginBottom: '16px', animation: 'bigBurst 0.6s ease-out' }}>
+                <div style={{ fontSize: '24px', marginBottom: '4px' }}>🏆✨🏆</div>
+                <div style={{ fontSize: '16px', fontWeight: '900', color: '#92400e' }}>ラストワン賞獲得！！</div>
+                <div style={{ fontSize: '12px', color: '#b45309', marginTop: '4px' }}>おめでとうございます！最後の1口を引き当てました！</div>
+              </div>
+            )}
             <div style={{ fontSize: '16px', color: '#64748b', marginBottom: '16px' }}>{results.length}回開封結果！</div>
             {results.length === 1 ? (
               <>
@@ -242,9 +256,38 @@ function GachaPageInner() {
             <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>
               残りポイント：<span style={{ color: '#f59e0b', fontWeight: 'bold' }}>{userPoints.toLocaleString()}pt</span>
             </div>
+
+            {/* 一括売却ボタン */}
+            {drawIds.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <button
+                  onClick={async () => {
+                    const unsoldIds = drawIds.filter(id => !soldIds.includes(id))
+                    if (unsoldIds.length === 0) return
+                    if (!confirm(`${unsoldIds.length}枚全て売却しますか？`)) return
+                    const res = await fetch('/api/sell', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ draw_ids: unsoldIds, user_id: userId }),
+                    })
+                    const data = await res.json()
+                    if (data.success) {
+                      setSoldIds(drawIds)
+                      setUserPoints(data.new_balance)
+                      alert(`✅ ${data.sold_count}枚売却！+${data.total_points.toLocaleString()}pt獲得！`)
+                    }
+                  }}
+                  disabled={soldIds.length === drawIds.length}
+                  style={{ width: '100%', background: soldIds.length === drawIds.length ? '#475569' : '#ef4444', color: 'white', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: 'bold', cursor: soldIds.length === drawIds.length ? 'not-allowed' : 'pointer', marginBottom: '8px' }}
+                >
+                  {soldIds.length === drawIds.length ? '売却済み ✓' : `全て売却する（${drawIds.length}枚）`}
+                </button>
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <button onClick={() => { setShowResult(false); setResults([]); setPhase('idle') }} style={{ flex: 1, background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', border: 'none', borderRadius: '10px', padding: '12px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', maxWidth: '180px' }}>もう1回！</button>
-              <button onClick={() => router.push('/mypage')} style={{ flex: 1, background: '#334155', color: '#e2e8f0', border: 'none', borderRadius: '10px', padding: '12px', fontSize: '15px', cursor: 'pointer', maxWidth: '180px' }}>マイページ</button>
+              <button onClick={() => { setShowResult(false); setResults([]); setPhase('idle'); setSoldIds([]); setDrawIds([]) }} style={{ flex: 1, background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', border: 'none', borderRadius: '10px', padding: '12px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', maxWidth: '180px' }}>もう1回！</button>
+              <button onClick={() => router.push('/prizes')} style={{ flex: 1, background: '#334155', color: '#e2e8f0', border: 'none', borderRadius: '10px', padding: '12px', fontSize: '15px', cursor: 'pointer', maxWidth: '180px' }}>獲得商品へ</button>
             </div>
           </div>
         </div>

@@ -108,9 +108,32 @@ export async function POST(req: NextRequest) {
       await supabase.from('prizes').update({ remaining_count: newCount }).eq('id', prizeId)
     }
 
+    // ラストワン賞チェック
+    const newRemaining = event.remaining_count - actualCount
+    if (newRemaining === 0 && event.last_one_product_id) {
+      // ラストワン賞の商品情報取得
+      const { data: lastOneProduct } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', event.last_one_product_id)
+        .single()
+
+      if (lastOneProduct) {
+        // 最後の結果をラストワン賞に置き換え
+        results[results.length - 1] = {
+          grade: 'ラストワン賞',
+          product: lastOneProduct,
+          prize_id: results[results.length - 1].prize_id,
+          product_id: event.last_one_product_id,
+          is_last_one: true,
+        }
+      }
+    }
+
     // オリパ残り口数更新
     await supabase.from('events').update({
-      remaining_count: event.remaining_count - actualCount,
+      remaining_count: newRemaining,
+      status: newRemaining === 0 ? 'sold_out' : event.status,
     }).eq('id', event_id)
 
     // 開封履歴記録
@@ -124,13 +147,24 @@ export async function POST(req: NextRequest) {
     }))
     await supabase.from('draws').insert(drawInserts)
 
+    // draw_idsを取得
+    const { data: insertedDraws } = await supabase
+      .from('draws')
+      .select('id')
+      .eq('user_id', user_id)
+      .eq('event_id', event_id)
+      .order('created_at', { ascending: false })
+      .limit(actualCount)
+
     return NextResponse.json({
       success: true,
       count: actualCount,
       results: results.map((r) => ({
         grade: r.grade,
         product: r.product,
+        is_last_one: (r as any).is_last_one || false,
       })),
+      draw_ids: insertedDraws?.map(d => d.id) || [],
       remaining_points: profile.points - actualCost,
     })
 
