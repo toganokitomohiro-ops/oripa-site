@@ -37,7 +37,8 @@ export default function AdminBannerNewPage() {
 
   const uploadImage = async (file: File) => {
     setUploading(true)
-    const resized = await resizeImage(file, 1050, 318)
+    const isTopPage = form.page === 'top'
+    const resized = await resizeImage(file, isTopPage ? 1050 : 800, isTopPage ? 318 : 200)
     const fileName = `banners/${Date.now()}.jpg`
     const { error } = await supabase.storage.from('images').upload(fileName, resized, { contentType: 'image/jpeg' })
     if (error) { alert('アップロードに失敗しました'); setUploading(false); return }
