@@ -58,6 +58,7 @@ export default function AdminEventDetailPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [gachaOptions, setGachaOptions] = useState<GachaOption[]>([])
   const [animationVideos, setAnimationVideos] = useState<AnimationVideo[]>([])
+  const [prizeViewMode, setPrizeViewMode] = useState<'grid' | 'list'>('list')
   const [activeTab, setActiveTab] = useState<'prizes' | 'gacha' | 'settings'>('prizes')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -301,27 +302,65 @@ export default function AdminEventDetailPage() {
           </div>
 
           {/* 賞品一覧 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {grades.filter(g => gradeGroups[g]).map((grade) => (
-              <div key={grade} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
-                <div style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: '8px', background: '#f9fafb' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: gradeColors[grade] || '#6b7280' }} />
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#1f2937' }}>{grade}</span>
-                  <span style={{ fontSize: '12px', color: '#6b7280' }}>{gradeGroups[grade]?.reduce((s, p) => s + p.count, 0)}口</span>
-                </div>
-                {gradeGroups[grade]?.map((prize) => (
-                  <div key={prize.id} style={{ padding: '12px 16px', borderTop: '1px solid #f9fafb', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    {prize.products?.image_url && <img src={prize.products.image_url} alt="" style={{ width: '40px', height: '56px', objectFit: 'cover', borderRadius: '4px' }} />}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937', marginBottom: '2px' }}>{prize.products?.name}</div>
-                      <div style={{ fontSize: '12px', color: '#6b7280' }}>{prize.count}口 / PT交換:{prize.pt_exchange}pt / ¥{prize.products?.market_value?.toLocaleString()}</div>
-                    </div>
-                    <button onClick={() => handleDeletePrize(prize.id)} style={{ fontSize: '12px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>削除</button>
-                  </div>
-                ))}
-              </div>
-            ))}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1f2937' }}>登録済み賞品</div>
+            <div style={{ display: 'flex', gap: '4px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+              <button onClick={() => setPrizeViewMode('grid')} style={{ padding: '4px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: prizeViewMode === 'grid' ? 'white' : 'transparent', fontSize: '14px' }}>⊞</button>
+              <button onClick={() => setPrizeViewMode('list')} style={{ padding: '4px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: prizeViewMode === 'list' ? 'white' : 'transparent', fontSize: '14px' }}>☰</button>
+            </div>
           </div>
+{prizeViewMode === 'list' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {grades.filter(g => gradeGroups[g]).map((grade) => (
+                <div key={grade} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: '8px', background: '#f9fafb' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: gradeColors[grade] || '#6b7280' }} />
+                    <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#1f2937' }}>{grade}</span>
+                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{gradeGroups[grade]?.reduce((s, p) => s + p.count, 0)}口</span>
+                  </div>
+                  {gradeGroups[grade]?.map((prize) => (
+                    <div key={prize.id} style={{ padding: '12px 16px', borderTop: '1px solid #f9fafb', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {prize.products?.image_url && <img src={prize.products.image_url} alt="" style={{ width: '40px', height: '56px', objectFit: 'cover', borderRadius: '4px' }} />}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937', marginBottom: '2px' }}>{prize.products?.name}</div>
+                        <div style={{ fontSize: '12px', color: '#6b7280' }}>{prize.count}口 / PT交換:{prize.pt_exchange}pt / ¥{prize.products?.market_value?.toLocaleString()}</div>
+                      </div>
+                      <button onClick={() => handleDeletePrize(prize.id)} style={{ fontSize: '12px', color: '#ef4444', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {grades.filter(g => gradeGroups[g]).map((grade) => (
+                <div key={grade}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: gradeColors[grade] || '#6b7280' }} />
+                    <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#1f2937' }}>{grade}</span>
+                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{gradeGroups[grade]?.reduce((s, p) => s + p.count, 0)}口</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
+                    {gradeGroups[grade]?.map((prize) => (
+                      <div key={prize.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '10px', overflow: 'hidden' }}>
+                        <div style={{ aspectRatio: '3/4', background: '#f3f4f6', overflow: 'hidden' }}>
+                          {prize.products?.image_url
+                            ? <img src={prize.products.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>🃏</div>
+                          }
+                        </div>
+                        <div style={{ padding: '8px' }}>
+                          <div style={{ fontSize: '11px', fontWeight: '600', color: '#1f2937', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prize.products?.name}</div>
+                          <div style={{ fontSize: '10px', color: '#6b7280', marginBottom: '6px' }}>{prize.count}口 / {prize.pt_exchange}pt</div>
+                          <button onClick={() => handleDeletePrize(prize.id)} style={{ width: '100%', fontSize: '11px', color: '#ef4444', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px', cursor: 'pointer' }}>削除</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

@@ -11,53 +11,66 @@ type Event = {
   total_count: number
   remaining_count: number
   status: string
-  description: string
   image_url: string
+  category: string
   created_at: string
+}
+
+const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
+  draft: { label: '下書き', color: '#6b7280', bg: '#f3f4f6' },
+  ready: { label: '準備完了', color: '#d97706', bg: '#fef3c7' },
+  active: { label: '公開中', color: '#16a34a', bg: '#f0fdf4' },
+  sold_out: { label: '売り切れ', color: '#dc2626', bg: '#fef2f2' },
+  ended: { label: '終了', color: '#6b7280', bg: '#f3f4f6' },
 }
 
 export default function AdminEventsPage() {
   const router = useRouter()
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('all')
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const fetchEvents = async () => {
     setLoading(true)
-    const { data } = await supabase.from('events').select('*').order('created_at', { ascending: false })
+    const { data } = await supabase
+      .from('events')
+      .select('*')
+      .order('created_at', { ascending: false })
     if (data) setEvents(data)
     setLoading(false)
   }
 
   useEffect(() => { fetchEvents() }, [])
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!confirm('このオリパを削除しますか？')) return
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`「${name}」を削除しますか？\nこの操作は取り消せません。`)) return
     await supabase.from('events').delete().eq('id', id)
     fetchEvents()
   }
 
-  const handleStatusChange = async (id: string, status: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    await supabase.from('events').update({ status }).eq('id', id)
-    fetchEvents()
-  }
+  const filtered = events.filter(e => {
+    const matchSearch = e.name.toLowerCase().includes(search.toLowerCase())
+    const matchStatus = statusFilter === 'all' || e.status === statusFilter
+    return matchSearch && matchStatus
+  })
 
-  const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-    draft: { label: '下書き', color: '#6b7280', bg: '#f3f4f6' },
-    active: { label: '公開中', color: '#10b981', bg: '#f0fdf4' },
-    ended: { label: '終了', color: '#ef4444', bg: '#fef2f2' },
+  const statusCounts = {
+    all: events.length,
+    draft: events.filter(e => e.status === 'draft').length,
+    ready: events.filter(e => e.status === 'ready').length,
+    active: events.filter(e => e.status === 'active').length,
+    sold_out: events.filter(e => e.status === 'sold_out').length,
+    ended: events.filter(e => e.status === 'ended').length,
   }
-
-  const filteredEvents = filter === 'all' ? events : events.filter(e => e.status === filter)
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937' }}>オリパ管理</h1>
-          <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>オリパの作成・編集・在庫管理を行います</p>
+          <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>オリパの作成・編集・公開設定を管理します</p>
         </div>
         <button
           onClick={() => router.push('/admin/events/new')}
@@ -67,117 +80,125 @@ export default function AdminEventsPage() {
         </button>
       </div>
 
-      {/* フィルタータブ */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        {[{ value: 'all', label: 'すべて' }, { value: 'active', label: '公開中' }, { value: 'draft', label: '下書き' }, { value: 'ended', label: '終了' }].map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setFilter(tab.value)}
-            style={{ padding: '6px 16px', borderRadius: '999px', fontSize: '13px', fontWeight: '600', border: '1px solid', borderColor: filter === tab.value ? '#db2777' : '#e5e7eb', background: filter === tab.value ? '#fdf2f8' : 'white', color: filter === tab.value ? '#db2777' : '#6b7280', cursor: 'pointer' }}
-          >
-            {tab.label}
-            {tab.value !== 'all' && <span style={{ marginLeft: '6px', fontSize: '11px' }}>({events.filter(e => e.status === tab.value).length})</span>}
-            {tab.value === 'all' && <span style={{ marginLeft: '6px', fontSize: '11px' }}>({events.length})</span>}
-          </button>
-        ))}
+      {/* 検索・フィルター */}
+      <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
+            <input
+              style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: '8px', padding: '8px 12px 8px 36px', fontSize: '14px', boxSizing: 'border-box' }}
+              placeholder="オリパ名で検索..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '4px', background: '#f3f4f6', padding: '4px', borderRadius: '8px' }}>
+            <button onClick={() => setViewMode('grid')} style={{ padding: '6px 10px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: viewMode === 'grid' ? 'white' : 'transparent', fontSize: '16px' }}>⊞</button>
+            <button onClick={() => setViewMode('list')} style={{ padding: '6px 10px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: viewMode === 'list' ? 'white' : 'transparent', fontSize: '16px' }}>☰</button>
+          </div>
+        </div>
+
+        {/* ステータスフィルター */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {[
+            { key: 'all', label: 'すべて' },
+            { key: 'active', label: '公開中' },
+            { key: 'ready', label: '準備完了' },
+            { key: 'draft', label: '下書き' },
+            { key: 'sold_out', label: '売り切れ' },
+            { key: 'ended', label: '終了' },
+          ].map(s => (
+            <button
+              key={s.key}
+              onClick={() => setStatusFilter(s.key)}
+              style={{ padding: '6px 14px', borderRadius: '999px', border: '1px solid', borderColor: statusFilter === s.key ? '#db2777' : '#e5e7eb', background: statusFilter === s.key ? '#db2777' : 'white', color: statusFilter === s.key ? 'white' : '#6b7280', fontSize: '13px', fontWeight: statusFilter === s.key ? 'bold' : 'normal', cursor: 'pointer' }}
+            >
+              {s.label}
+              <span style={{ marginLeft: '4px', fontSize: '11px', opacity: 0.8 }}>({statusCounts[s.key as keyof typeof statusCounts]})</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* オリパ一覧テーブル */}
-      <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#6b7280' }}>オリパ名</th>
-              <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#6b7280' }}>価格</th>
-              <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#6b7280' }}>在庫状況</th>
-              <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#6b7280' }}>ステータス</th>
-              <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#6b7280' }}>作成日</th>
-              <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#6b7280' }}>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>読み込み中...</td></tr>
-            ) : filteredEvents.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9ca3af' }}>オリパが見つかりません</td></tr>
-            ) : (
-              filteredEvents.map((event) => {
-                const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
-                const status = statusConfig[event.status] || statusConfig.draft
-                return (
-                  <tr
-                    key={event.id}
-                    onClick={() => router.push('/admin/events/' + event.id)}
-                    style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer', transition: 'background 0.1s' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = '#f9fafb')}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = 'white')}
-                  >
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {event.image_url ? (
-                          <img src={event.image_url} alt={event.name} style={{ width: '48px', height: '32px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0 }} />
-                        ) : (
-                          <div style={{ width: '48px', height: '32px', background: '#f3f4f6', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>📦</div>
-                        )}
-                        <div>
-                          <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>{event.name}</div>
-                          {event.description && <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>{event.description.slice(0, 30)}{event.description.length > 30 ? '...' : ''}</div>}
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-                      <span style={{ fontSize: '11px', color: '#9ca3af' }}>pt</span>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280' }}>
-                          <span>残り {event.remaining_count}</span>
-                          <span>{event.remaining_count}/{event.total_count}</span>
-                        </div>
-                        <div style={{ background: '#f3f4f6', borderRadius: '999px', height: '6px' }}>
-                          <div style={{ background: remainingPercent > 50 ? '#10b981' : remainingPercent > 20 ? '#f59e0b' : '#ef4444', borderRadius: '999px', height: '6px', width: remainingPercent + '%' }} />
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '600', color: status.color, background: status.bg, padding: '4px 10px', borderRadius: '999px' }}>{status.label}</span>
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center', fontSize: '13px', color: '#6b7280' }}>
-                      {new Date(event.created_at).toLocaleDateString('ja-JP')}
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }} onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={event.status}
-                          onChange={(e) => handleStatusChange(event.id, e.target.value, e as any)}
-                          style={{ fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '6px', padding: '4px 8px', background: 'white', cursor: 'pointer' }}
-                        >
-                          <option value="draft">下書き</option>
-                          <option value="active">公開中</option>
-                          <option value="ended">終了</option>
-                        </select>
-                        <button
-                          onClick={(e) => { router.push('/admin/events/' + event.id); e.stopPropagation() }}
-                          style={{ fontSize: '12px', color: '#3b82f6', background: 'none', border: '1px solid #3b82f6', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer' }}
-                        >
-                          詳細
-                        </button>
-                        <button
-                          onClick={(e) => handleDelete(event.id, e)}
-                          style={{ fontSize: '12px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >
-                          削除
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+      <div style={{ marginBottom: '12px', fontSize: '13px', color: '#6b7280' }}>{filtered.length}件</div>
+
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '60px', color: '#9ca3af' }}>読み込み中...</div>
+      ) : filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', color: '#9ca3af' }}>
+          <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
+          <div>オリパが見つかりません</div>
+          <button onClick={() => router.push('/admin/events/new')} style={{ marginTop: '16px', background: '#db2777', color: 'white', padding: '8px 20px', borderRadius: '8px', fontSize: '14px', border: 'none', cursor: 'pointer' }}>新規作成</button>
+        </div>
+      ) : viewMode === 'grid' ? (
+        /* グリッド表示 */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {filtered.map((event) => {
+            const status = STATUS_LABELS[event.status] || STATUS_LABELS.draft
+            const soldPercent = Math.round(((event.total_count - event.remaining_count) / event.total_count) * 100)
+            return (
+              <div key={event.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer' }} onClick={() => router.push(`/admin/events/${event.id}`)}>
+                <div style={{ position: 'relative', height: '160px', background: '#f3f4f6', overflow: 'hidden' }}>
+                  {event.image_url ? (
+                    <img src={event.image_url} alt={event.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px' }}>🎴</div>
+                  )}
+                  <div style={{ position: 'absolute', top: '8px', left: '8px', background: status.bg, color: status.color, padding: '3px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: 'bold' }}>{status.label}</div>
+                </div>
+                <div style={{ padding: '14px' }}>
+                  <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{event.name}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '13px', color: '#f59e0b', fontWeight: 'bold' }}>{event.price.toLocaleString()}pt/回</span>
+                    <span style={{ fontSize: '13px', color: '#6b7280' }}>残り {event.remaining_count}/{event.total_count}口</span>
+                  </div>
+                  <div style={{ background: '#f3f4f6', borderRadius: '999px', height: '6px', marginBottom: '12px' }}>
+                    <div style={{ background: soldPercent > 80 ? '#ef4444' : '#10b981', borderRadius: '999px', height: '6px', width: `${soldPercent}%` }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }} onClick={(e) => e.stopPropagation()}>
+                    <button onClick={() => router.push(`/admin/events/${event.id}`)} style={{ flex: 1, background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '6px', padding: '7px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>編集</button>
+                    <button onClick={() => handleDelete(event.id, event.name)} style={{ background: '#fef2f2', color: '#ef4444', border: 'none', borderRadius: '6px', padding: '7px 12px', fontSize: '13px', cursor: 'pointer' }}>削除</button>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        /* リスト表示 */
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto', gap: '16px', padding: '12px 16px', background: '#f9fafb', borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'bold', color: '#6b7280' }}>
+            <div>オリパ名</div>
+            <div>価格</div>
+            <div>残り口数</div>
+            <div>販売済み</div>
+            <div>ステータス</div>
+            <div>操作</div>
+          </div>
+          {filtered.map((event, index) => {
+            const status = STATUS_LABELS[event.status] || STATUS_LABELS.draft
+            const soldPercent = Math.round(((event.total_count - event.remaining_count) / event.total_count) * 100)
+            return (
+              <div key={event.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto', gap: '16px', padding: '14px 16px', borderTop: index > 0 ? '1px solid #f3f4f6' : 'none', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '40px', height: '40px', background: '#f3f4f6', borderRadius: '6px', overflow: 'hidden', flexShrink: 0 }}>
+                    {event.image_url ? <img src={event.image_url} alt={event.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🎴</div>}
+                  </div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>{event.name}</div>
+                </div>
+                <div style={{ fontSize: '14px', color: '#f59e0b', fontWeight: 'bold' }}>{event.price.toLocaleString()}pt</div>
+                <div style={{ fontSize: '14px', color: '#374151' }}>{event.remaining_count}/{event.total_count}</div>
+                <div style={{ fontSize: '14px', color: '#374151' }}>{soldPercent}%</div>
+                <div><span style={{ background: status.bg, color: status.color, padding: '3px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 'bold' }}>{status.label}</span></div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => router.push(`/admin/events/${event.id}`)} style={{ fontSize: '12px', color: '#2980b9', background: 'none', border: '1px solid #93c5fd', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>編集</button>
+                  <button onClick={() => handleDelete(event.id, event.name)} style={{ fontSize: '12px', color: '#ef4444', background: 'none', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message }, { status: 400 })
   }
 
+  console.log('Webhook event type:', event.type)
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     const { user_id, points } = session.metadata || {}
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
         .eq('id', user_id)
         .single()
 
+      console.log('Profile found:', profile)
       if (profile) {
         await supabase.from('profiles').update({
           points: (profile.points || 0) + pointsNum,
