@@ -27,6 +27,14 @@ export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [banners, setBanners] = useState<Banner[]>([])
   const [user, setUser] = useState<any>(null)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [confirmEvent, setConfirmEvent] = useState<any>(null)
+  const [confirmOption, setConfirmOption] = useState<any>(null)
+  const [userPoints, setUserPoints] = useState(0)
+  const [pulling, setPulling] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
+  const [videoUrl, setVideoUrl] = useState('')
+  const [pendingDrawIds, setPendingDrawIds] = useState<string[]>([])
   const [points, setPoints] = useState(0)
   const [currentBanner, setCurrentBanner] = useState(0)
   const [activeCategory, setActiveCategory] = useState('all')
@@ -37,6 +45,9 @@ export default function Home() {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setUser(session.user)
+        supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data: profile }) => {
+          if (profile) setUserPoints(profile.points)
+        })
         fetchPoints(session.user.id)
       } else {
         setUser(null)
@@ -56,7 +67,7 @@ export default function Home() {
   const fetchEvents = async () => {
     const { data } = await supabase
       .from('events')
-      .select('*, gacha_options(*)')
+      .select('*, gacha_options(*), prizes(*, animation_videos(video_url))')
       .eq('status', 'active')
       .order('created_at', { ascending: false })
     if (data) setEvents(data)
@@ -78,6 +89,48 @@ export default function Home() {
       .eq('id', userId)
       .single()
     if (profile) setPoints(profile.points)
+  }
+
+  const openConfirm = (event: any, opt: any) => {
+    if (!user) { window.location.href = '/auth/login'; return }
+    setConfirmEvent(event)
+    setConfirmOption(opt)
+    setShowConfirm(true)
+  }
+
+  const handleGacha = async () => {
+    if (!user || !confirmEvent || !confirmOption) return
+    setPulling(true)
+    setShowConfirm(false)
+    try {
+      const res = await fetch('/api/gacha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_id: confirmEvent.id, user_id: user.id, count: confirmOption.count }),
+      })
+      const data = await res.json()
+      if (!res.ok) { alert(data.error || 'エラー'); setPulling(false); return }
+      setUserPoints(data.remaining_points)
+      setPendingDrawIds(data.draw_ids || [])
+      // 最高グレード動画を探す
+      const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
+      const prizes = confirmEvent.prizes || []
+      let bestVideo = ''
+      for (const grade of gradeOrder) {
+        const hit = data.results.find((r: any) => r.grade === grade)
+        if (hit) {
+          const prize = prizes.find((p: any) => p.grade === grade)
+          if (prize?.animation_videos?.video_url) { bestVideo = prize.animation_videos.video_url; break }
+        }
+      }
+      if (bestVideo) {
+        setVideoUrl(bestVideo)
+        setShowVideo(true)
+      } else {
+        window.location.href = '/gacha-result?draw_ids=' + (data.draw_ids || []).join(',') + '&event_id=' + confirmEvent.id
+      }
+    } catch { alert('通信エラー') }
+    setPulling(false)
   }
 
   const handleLogout = async () => {
@@ -218,12 +271,12 @@ export default function Home() {
                     ) : sortedOptions.length > 0 ? (
                       <div style={{ display: 'flex', gap: '6px' }}>
                         {sortedOptions.map((opt) => (
-                          <a key={opt.id} href={user ? '/gacha/' + event.id + '?count=' + opt.count : '/auth/login'} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: opt.color, color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', textDecoration: 'none' }}>{opt.label}</a>
+                          <button key={opt.id} onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: opt.color, color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>{opt.label}</button>
                         ))}
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <a href={user ? '/gacha/' + event.id : '/auth/login'} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#e67e00', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', textDecoration: 'none' }}>1回ガチャ</a>
+                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#e67e00', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
                       </div>
                     )}
                   </div>
@@ -239,9 +292,9 @@ export default function Home() {
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '56px' }}>
           {[
             { href: '/', icon: '🎴', label: 'オリパガチャ' },
-            { href: '/mypage', icon: '🏆', label: '獲得商品' },
-            { href: '/mypage', icon: '🕐', label: '当選履歴' },
-            { href: '/mypage', icon: '📢', label: '当選報告' },
+            { href: '/prizes', icon: '🏆', label: '獲得商品' },
+            { href: '/history', icon: '🕐', label: '当選履歴' },
+            { href: '/reports', icon: '📢', label: '当選報告' },
             { href: '/mypage', icon: '👤', label: 'マイページ' },
           ].map((item) => (
             <a key={item.label} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#888', gap: '2px' }}>
@@ -251,6 +304,49 @@ export default function Home() {
           ))}
         </div>
       </nav>
+    {/* 確認ポップアップ */}
+      {showConfirm && confirmOption && confirmEvent && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
+          <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', maxWidth: '400px', width: '100%' }}>
+            <div style={{ width: '100%', height: '200px', background: '#1f2937', overflow: 'hidden' }}>
+              {confirmEvent.image_url
+                ? <img src={confirmEvent.image_url} alt={confirmEvent.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '60px' }}>🎴</div>
+              }
+            </div>
+            <div style={{ padding: '20px' }}>
+              <p style={{ fontSize: '16px', color: '#374151', textAlign: 'center', marginBottom: '16px' }}>
+                コインを消費して、<span style={{ fontWeight: 'bold', color: '#e67e00' }}>{confirmOption.count}回</span>ガチャを引きますか？
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', background: '#f9fafb', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'24px', height:'24px', borderRadius:'50%', background:'linear-gradient(135deg,#f5c518,#e67e00)', color:'white', fontSize:'12px', fontWeight:'900', flexShrink:0 }}>C</span>
+                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
+                </div>
+                <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'24px', height:'24px', borderRadius:'50%', background:'linear-gradient(135deg,#f5c518,#e67e00)', color:'white', fontSize:'12px', fontWeight:'900', flexShrink:0 }}>C</span>
+                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>{(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}</span>
+                </div>
+              </div>
+              <button onClick={handleGacha} disabled={pulling} style={{ width: '100%', padding: '14px', background: '#f59e0b', color: '#1a1a1a', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px' }}>
+                {pulling ? '処理中...' : 'ガチャを引く'}
+              </button>
+              <button onClick={() => setShowConfirm(false)} style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '16px', cursor: 'pointer' }}>
+                キャンセル
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 動画再生 */}
+      {showVideo && videoUrl && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
+          <video src={videoUrl} autoPlay playsInline onEnded={() => { setShowVideo(false); window.location.href = '/gacha-result?draw_ids=' + pendingDrawIds.join(',') + '&event_id=' + (confirmEvent?.id || '') }} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+          <button onClick={() => { setShowVideo(false); window.location.href = '/gacha-result?draw_ids=' + pendingDrawIds.join(',') }} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '999px', padding: '8px 16px', fontSize: '14px', cursor: 'pointer' }}>スキップ</button>
+        </div>
+      )}
     </div>
   )
 }

@@ -55,6 +55,8 @@ function GachaPageInner() {
   const [drawIds, setDrawIds] = useState<string[]>([])
   const [ceilingCount, setCeilingCount] = useState(0)
   const [userCeilingCount, setUserCeilingCount] = useState(0)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [confirmCount, setConfirmCount] = useState(1)
 
   useEffect(() => { fetchData() }, [])
 
@@ -78,13 +80,19 @@ function GachaPageInner() {
     setLoading(false)
   }
 
+  const openConfirm = (count: number) => {
+    if (!userId) { router.push('/auth/login'); return }
+    setConfirmCount(count)
+    setShowConfirm(true)
+  }
+
   const handleGacha = async (count: number) => {
     if (!userId) { router.push('/auth/login'); return }
     if (!event) return
     const totalCost = event.price * count
     if (userPoints < totalCost) { setError(`ポイントが不足しています（必要: ${totalCost.toLocaleString()}pt）`); return }
     if (event.remaining_count < count) { setError(`残り${event.remaining_count}口しかありません`); return }
-
+    setShowConfirm(false)
     setPulling(true)
     setError('')
     setPhase('shaking')
@@ -104,6 +112,11 @@ function GachaPageInner() {
       setUserPoints(data.remaining_points)
       setDrawIds(data.draw_ids || [])
       if (data.ceiling_count !== undefined) setUserCeilingCount(data.ceiling_count)
+      // ガチャ結果ページに遷移
+      if (data.draw_ids && data.draw_ids.length > 0) {
+        router.push('/gacha-result?draw_ids=' + data.draw_ids.join(','))
+        return
+      }
       setPhase('result')
       setShowResult(true)
       await fetchData()
@@ -213,7 +226,7 @@ function GachaPageInner() {
                     const disabled = pulling || !canAfford || !hasStock
                     return (
                       <div key={opt.id} style={{ textAlign: 'center' }}>
-                        <button onClick={() => handleGacha(opt.count)} disabled={disabled} style={{ background: disabled ? '#475569' : opt.color, color: 'white', border: 'none', borderRadius: '12px', padding: '14px 28px', fontSize: '16px', fontWeight: 'bold', cursor: disabled ? 'not-allowed' : 'pointer', boxShadow: disabled ? 'none' : `0 0 20px ${opt.color}66`, opacity: disabled ? 0.6 : 1, minWidth: '100px' }}>
+                        <button onClick={() => openConfirm(opt.count)} disabled={disabled} style={{ background: disabled ? '#475569' : opt.color, color: 'white', border: 'none', borderRadius: '12px', padding: '14px 28px', fontSize: '16px', fontWeight: 'bold', cursor: disabled ? 'not-allowed' : 'pointer', boxShadow: disabled ? 'none' : `0 0 20px ${opt.color}66`, opacity: disabled ? 0.6 : 1, minWidth: '100px' }}>
                           {pulling ? '開封中...' : opt.label}
                         </button>
                         <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>{cost.toLocaleString()}pt</div>
@@ -222,7 +235,7 @@ function GachaPageInner() {
                   })}
                 </div>
               ) : (
-                <button onClick={() => handleGacha(1)} disabled={pulling} style={{ background: pulling ? '#475569' : 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', border: 'none', borderRadius: '16px', padding: '18px 56px', fontSize: '20px', fontWeight: 'bold', cursor: pulling ? 'not-allowed' : 'pointer', boxShadow: pulling ? 'none' : '0 0 30px rgba(239,68,68,0.4)' }}>
+                <button onClick={() => openConfirm(1)} disabled={pulling} style={{ background: pulling ? '#475569' : 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', border: 'none', borderRadius: '16px', padding: '18px 56px', fontSize: '20px', fontWeight: 'bold', cursor: pulling ? 'not-allowed' : 'pointer', boxShadow: pulling ? 'none' : '0 0 30px rgba(239,68,68,0.4)' }}>
                   {pulling ? '開封中...' : '開封する！'}
                 </button>
               )}

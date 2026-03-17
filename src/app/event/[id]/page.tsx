@@ -13,8 +13,8 @@ type Event = {
   status: string
   description: string
   image_url: string
-  notes: string
-  category: string
+  ceiling_count: number
+  ceiling_grade: string
 }
 
 type Prize = {
@@ -23,28 +23,45 @@ type Prize = {
   count: number
   remaining_count: number
   pt_exchange: number
-  products: { name: string; image_url: string; market_value: number }
+  animation_video_id: string | null
+  animation_videos: { video_url: string } | null
+  products: {
+    name: string
+    image_url: string
+    market_value: number
+  }
 }
 
 type GachaOption = {
   id: string
-  count: number
   label: string
+  count: number
   color: string
   is_active: boolean
-  sort_order: number
 }
+
+const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
 
 export default function EventDetailPage() {
   const params = useParams()
   const router = useRouter()
+
   const [event, setEvent] = useState<Event | null>(null)
   const [prizes, setPrizes] = useState<Prize[]>([])
   const [gachaOptions, setGachaOptions] = useState<GachaOption[]>([])
-  const [userPoints, setUserPoints] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
+  const [userPoints, setUserPoints] = useState(0)
+  const [userCeilingCount, setUserCeilingCount] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [notesOpen, setNotesOpen] = useState(true)
+
+  // ポップアップ・動画・ガチャ状態
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [confirmOption, setConfirmOption] = useState<GachaOption | null>(null)
+  const [showVideo, setShowVideo] = useState(false)
+  const [videoUrl, setVideoUrl] = useState('')
+  const [pulling, setPulling] = useState(false)
+  const [error, setError] = useState('')
+  const [pendingDrawIds, setPendingDrawIds] = useState<string[]>([])
 
   useEffect(() => { fetchData() }, [])
 
@@ -56,176 +73,293 @@ export default function EventDetailPage() {
       const { data: profile } = await supabase.from('profiles').select('points').eq('id', session.user.id).single()
       if (profile) setUserPoints(profile.points)
     }
+
     const { data: eventData } = await supabase.from('events').select('*').eq('id', params.id).single()
     if (eventData) setEvent(eventData)
-    const { data: prizesData } = await supabase.from('prizes').select('*, products(*)').eq('event_id', params.id)
-    if (prizesData) setPrizes(prizesData.sort((a, b) => (b.products?.market_value || 0) - (a.products?.market_value || 0)))
-    const { data: gachaData } = await supabase.from('gacha_options').select('*').eq('event_id', params.id).eq('is_active', true).order('sort_order')
-    if (gachaData) setGachaOptions(gachaData)
+
+    const { data: prizesData } = await supabase
+      .from('prizes')
+      .select('*, animation_videos(video_url), products(name, image_url, market_value)')
+      .eq('event_id', params.id)
+    if (prizesData) setPrizes(prizesData)
+
+    const { data: optionsData } = await supabase
+      .from('gacha_options')
+      .select('*')
+      .eq('event_id', params.id)
+      .eq('is_active', true)
+      .order('count')
+    if (optionsData) setGachaOptions(optionsData)
+
+    if (session?.user) {
+      const { data: ceiling } = await supabase.from('user_ceiling').select('count').eq('user_id', session.user.id).eq('event_id', params.id).single()
+      if (ceiling) setUserCeilingCount(ceiling.count)
+    }
+
     setLoading(false)
   }
 
-  if (loading) return <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>読み込み中...</div></div>
-  if (!event) return <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>オリパが見つかりません</div></div>
-
-  const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
-  const isSoldOut = event.remaining_count <= 0
-
-  const gradeGroups = prizes.reduce((acc, prize) => {
-    if (!acc[prize.grade]) acc[prize.grade] = []
-    acc[prize.grade].push(prize)
-    return acc
-  }, {} as Record<string, Prize[]>)
-
-  const gradeOrder = ['S賞', 'A賞', 'B賞', 'C賞', 'ラストワン賞']
-  const sortedGrades = Object.keys(gradeGroups).sort((a, b) => {
-    const ai = gradeOrder.indexOf(a)
-    const bi = gradeOrder.indexOf(b)
-    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+  // 賞品をグレード別にグループ化
+  const gradeGroups: Record<string, Prize[]> = {}
+  prizes.forEach(p => {
+    if (!gradeGroups[p.grade]) gradeGroups[p.grade] = []
+    gradeGroups[p.grade].push(p)
   })
 
-  const gradeStyles: Record<string, string> = {
-    'S賞': 'linear-gradient(135deg, #ffd700, #ff8c00)',
-    'A賞': 'linear-gradient(135deg, #c084fc, #7c3aed)',
-    'B賞': 'linear-gradient(135deg, #60a5fa, #2563eb)',
-    'C賞': 'linear-gradient(135deg, #94a3b8, #64748b)',
-    'ラストワン賞': 'linear-gradient(135deg, #f472b6, #be185d)',
+  const getBestVideoUrl = (results: any[]) => {
+    for (const grade of gradeOrder) {
+      const match = results.find((r: any) => r.grade === grade)
+      if (match?.video_url) return match.video_url
+    }
+    return ''
   }
 
-  const loginUrl = '/auth/login'
+  const openConfirm = (opt: GachaOption) => {
+    if (!userId) { router.push('/auth/login'); return }
+    setConfirmOption(opt)
+    setShowConfirm(true)
+    setError('')
+  }
+
+  const handleGacha = async () => {
+    if (!userId || !event || !confirmOption) return
+    const totalCost = event.price * confirmOption.count
+    if (userPoints < totalCost) { setError(`ポイントが不足しています（必要: ${totalCost.toLocaleString()}pt）`); return }
+
+    setPulling(true)
+    setShowConfirm(false)
+
+    try {
+      const res = await fetch('/api/gacha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_id: event.id, user_id: userId, count: confirmOption.count }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'エラーが発生しました'); setPulling(false); return }
+
+      setUserPoints(data.remaining_points)
+      setPendingDrawIds(data.draw_ids || [])
+
+      // 最高グレードの動画を取得
+      const bestVideo = getBestVideoUrl(data.results.map((r: any) => ({
+        grade: r.grade,
+        video_url: prizes.find(p => p.grade === r.grade)?.animation_videos?.video_url || ''
+      })))
+
+      if (bestVideo) {
+        setVideoUrl(bestVideo)
+        setShowVideo(true)
+      } else {
+        // 動画なし → 直接結果ページへ
+        router.push('/gacha-result?draw_ids=' + (data.draw_ids || []).join(','))
+      }
+    } catch {
+      setError('通信エラーが発生しました')
+    }
+    setPulling(false)
+  }
+
+  const handleVideoEnd = () => {
+    setShowVideo(false)
+    router.push('/gacha-result?draw_ids=' + pendingDrawIds.join(','))
+  }
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ color: 'white' }}>読み込み中...</div>
+    </div>
+  )
+
+  if (!event) return (
+    <div style={{ minHeight: '100vh', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ color: 'white' }}>オリパが見つかりません</div>
+    </div>
+  )
+
+  const isSoldOut = event.remaining_count <= 0 || event.status !== 'active'
+  const loginUrl = `/auth/login?redirect=/event/${event.id}`
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '90px' }}>
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '100px' }}>
 
-      <header style={{ background: '#1a1a2e', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button onClick={() => router.push('/')} style={{ color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>← 戻る</button>
-            <a href="/" style={{ fontSize: '20px', fontWeight: '900', color: '#f5c518', textDecoration: 'none' }}>ORIPA</a>
+      {/* ヘッダー */}
+      <header style={{ background: '#1f2937', color: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button onClick={() => router.push('/')} style={{ color: '#aaa', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>← 戻る</button>
+        {userId && <div style={{ fontSize: '14px', color: '#f59e0b', fontWeight: 'bold' }}>{userPoints.toLocaleString()}pt</div>}
+      </header>
+
+      {/* メイン画像 */}
+      <div style={{ width: '100%', height: '240px', background: '#1f2937', overflow: 'hidden' }}>
+        {event.image_url
+          ? <img src={event.image_url} alt={event.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '60px' }}>🎴</div>
+        }
+      </div>
+
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '16px' }}>
+        {/* 基本情報 */}
+        <div style={{ background: 'white', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#1f2937', marginBottom: '12px' }}>{event.name}</h1>
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '2px' }}>価格</div>
+              <div style={{ fontSize: '20px', fontWeight: '900', color: '#f59e0b' }}>{event.price.toLocaleString()}pt/回</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '2px' }}>残り</div>
+              <div style={{ fontSize: '20px', fontWeight: '900', color: '#1f2937' }}>{event.remaining_count}<span style={{ fontSize: '12px', color: '#9ca3af' }}>/{event.total_count}口</span></div>
+            </div>
           </div>
-          {userId && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f5c518', padding: '6px 12px', borderRadius: '4px' }}>
-              <span style={{ fontSize: '11px', color: '#1a1a2e', fontWeight: '700' }}>PT</span>
-              <span style={{ fontSize: '16px', fontWeight: '900', color: '#1a1a2e' }}>{userPoints.toLocaleString()}</span>
+          <div style={{ background: '#f3f4f6', borderRadius: '999px', height: '8px' }}>
+            <div style={{ background: 'linear-gradient(90deg, #f59e0b, #ef4444)', borderRadius: '999px', height: '8px', width: `${(event.remaining_count / event.total_count) * 100}%` }} />
+          </div>
+
+          {/* 天井カウンター */}
+          {event.ceiling_count > 0 && (
+            <div style={{ marginTop: '12px', background: '#eff6ff', borderRadius: '8px', padding: '10px 14px' }}>
+              <div style={{ fontSize: '12px', color: '#3b82f6', marginBottom: '4px' }}>天井カウンター</div>
+              <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#1e40af' }}>
+                {userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定
+              </div>
+              <div style={{ background: '#dbeafe', borderRadius: '999px', height: '4px', marginTop: '6px' }}>
+                <div style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)', borderRadius: '999px', height: '4px', width: `${Math.min((userCeilingCount / event.ceiling_count) * 100, 100)}%` }} />
+              </div>
             </div>
           )}
         </div>
-      </header>
 
-      <div style={{ background: 'white', borderBottom: '1px solid #e0e0e0', padding: '8px 16px', fontSize: '12px', color: '#999' }}>
-        <span style={{ cursor: 'pointer', color: '#666' }} onClick={() => router.push('/')}>トップ</span>
-        <span style={{ margin: '0 6px' }}>{'>'}</span>
-        <span style={{ color: '#333' }}>{event.name}</span>
-      </div>
-
-      <div style={{ maxWidth: '760px', margin: '0 auto', padding: '20px 16px' }}>
-
-        <div style={{ borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', background: '#111', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
-          {event.image_url
-            ? <img src={event.image_url} alt={event.name} style={{ width: '100%', height: 'auto', maxHeight: '480px', objectFit: 'cover', display: 'block' }} />
-            : <div style={{ height: '320px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', opacity: 0.2 }}>?</div>
-          }
-        </div>
-
-        {event.notes && (
-          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', marginBottom: '16px', overflow: 'hidden' }}>
-            <button onClick={() => setNotesOpen(!notesOpen)} style={{ width: '100%', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', color: '#92400e' }}>
-              <span>注意事項・ご利用条件</span>
-              <span>{notesOpen ? '▲' : '▼'}</span>
-            </button>
-            {notesOpen && <div style={{ padding: '0 16px 16px', fontSize: '13px', color: '#78350f', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{event.notes}</div>}
-          </div>
+        {error && (
+          <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '10px', padding: '12px', marginBottom: '16px', color: '#ef4444', fontSize: '14px', textAlign: 'center' }}>{error}</div>
         )}
 
-        <div style={{ background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', padding: '14px 16px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-              <div style={{ width: '20px', height: '20px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '900', color: '#333' }}>P</div>
-              <span style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-              <span style={{ fontSize: '12px', color: '#999' }}>/回</span>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#999', marginBottom: '5px' }}>
-                <span>残り{event.remaining_count.toLocaleString()}口</span>
-                <span>{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
+        {/* 賞品一覧 */}
+        <div style={{ background: 'white', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '16px' }}>賞品一覧</h2>
+          {gradeOrder.filter(g => gradeGroups[g]).map(grade => (
+            <div key={grade} style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#1f2937', marginBottom: '10px', paddingBottom: '6px', borderBottom: '2px solid #f3f4f6' }}>
+                {grade}
+                <span style={{ fontSize: '12px', color: '#9ca3af', marginLeft: '8px', fontWeight: 'normal' }}>{gradeGroups[grade].reduce((s, p) => s + p.remaining_count, 0)}口</span>
               </div>
-              <div style={{ background: '#eee', borderRadius: '999px', height: '10px' }}>
-                <div style={{ background: remainingPercent > 50 ? '#4caf50' : remainingPercent > 20 ? '#ff9800' : '#f44336', borderRadius: '999px', height: '10px', width: remainingPercent + '%' }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          {sortedGrades.map((grade) => {
-            const gradePrizes = gradeGroups[grade]
-            const bg = gradeStyles[grade] || 'linear-gradient(135deg, #94a3b8, #64748b)'
-            return (
-              <div key={grade} style={{ marginBottom: '28px' }}>
-                <div style={{ background: bg, borderRadius: '8px', padding: '12px 20px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-                  <span style={{ fontSize: '20px', fontWeight: '900', color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>{grade}</span>
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.9)', fontWeight: '600' }}>{gradePrizes.reduce((s, p) => s + p.count, 0)}口</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px' }}>
-                  {gradePrizes.map((prize) => (
-                    <div key={prize.id} style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-                      <div style={{ position: 'relative', paddingBottom: '140%', background: '#f0f0f0' }}>
-                        {prize.products?.image_url
-                          ? <img src={prize.products.image_url} alt={prize.products.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                          : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', opacity: 0.2 }}>?</div>
-                        }
-                        <div style={{ position: 'absolute', bottom: '4px', right: '4px', background: 'rgba(0,0,0,0.75)', borderRadius: '4px', padding: '2px 8px', fontSize: '11px', color: 'white', fontWeight: '700' }}>x{prize.count}</div>
-                      </div>
-                      <div style={{ padding: '8px 10px' }}>
-                        <div style={{ fontSize: '12px', fontWeight: '700', color: '#333', marginBottom: '3px', lineHeight: 1.3 }}>{prize.products?.name}</div>
-                        <div style={{ fontSize: '12px', color: '#e67e00', fontWeight: '700' }}>¥{prize.products?.market_value?.toLocaleString()}</div>
-                      </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {gradeGroups[grade].map(prize => (
+                  <div key={prize.id} style={{ textAlign: 'center' }}>
+                    <div style={{ aspectRatio: '3/4', background: '#f3f4f6', borderRadius: '8px', overflow: 'hidden', marginBottom: '4px' }}>
+                      {prize.products?.image_url
+                        ? <img src={prize.products.image_url} alt={prize.products.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🃏</div>
+                      }
                     </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* 固定フッターガチャボタン */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '2px solid #e0e0e0', padding: '10px 16px', zIndex: 50, boxShadow: '0 -4px 16px rgba(0,0,0,0.12)' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto' }}>
-          {event.status !== 'active' || isSoldOut ? (
-            <div style={{ textAlign: 'center', padding: '14px', background: '#f0f0f0', borderRadius: '8px', color: '#999', fontSize: '15px', fontWeight: '700' }}>
-              {isSoldOut ? '売り切れ' : '開催終了'}
-            </div>
-          ) : gachaOptions.length > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ flexShrink: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <div style={{ width: '16px', height: '16px', background: '#f5c518', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '18px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-                </div>
-                <div style={{ fontSize: '11px', color: '#999', textAlign: 'center' }}>1回</div>
-              </div>
-              <div style={{ flex: 1, display: 'flex', gap: '6px', overflowX: 'auto' }}>
-                {gachaOptions.map((opt) => (
-                    <a
-                    key={opt.id}
-                    href={userId ? '/gacha/' + event.id + '?count=' + opt.count : loginUrl}
-                    style={{ flex: '1 0 auto', display: 'block', textAlign: 'center', padding: '12px 8px', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', textDecoration: 'none', whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
-                  >
-                    {opt.label}
-                  </a>
+                    <div style={{ fontSize: '10px', color: '#374151', fontWeight: '600', lineHeight: 1.3 }}>{prize.products?.name}</div>
+                    <div style={{ fontSize: '10px', color: '#9ca3af' }}>{prize.remaining_count}口</div>
+                  </div>
                 ))}
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* 説明文 */}
+        {event.description && (
+          <div style={{ background: 'white', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '12px' }}>オリパについて</h2>
+            <p style={{ fontSize: '14px', color: '#374151', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{event.description}</p>
+          </div>
+        )}
+      </div>
+
+      {/* 固定フッターガチャボタン */}
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '10px 16px', zIndex: 50 }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          {isSoldOut ? (
+            <div style={{ textAlign: 'center', padding: '14px', background: '#f3f4f6', borderRadius: '8px', color: '#9ca3af', fontWeight: 'bold' }}>SOLD OUT</div>
+          ) : gachaOptions.length > 0 ? (
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto' }}>
+              {gachaOptions.map(opt => (
+                <div key={opt.id} style={{ textAlign: 'center', flexShrink: 0 }}>
+                  <button
+                    onClick={() => openConfirm(opt)}
+                    disabled={pulling}
+                    style={{ padding: '12px 20px', background: opt.color, color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    {opt.label}
+                  </button>
+                  <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>{(event.price * opt.count).toLocaleString()}pt</div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div style={{ display: 'flex', gap: '8px' }}>
-              <a href={userId ? '/gacha/' + event.id : loginUrl} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '14px', background: '#e67e00', color: 'white', borderRadius: '8px', fontSize: '15px', fontWeight: '900', textDecoration: 'none' }}>1回ガチャ</a>
-              <a href={userId ? '/gacha/' + event.id : loginUrl} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '14px', background: '#c0392b', color: 'white', borderRadius: '8px', fontSize: '15px', fontWeight: '900', textDecoration: 'none' }}>5連ガチャ</a>
+              <button onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#e67e00', is_active: true })} style={{ flex: 1, padding: '14px', background: '#e67e00', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>1回ガチャ</button>
+              <button onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#c0392b', is_active: true })} style={{ flex: 1, padding: '14px', background: '#c0392b', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>10連ガチャ</button>
             </div>
           )}
           {!userId && <p style={{ textAlign: 'center', fontSize: '12px', color: '#999', marginTop: '4px' }}>ガチャを引くには<a href={loginUrl} style={{ color: '#e67e00', fontWeight: '700' }}>ログイン</a>が必要です</p>}
         </div>
       </div>
+
+      {/* 確認ポップアップ */}
+      {showConfirm && confirmOption && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px' }}>
+          <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', maxWidth: '400px', width: '100%' }}>
+            <div style={{ width: '100%', height: '200px', background: '#1f2937', overflow: 'hidden' }}>
+              {event.image_url
+                ? <img src={event.image_url} alt={event.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '60px' }}>🎴</div>
+              }
+            </div>
+            <div style={{ padding: '20px' }}>
+              <p style={{ fontSize: '16px', color: '#374151', textAlign: 'center', marginBottom: '16px' }}>
+                コインを消費して、<span style={{ fontWeight: 'bold', color: '#e67e00' }}>{confirmOption.count}回</span>ガチャを引きますか？
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', background: '#f9fafb', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '20px' }}>🪙</span>
+                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
+                </div>
+                <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '20px' }}>🪙</span>
+                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#ef4444' }}>{(userPoints - event.price * confirmOption.count).toLocaleString()}</span>
+                </div>
+              </div>
+              <button
+                onClick={handleGacha}
+                disabled={pulling}
+                style={{ width: '100%', padding: '14px', background: '#f59e0b', color: '#1a1a1a', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px' }}
+              >
+                {pulling ? '処理中...' : 'ガチャを引く'}
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '16px', cursor: 'pointer' }}
+              >
+                キャンセル
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 動画再生 */}
+      {showVideo && videoUrl && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
+          <video
+            src={videoUrl}
+            autoPlay
+            playsInline
+            onEnded={handleVideoEnd}
+            style={{ maxWidth: '100%', maxHeight: '100%' }}
+          />
+          <button
+            onClick={handleVideoEnd}
+            style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '999px', padding: '8px 16px', fontSize: '14px', cursor: 'pointer' }}
+          >
+            スキップ
+          </button>
+        </div>
+      )}
     </div>
   )
 }
