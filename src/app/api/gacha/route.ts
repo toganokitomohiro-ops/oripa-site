@@ -43,10 +43,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'ポイントが不足しています' }, { status: 400 })
     }
 
-    // 賞品リスト取得
+    // 賞品リスト取得（複数動画も含む）
     const { data: prizes } = await supabase
       .from('prizes')
-      .select('*, products(*)')
+      .select('*, products(*), prize_animation_videos(animation_video_id, animation_videos(video_url))')
       .eq('event_id', event_id)
       .gt('remaining_count', 0)
 
@@ -201,9 +201,27 @@ export async function POST(req: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(actualCount)
 
+    // 最高グレードの動画をランダムで1本選ぶ
+    const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
+    let videoUrl = ''
+    for (const grade of gradeOrder) {
+      const matched = results.find((r: any) => r.grade === grade)
+      if (matched) {
+        // そのグレードの賞品IDから動画リストを取得
+        const prizeWithVideos = prizes?.find(p => p.id === (matched as any).prize_id)
+        const videos = prizeWithVideos?.prize_animation_videos || []
+        if (videos.length > 0) {
+          const picked = videos[Math.floor(Math.random() * videos.length)]
+          videoUrl = picked?.animation_videos?.video_url || ''
+        }
+        break
+      }
+    }
+
     return NextResponse.json({
       success: true,
       count: actualCount,
+      video_url: videoUrl,
       results: results.map((r) => ({
         grade: r.grade,
         product: r.product,
