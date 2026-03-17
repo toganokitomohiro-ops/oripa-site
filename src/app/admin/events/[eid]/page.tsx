@@ -76,7 +76,7 @@ export default function AdminEventDetailPage() {
       supabase.from('events').select('*').eq('id', eid).single(),
       supabase.from('prizes').select('*, products(*)').eq('event_id', eid).order('grade'),
       supabase.from('products').select('id, name, market_value').order('name'),
-      supabase.from('gacha_options').select('*').eq('event_id', eid).order('count'),
+      supabase.from('gacha_options').select('*').eq('event_id', eid).order('sort_order'),
       supabase.from('animation_videos').select('*').eq('is_active', true).order('sort_order'),
     ])
     if (e.data) setEvent(e.data)
@@ -107,7 +107,7 @@ export default function AdminEventDetailPage() {
   const handleUpload = async (file: File) => {
     setUploading(true)
     const ext = file.name.split('.').pop()
-    const fileName = `events/${Date.now()}.${ext}`
+    const fileName = `events/${Date.now()}.jpg`
     await supabase.storage.from('images').upload(fileName, file)
     const { data } = supabase.storage.from('images').getPublicUrl(fileName)
     setEvent((prev) => prev ? { ...prev, image_url: data.publicUrl } : prev)
@@ -161,6 +161,18 @@ export default function AdminEventDetailPage() {
   const handleDeleteGachaOption = async (id: string) => {
     if (!confirm('このガチャボタンを削除しますか？')) return
     await supabase.from('gacha_options').delete().eq('id', id)
+    fetchAll()
+  }
+
+  const handleMoveGachaOption = async (index: number, direction: 'up' | 'down') => {
+    const newOptions = [...gachaOptions]
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= newOptions.length) return
+    const temp = newOptions[index].sort_order
+    newOptions[index].sort_order = newOptions[targetIndex].sort_order
+    newOptions[targetIndex].sort_order = temp
+    await supabase.from('gacha_options').update({ sort_order: newOptions[index].sort_order }).eq('id', newOptions[index].id)
+    await supabase.from('gacha_options').update({ sort_order: newOptions[targetIndex].sort_order }).eq('id', newOptions[targetIndex].id)
     fetchAll()
   }
 
@@ -422,7 +434,12 @@ export default function AdminEventDetailPage() {
                   <span style={{ display: 'inline-block', padding: '8px 20px', background: opt.color, color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', minWidth: '80px', textAlign: 'center' }}>{opt.label}</span>
                   <span style={{ fontSize: '13px', color: '#6b7280' }}>{opt.count >= 9999 ? 'ラストまで全部' : opt.count + '連'}</span>
                   <span style={{ fontSize: '11px', color: opt.is_active ? '#10b981' : '#6b7280', background: opt.is_active ? '#f0fdf4' : '#f3f4f6', padding: '2px 8px', borderRadius: '999px' }}>{opt.is_active ? '表示中' : '非表示'}</span>
-                  <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                  <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {/* 並び替えボタン */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <button onClick={() => handleMoveGachaOption(index, 'up')} disabled={index === 0} style={{ fontSize: '10px', color: index === 0 ? '#d1d5db' : '#6b7280', background: 'none', border: '1px solid #e5e7eb', borderRadius: '3px', padding: '2px 6px', cursor: index === 0 ? 'not-allowed' : 'pointer', lineHeight: 1 }}>↑</button>
+                      <button onClick={() => handleMoveGachaOption(index, 'down')} disabled={index === gachaOptions.length - 1} style={{ fontSize: '10px', color: index === gachaOptions.length - 1 ? '#d1d5db' : '#6b7280', background: 'none', border: '1px solid #e5e7eb', borderRadius: '3px', padding: '2px 6px', cursor: index === gachaOptions.length - 1 ? 'not-allowed' : 'pointer', lineHeight: 1 }}>↓</button>
+                    </div>
                     <button onClick={() => setGachaForm({ label: opt.label, count: opt.count >= 9999 ? -1 : opt.count, color: opt.color, editing_id: opt.id })} style={{ fontSize: '12px', color: '#2980b9', background: 'none', border: '1px solid #93c5fd', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>編集</button>
                     <button onClick={() => handleToggleGachaOption(opt.id, opt.is_active)} style={{ fontSize: '12px', color: '#6b7280', background: 'none', border: '1px solid #d1d5db', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>{opt.is_active ? '非表示' : '表示'}</button>
                     <button onClick={() => handleDeleteGachaOption(opt.id)} style={{ fontSize: '12px', color: '#ef4444', background: 'none', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>

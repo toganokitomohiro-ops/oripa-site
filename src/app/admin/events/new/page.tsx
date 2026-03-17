@@ -22,8 +22,26 @@ export default function AdminEventsNewPage() {
   const handleUpload = async (file: File) => {
     setUploading(true)
     const ext = file.name.split('.').pop()
-    const fileName = `events/${Date.now()}.${ext}`
-    const { error } = await supabase.storage.from('images').upload(fileName, file)
+    const fileName = `events/${Date.now()}.jpg`
+    const resizeImage = (file: File, width: number, height: number): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, width, height)
+        URL.revokeObjectURL(url)
+        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.9)
+      }
+      img.src = url
+    })
+  }
+
+  const resized = await resizeImage(file, 416, 273)
+    const { error } = await supabase.storage.from('images').upload(fileName, resized, { contentType: 'image/jpeg' })
     if (error) { alert('アップロード失敗'); setUploading(false); return }
     const { data } = supabase.storage.from('images').getPublicUrl(fileName)
     setForm((prev) => ({ ...prev, image_url: data.publicUrl }))
