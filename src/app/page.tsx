@@ -77,6 +77,7 @@ export default function Home() {
     const { data } = await supabase
       .from('banners')
       .select('*')
+      .eq('status', 'published')
       .eq('is_active', true)
       .order('sort_order')
     if (data) setBanners(data)
@@ -181,22 +182,54 @@ export default function Home() {
 
       {/* バナースライダー */}
       {banners.length > 0 && (
-        <div style={{ background: '#f5f5f5', padding: '8px 0', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', gap: '8px', padding: '0 8px', scrollbarWidth: 'none' }}>
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* 左矢印 */}
+          {currentBanner > 0 && (
+            <button
+              onClick={() => setCurrentBanner(prev => Math.max(0, prev - 1))}
+              style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >‹</button>
+          )}
+          {/* 右矢印 */}
+          {currentBanner < banners.length - 1 && (
+            <button
+              onClick={() => setCurrentBanner(prev => Math.min(banners.length - 1, prev + 1))}
+              style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >›</button>
+          )}
+          {/* バナー本体 */}
+          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(calc(-${currentBanner} * 52% - 28%))`, gap: '8px', padding: '4px 0' }}>
+            {/* 最後のバナーを先頭に */}
+            {banners.length > 0 && (
+              <div style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', opacity: 0.7, transform: 'scale(0.95)' }}>
+                <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
+              </div>
+            )}
             {banners.map((banner, index) => (
               <div
                 key={banner.id}
-                style={{ flexShrink: 0, width: 'calc(50% - 4px)', scrollSnapAlign: 'start', cursor: banner.link_url ? 'pointer' : 'default', borderRadius: '8px', overflow: 'hidden' }}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
+                style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default', transition: 'transform 0.4s, opacity 0.4s', transform: index === currentBanner ? 'scale(1)' : 'scale(0.95)', opacity: index === currentBanner ? 1 : 0.7 }}
               >
-                <img src={banner.image_url} alt={banner.title} style={{ width: '100%', height: '100px', objectFit: 'cover', display: 'block' }} />
+                <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             ))}
+            {/* 最初のバナーを末尾に */}
+            {banners.length > 0 && (
+              <div style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', opacity: 0.7, transform: 'scale(0.95)' }}>
+                <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
+              </div>
+            )}
           </div>
+          {/* ドット */}
           {banners.length > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', padding: '8px 0 4px' }}>
               {banners.map((_, index) => (
-                <button key={index} onClick={() => setCurrentBanner(index)} style={{ width: index === currentBanner ? '16px' : '6px', height: '6px', borderRadius: '999px', background: index === currentBanner ? '#e67e00' : '#ddd', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }} />
+                <button
+                  key={index}
+                  onClick={() => setCurrentBanner(index)}
+                  style={{ width: index === currentBanner ? '16px' : '6px', height: '6px', borderRadius: '999px', background: index === currentBanner ? '#e67e00' : '#ddd', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }}
+                />
               ))}
             </div>
           )}
