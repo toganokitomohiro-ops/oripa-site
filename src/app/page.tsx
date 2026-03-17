@@ -13,6 +13,7 @@ type Event = {
   image_url: string
   status: string
   category: string
+  created_at: string
   gacha_options?: { id: string; label: string; color: string; count: number; sort_order: number }[]
 }
 
@@ -38,6 +39,7 @@ export default function Home() {
   const [points, setPoints] = useState(0)
   const [currentBanner, setCurrentBanner] = useState(0)
   const [activeCategory, setActiveCategory] = useState('all')
+  const [sortFilter, setSortFilter] = useState('')
 
   useEffect(() => {
     fetchEvents()
@@ -147,9 +149,16 @@ export default function Home() {
     { value: 'other', label: 'その他' },
   ]
 
-  const filteredEvents = activeCategory === 'all'
-    ? events
-    : events.filter((e) => e.category === activeCategory)
+  const filteredEvents = (() => {
+    let result = activeCategory === 'all' ? [...events] : events.filter(e => e.category === activeCategory)
+    if (sortFilter === 'high_point') result.sort((a, b) => b.price - a.price)
+    else if (sortFilter === 'low_point') result.sort((a, b) => a.price - b.price)
+    else if (sortFilter === 'new') result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    else if (sortFilter === 'old') result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    else if (sortFilter === 'remaining_high') result.sort((a, b) => (b.remaining_count / b.total_count) - (a.remaining_count / a.total_count))
+    else if (sortFilter === 'remaining_low') result.sort((a, b) => (a.remaining_count / a.total_count) - (b.remaining_count / b.total_count))
+    return result
+  })()
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#333', paddingBottom: '70px' }}>
@@ -237,15 +246,35 @@ export default function Home() {
       )}
 
       {/* カテゴリータブ */}
-      <div style={{ background: 'white', borderBottom: '2px solid #f0f0f0', position: 'sticky', top: '56px', zIndex: 40 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', overflowX: 'auto' }}>
+      <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: '56px', zIndex: 40 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {categories.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setActiveCategory(cat.value)}
-              style={{ padding: '14px 24px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', color: activeCategory === cat.value ? '#e67e00' : '#666', borderBottom: activeCategory === cat.value ? '3px solid #e67e00' : '3px solid transparent', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+              style={{ padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', color: activeCategory === cat.value ? '#e67e00' : '#666', borderBottom: activeCategory === cat.value ? '3px solid #e67e00' : '3px solid transparent', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
             >
               {cat.label}
+            </button>
+          ))}
+        </div>
+        {/* 絞り込みボタン */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {[
+            { key: 'recommended', label: 'おすすめ順 ↕' },
+            { key: 'high_point', label: 'ポイントが高い順' },
+            { key: 'low_point', label: 'ポイントが低い順' },
+            { key: 'new', label: '公開が新しい順' },
+            { key: 'old', label: '公開が古い順' },
+            { key: 'remaining_high', label: '残り割合が多い順' },
+            { key: 'remaining_low', label: '残り割合が少ない順' },
+          ].map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setSortFilter(sortFilter === f.key ? '' : f.key)}
+              style={{ padding: '6px 14px', borderRadius: '999px', border: '1px solid', borderColor: sortFilter === f.key ? '#e67e00' : '#e5e7eb', background: sortFilter === f.key ? '#e67e00' : 'white', color: sortFilter === f.key ? 'white' : '#374151', fontSize: '12px', fontWeight: sortFilter === f.key ? 'bold' : 'normal', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+            >
+              {f.label}
             </button>
           ))}
         </div>
@@ -266,7 +295,7 @@ export default function Home() {
               return (
                 <div key={event.id} style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e8e8e8', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                   {/* バナー画像 */}
-                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '56%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
+                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
                       <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
