@@ -203,7 +203,7 @@ export default function EventDetailPage() {
       {/* パンくずリスト */}
       <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#9ca3af' }}>
-          <a href="/" style={{ color: '#9ca3af', textDecoration: 'none', hover: 'color:#374151' }}>ガチャ一覧</a>
+          <a href="/" style={{ color: '#9ca3af', textDecoration: 'none' }}>ガチャ一覧</a>
           <span>›</span>
           <span style={{ color: '#374151', fontWeight: '600' }}>{event.name}</span>
         </div>
