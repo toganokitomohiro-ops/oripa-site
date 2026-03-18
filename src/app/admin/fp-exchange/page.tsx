@@ -12,6 +12,8 @@ type Item = {
   remaining_stock: number
   rarity: string
   item_code: string
+  notes: string
+  description: string
   is_active: boolean
   sort_order: number
   fp_exchange_categories: { name: string } | null
