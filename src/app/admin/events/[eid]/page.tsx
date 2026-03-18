@@ -60,12 +60,14 @@ export default function AdminEventDetailPage() {
   const [gachaOptions, setGachaOptions] = useState<GachaOption[]>([])
   const [animationVideos, setAnimationVideos] = useState<AnimationVideo[]>([])
   const [prizeViewMode, setPrizeViewMode] = useState<'grid' | 'list'>('list')
-  const [activeTab, setActiveTab] = useState<'prizes' | 'gacha' | 'settings'>('prizes')
+  const [activeTab, setActiveTab] = useState<'prizes' | 'grade_videos' | 'gacha' | 'settings'>('prizes')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [prizeForm, setPrizeForm] = useState({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0 })
   const [videoModalPrizeId, setVideoModalPrizeId] = useState<string | null>(null)
+  const [gradeVideos, setGradeVideos] = useState<{id:string,grade:string,animation_video_id:string,animation_videos:{id:string,name:string,video_url:string}}[]>([])
+  const [gradeVideoForm, setGradeVideoForm] = useState({ grade: 'S賞', animation_video_id: '' })
   const [selectedVideoId, setSelectedVideoId] = useState('')
   const [videoSearch, setVideoSearch] = useState('')
   const [videoFilterCategory, setVideoFilterCategory] = useState('all')
@@ -93,6 +95,8 @@ export default function AdminEventDetailPage() {
     if (go.data) setGachaOptions(go.data)
     if (av.data) setAnimationVideos(av.data)
     if (ac.data) setAnimationCategories(ac.data)
+    const { data: gv } = await supabase.from('grade_animation_videos').select('*, animation_videos(id, name, video_url)').eq('event_id', eid)
+    if (gv) setGradeVideos(gv)
     setLoading(false)
   }
 
@@ -273,6 +277,7 @@ export default function AdminEventDetailPage() {
       <div style={{ display: 'flex', borderBottom: '2px solid #e5e7eb', marginBottom: '24px' }}>
         {[
           { key: 'prizes', label: '賞品・在庫' },
+          { key: 'grade_videos', label: '賞別動画' },
           { key: 'gacha', label: 'ガチャ設定' },
           { key: 'settings', label: '基本設定' },
         ].map((tab) => (
@@ -476,6 +481,76 @@ export default function AdminEventDetailPage() {
       )}
 
       {/* 基本設定タブ */}
+      {activeTab === 'grade_videos' && (
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>🎬 賞ごとの演出動画</h2>
+          <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>カードに動画が設定されていない場合、ここで設定した動画が再生されます。</p>
+
+          {/* 追加フォーム */}
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '6px' }}>賞</label>
+              <select value={gradeVideoForm.grade} onChange={(e) => setGradeVideoForm({...gradeVideoForm, grade: e.target.value})}
+                style={{ border: '1px solid #d1d5db', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: 'white' }}>
+                {['S賞','A賞','B賞','C賞','ラストワン賞'].map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </div>
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '6px' }}>動画</label>
+              <select value={gradeVideoForm.animation_video_id} onChange={(e) => setGradeVideoForm({...gradeVideoForm, animation_video_id: e.target.value})}
+                style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', background: 'white' }}>
+                <option value="">動画を選択してください</option>
+                {animationVideos.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+              </select>
+            </div>
+            <button
+              onClick={async () => {
+                if (!gradeVideoForm.animation_video_id) return
+                await supabase.from('grade_animation_videos').insert({ event_id: eid, grade: gradeVideoForm.grade, animation_video_id: gradeVideoForm.animation_video_id })
+                const { data: gv } = await supabase.from('grade_animation_videos').select('*, animation_videos(id, name, video_url)').eq('event_id', eid)
+                if (gv) setGradeVideos(gv)
+                setGradeVideoForm({ grade: 'S賞', animation_video_id: '' })
+              }}
+              disabled={!gradeVideoForm.animation_video_id}
+              style={{ padding: '8px 20px', background: gradeVideoForm.animation_video_id ? '#7c3aed' : '#9ca3af', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold', cursor: gradeVideoForm.animation_video_id ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap' }}>
+              追加
+            </button>
+          </div>
+
+          {/* 登録済み一覧 */}
+          {gradeVideos.length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', background: '#f9fafb', borderRadius: '8px', color: '#9ca3af', fontSize: '14px' }}>
+              まだ登録されていません
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {['ラストワン賞','S賞','A賞','B賞','C賞'].map(grade => {
+                const vids = gradeVideos.filter(v => v.grade === grade)
+                if (vids.length === 0) return null
+                return (
+                  <div key={grade}>
+                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', marginBottom: '6px' }}>{grade}</div>
+                    {vids.map(v => (
+                      <div key={v.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>🎬</span>
+                          <span style={{ fontSize: '13px', color: '#374151' }}>{v.animation_videos?.name || '不明'}</span>
+                        </div>
+                        <button onClick={async () => {
+                          if (!confirm('削除しますか？')) return
+                          await supabase.from('grade_animation_videos').delete().eq('id', v.id)
+                          const { data: gv } = await supabase.from('grade_animation_videos').select('*, animation_videos(id, name, video_url)').eq('event_id', eid)
+                          if (gv) setGradeVideos(gv)
+                        }} style={{ fontSize: '12px', color: '#ef4444', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
       {activeTab === 'settings' && (
         <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

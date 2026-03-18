@@ -201,18 +201,31 @@ export async function POST(req: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(actualCount)
 
-    // 最高グレードの動画をランダムで1本選ぶ
+    // 賞ごとの動画を取得（フォールバック用）
+    const { data: gradeVideos } = await supabase
+      .from('grade_animation_videos')
+      .select('grade, animation_videos(video_url)')
+      .eq('event_id', event_id)
+
+    // 最高グレードの動画をランダムで1本選ぶ（カード動画優先、なければ賞動画）
     const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
     let videoUrl = ''
     for (const grade of gradeOrder) {
       const matched = results.find((r: any) => r.grade === grade)
       if (matched) {
-        // そのグレードの賞品IDから動画リストを取得
+        // カードごとの動画を優先
         const prizeWithVideos = prizes?.find(p => p.id === (matched as any).prize_id)
-        const videos = prizeWithVideos?.prize_animation_videos || []
-        if (videos.length > 0) {
-          const picked = videos[Math.floor(Math.random() * videos.length)]
+        const cardVideos = prizeWithVideos?.prize_animation_videos || []
+        if (cardVideos.length > 0) {
+          const picked = cardVideos[Math.floor(Math.random() * cardVideos.length)]
           videoUrl = picked?.animation_videos?.video_url || ''
+        } else {
+          // フォールバック：賞ごとの動画
+          const fallbackVideos = (gradeVideos || []).filter((v: any) => v.grade === grade)
+          if (fallbackVideos.length > 0) {
+            const picked = fallbackVideos[Math.floor(Math.random() * fallbackVideos.length)]
+            videoUrl = (picked as any)?.animation_videos?.video_url || ''
+          }
         }
         break
       }
