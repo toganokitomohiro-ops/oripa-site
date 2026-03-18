@@ -25,10 +25,6 @@ export default function PrizesPage() {
   const [userId, setUserId] = useState<string | null>(null)
   const [selected, setSelected] = useState<string[]>([])
   const [selling, setSelling] = useState(false)
-  const [showSellConfirm, setShowSellConfirm] = useState(false)
-  const [showSellSuccess, setShowSellSuccess] = useState(false)
-  const [soldPoints, setSoldPoints] = useState(0)
-  const [userPoints, setUserPoints] = useState(0)
   const [tab, setTab] = useState<'pending' | 'sold' | 'shipped'>('pending')
 
   useEffect(() => { fetchData() }, [])
@@ -38,9 +34,6 @@ export default function PrizesPage() {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { router.push('/auth/login'); return }
     setUserId(session.user.id)
-
-    const { data: profile } = await supabase.from('profiles').select('points').eq('id', session.user.id).single()
-    if (profile) setUserPoints(profile.points)
 
     const { data } = await supabase
       .from('draws')
@@ -72,9 +65,9 @@ export default function PrizesPage() {
     }, 0)
   }
 
-  const handleSellConfirm = async () => {
+  const handleSell = async () => {
     if (!userId || selected.length === 0) return
-    setShowSellConfirm(false)
+    if (!confirm(`${selected.length}枚をコインに交換しますか？`)) return
     setSelling(true)
     try {
       const res = await fetch('/api/sell', {
@@ -84,8 +77,7 @@ export default function PrizesPage() {
       })
       const data = await res.json()
       if (data.success) {
-        setSoldPoints(data.total_points)
-        setShowSellSuccess(true)
+        alert(`✅ ${data.sold_count}枚交換！+${data.total_points.toLocaleString()}コイン獲得！`)
         setSelected([])
         await fetchData()
       } else {
@@ -95,11 +87,6 @@ export default function PrizesPage() {
       alert('通信エラーが発生しました')
     }
     setSelling(false)
-  }
-
-  const handleSell = () => {
-    if (!userId || selected.length === 0) return
-    setShowSellConfirm(true)
   }
 
   const filteredDraws = draws.filter(d => {
@@ -127,11 +114,11 @@ export default function PrizesPage() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '160px' }}>
       {/* ヘッダー */}
       <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ maxWidth: '50vw', margin: '0 auto', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center' }}>
           <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937' }}>獲得商品</h1>
         </div>
         {/* タブ */}
-        <div style={{ display: 'flex', borderTop: '1px solid #f3f4f6', maxWidth: '50vw', margin: '0 auto' }}>
+        <div style={{ display: 'flex', borderTop: '1px solid #f3f4f6', maxWidth: '640px', margin: '0 auto' }}>
           {tabs.map(t => (
             <button
               key={t.key}
@@ -145,13 +132,13 @@ export default function PrizesPage() {
         </div>
       </header>
 
-      <div style={{ maxWidth: '50vw', margin: '0 auto', padding: '12px 16px' }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '12px 16px' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px', color: '#9ca3af' }}>読み込み中...</div>
         ) : filteredDraws.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#9ca3af' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
-            <div style={{ maxWidth: '50vw', margin: '0 auto' }}>{tab === 'pending' ? 'まだ獲得した商品がありません' : tab === 'sold' ? '発送待ちの商品はありません' : '発送済みの商品はありません'}</div>
+            <div style={{ maxWidth: '640px', margin: '0 auto' }}>{tab === 'pending' ? 'まだ獲得した商品がありません' : tab === 'sold' ? '発送待ちの商品はありません' : '発送済みの商品はありません'}</div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -161,7 +148,7 @@ export default function PrizesPage() {
                 <div
                   key={draw.id}
                   onClick={() => tab === 'pending' && handleSelect(draw.id)}
-                  style={{ background: 'white', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', cursor: tab === 'pending' ? 'pointer' : 'default', border: '2px solid', borderColor: isSelected ? '#f59e0b' : 'transparent' }}
+                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: tab === 'pending' ? 'pointer' : 'default', border: '2px solid', borderColor: isSelected ? '#f59e0b' : 'transparent' }}
                 >
                   {/* チェック */}
                   {tab === 'pending' && (
@@ -171,7 +158,7 @@ export default function PrizesPage() {
                   )}
 
                   {/* 画像 */}
-                  <div style={{ width: '80px', height: '110px', borderRadius: '8px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
+                  <div style={{ width: '60px', height: '80px', borderRadius: '6px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
                     {draw.products?.image_url
                       ? <img src={draw.products.image_url} alt={draw.products.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🃏</div>
@@ -180,11 +167,11 @@ export default function PrizesPage() {
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 'bold', color: gradeColors[draw.grade] || '#6b7280', background: `${gradeColors[draw.grade] || '#6b7280'}20`, padding: '2px 8px', borderRadius: '999px', marginBottom: '4px' }}>{draw.grade}</div>
-                    <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937', marginBottom: '6px' }}>{draw.products?.name || '不明な商品'}</div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>{draw.products?.name || '不明な商品'}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '18px', height: '18px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '10px', fontWeight: '900' }}>C</span>
-                      <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#f59e0b' }}>{draw.prizes?.pt_exchange?.toLocaleString() || 0}</span>
-                      <span style={{ fontSize: '13px', color: '#9ca3af' }}>コイン</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#f59e0b' }}>{draw.prizes?.pt_exchange?.toLocaleString() || 0}</span>
+                      <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
                     </div>
                     {tab === 'sold' && draw.sold_at && (
                       <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>売却日：{new Date(draw.sold_at).toLocaleDateString('ja-JP')}</div>
@@ -207,7 +194,7 @@ export default function PrizesPage() {
 
       {/* 固定フッター */}
       {tab === 'pending' && (
-        <div style={{ position: 'fixed', bottom: '56px', left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '50vw', background: 'white', borderTop: '1px solid #e5e7eb', padding: '10px 16px', zIndex: 40, boxSizing: 'border-box' }}>
+        <div style={{ position: 'fixed', bottom: '60px', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -247,85 +234,19 @@ export default function PrizesPage() {
         </div>
       )}
 
-      {/* コイン交換完了ポップアップ */}
-      {showSellSuccess && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '16px' }}>
-          <div style={{ background: 'white', borderRadius: '16px', padding: '28px 24px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎉</div>
-            <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '12px' }}>コインに交換しました🎉</h2>
-            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{(userPoints - soldPoints).toLocaleString()}</span>
-              </div>
-              <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowSellSuccess(false)}
-              style={{ width: '100%', padding: '14px', background: 'white', color: '#1f2937', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}
-            >
-              閉じる
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* コイン交換確認ポップアップ */}
-      {showSellConfirm && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '16px' }}>
-          <div style={{ background: 'white', borderRadius: '16px', padding: '28px 24px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937', marginBottom: '12px' }}>コインに交換</h2>
-            <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px', lineHeight: 1.6 }}>
-              選択した商品をコインに交換します。<br />よろしいですか？
-            </p>
-            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
-              </div>
-              <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{(userPoints + getTotalPt()).toLocaleString()}</span>
-              </div>
-            </div>
-            <button
-              onClick={handleSellConfirm}
-              disabled={selling}
-              style={{ width: '100%', padding: '14px', background: '#f59e0b', color: '#1a1a1a', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}
-            >
-              {selling ? '処理中...' : 'コインに交換する'}
-            </button>
-            <button
-              onClick={() => setShowSellConfirm(false)}
-              style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '16px', cursor: 'pointer' }}
-            >
-              キャンセル
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* ボトムナビ */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', zIndex: 50, height: '56px' }}>
-        <div style={{ display: 'flex', height: '100%', width: '50vw', margin: '0 auto' }}>
-          {[
-            { href: '/', icon: '🎴', label: 'オリパガチャ' },
-            { href: '/prizes', icon: '🏆', label: '獲得商品' },
-            { href: '/history', icon: '🕐', label: '当選履歴' },
-            { href: '/reports', icon: '📢', label: '当選報告' },
-            { href: '/mypage', icon: '👤', label: 'マイページ' },
-          ].map((item) => (
-            <button key={item.href} onClick={() => router.push(item.href)} style={{ flex: 1, padding: '8px 0', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px' }}>
-              <span style={{ fontSize: '22px' }}>{item.icon}</span>
-              <span style={{ fontSize: '10px', color: item.href === '/prizes' ? '#f59e0b' : '#9ca3af', fontWeight: item.href === '/prizes' ? '900' : 'normal' }}>{item.label}</span>
-            </button>
-          ))}
-        </div>
+      <nav style={{ position: 'fixed', bottom: tab === 'pending' ? '130px' : '0', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', display: 'flex', zIndex: 50 }}>
+        {[
+          { href: '/', icon: '🎴', label: 'オリパガチャ' },
+          { href: '/prizes', icon: '🎁', label: '獲得商品' },
+          { href: '/buy-points', icon: '💰', label: 'ポイント' },
+          { href: '/mypage', icon: '👤', label: 'マイページ' },
+        ].map((item) => (
+          <button key={item.href} onClick={() => router.push(item.href)} style={{ flex: 1, padding: '10px 0', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+            <span style={{ fontSize: '20px' }}>{item.icon}</span>
+            <span style={{ fontSize: '10px', color: item.href === '/prizes' ? '#f59e0b' : '#9ca3af', fontWeight: item.href === '/prizes' ? 'bold' : 'normal' }}>{item.label}</span>
+          </button>
+        ))}
       </nav>
     </div>
   )

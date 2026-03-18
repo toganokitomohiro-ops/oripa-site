@@ -66,6 +66,10 @@ export default function AdminEventDetailPage() {
   const [prizeForm, setPrizeForm] = useState({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0 })
   const [videoModalPrizeId, setVideoModalPrizeId] = useState<string | null>(null)
   const [selectedVideoId, setSelectedVideoId] = useState('')
+  const [videoSearch, setVideoSearch] = useState('')
+  const [videoFilterCategory, setVideoFilterCategory] = useState('all')
+  const [previewVideoUrl, setPreviewVideoUrl] = useState<string | null>(null)
+  const [animationCategories, setAnimationCategories] = useState<{id:string,name:string,value:string}[]>([])
   const [gachaForm, setGachaForm] = useState<{ label: string; count: number; color: string; editing_id?: string }>({ label: '1回', count: 1, color: '#e67e00' })
 
   const eid = params.eid as string
@@ -74,18 +78,20 @@ export default function AdminEventDetailPage() {
 
   const fetchAll = async () => {
     setLoading(true)
-    const [e, pr, prod, go, av] = await Promise.all([
+    const [e, pr, prod, go, av, ac] = await Promise.all([
       supabase.from('events').select('*').eq('id', eid).single(),
       supabase.from('prizes').select('*, products(*), prize_animation_videos(id, animation_video_id, animation_videos(id, name, video_url))').eq('event_id', eid).order('grade'),
       supabase.from('products').select('id, name, market_value').order('name'),
       supabase.from('gacha_options').select('*').eq('event_id', eid).order('sort_order'),
       supabase.from('animation_videos').select('*').eq('is_active', true).order('sort_order'),
+      supabase.from('animation_categories').select('*').order('sort_order'),
     ])
     if (e.data) setEvent(e.data)
     if (pr.data) setPrizes(pr.data)
     if (prod.data) setProducts(prod.data)
     if (go.data) setGachaOptions(go.data)
     if (av.data) setAnimationVideos(av.data)
+    if (ac.data) setAnimationCategories(ac.data)
     setLoading(false)
   }
 
@@ -523,57 +529,76 @@ export default function AdminEventDetailPage() {
     {/* 動画設定モーダル */}
     {videoModalPrizeId && (
       <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px' }}>
-        <div style={{ background: 'white', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '480px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1f2937' }}>🎬 演出動画の設定</h3>
-            <button onClick={() => setVideoModalPrizeId(null)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#6b7280' }}>✕</button>
+        <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '640px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1f2937' }}>🎬 演出動画の設定</h3>
+              <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>{prizes.find(p => p.id === videoModalPrizeId)?.products?.name}</p>
+            </div>
+            <button onClick={() => { setVideoModalPrizeId(null); setPreviewVideoUrl(null); setVideoSearch(''); setVideoFilterCategory('all') }} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#6b7280' }}>✕</button>
           </div>
-
-          {/* 登録済み動画 */}
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', marginBottom: '8px' }}>登録済み動画</div>
-            {prizes.find(p => p.id === videoModalPrizeId)?.prize_animation_videos?.length === 0 ? (
-              <div style={{ fontSize: '13px', color: '#9ca3af', padding: '12px', background: '#f9fafb', borderRadius: '8px', textAlign: 'center' }}>動画が登録されていません</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {prizes.find(p => p.id === videoModalPrizeId)?.prize_animation_videos?.map((pv: any) => (
-                  <div key={pv.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '18px' }}>🎬</span>
-                      <span style={{ fontSize: '13px', color: '#374151' }}>{pv.animation_videos?.name || '不明'}</span>
+          <div style={{ overflow: 'auto', padding: '20px 24px', flex: 1 }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', marginBottom: '8px' }}>登録済み動画（{prizes.find(p => p.id === videoModalPrizeId)?.prize_animation_videos?.length || 0}本）</div>
+              {(prizes.find(p => p.id === videoModalPrizeId)?.prize_animation_videos?.length || 0) === 0 ? (
+                <div style={{ fontSize: '13px', color: '#9ca3af', padding: '16px', background: '#f9fafb', borderRadius: '8px', textAlign: 'center' }}>動画が登録されていません</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {prizes.find(p => p.id === videoModalPrizeId)?.prize_animation_videos?.map((pv: any) => (
+                    <div key={pv.id} style={{ background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '18px' }}>🎬</span>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#374151' }}>{pv.animation_videos?.name || '不明'}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button onClick={() => setPreviewVideoUrl(previewVideoUrl === pv.animation_videos?.video_url ? null : pv.animation_videos?.video_url)} style={{ fontSize: '12px', color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>{previewVideoUrl === pv.animation_videos?.video_url ? '閉じる' : '▶ 再生'}</button>
+                          <button onClick={() => { if (confirm('この動画を削除しますか？')) handleDeletePrizeVideo(pv.id) }} style={{ fontSize: '12px', color: '#ef4444', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
+                        </div>
+                      </div>
+                      {previewVideoUrl === pv.animation_videos?.video_url && (
+                        <video src={pv.animation_videos?.video_url} autoPlay controls style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', background: '#000' }} />
+                      )}
                     </div>
-                    <button onClick={() => handleDeletePrizeVideo(pv.id)} style={{ fontSize: '12px', color: '#ef4444', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', marginBottom: '12px' }}>動画を追加</div>
+              <input value={videoSearch} onChange={(e) => setVideoSearch(e.target.value)} placeholder="🔍 動画名で検索..."
+                style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', boxSizing: 'border-box', marginBottom: '8px' }} />
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                <button onClick={() => setVideoFilterCategory('all')} style={{ padding: '4px 12px', borderRadius: '999px', border: '1px solid', borderColor: videoFilterCategory === 'all' ? '#7c3aed' : '#e5e7eb', background: videoFilterCategory === 'all' ? '#f5f3ff' : 'white', color: videoFilterCategory === 'all' ? '#7c3aed' : '#6b7280', fontSize: '12px', cursor: 'pointer' }}>すべて</button>
+                {animationCategories.map(c => (
+                  <button key={c.id} onClick={() => setVideoFilterCategory(c.value)} style={{ padding: '4px 12px', borderRadius: '999px', border: '1px solid', borderColor: videoFilterCategory === c.value ? '#7c3aed' : '#e5e7eb', background: videoFilterCategory === c.value ? '#f5f3ff' : 'white', color: videoFilterCategory === c.value ? '#7c3aed' : '#6b7280', fontSize: '12px', cursor: 'pointer' }}>{c.name}</button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '240px', overflowY: 'auto' }}>
+                {animationVideos.filter(v => (videoFilterCategory === 'all' || v.category === videoFilterCategory) && (!videoSearch || v.name.includes(videoSearch))).map(v => (
+                  <div key={v.id} style={{ border: '1px solid', borderColor: selectedVideoId === v.id ? '#7c3aed' : '#e5e7eb', borderRadius: '8px', overflow: 'hidden', background: selectedVideoId === v.id ? '#f5f3ff' : 'white' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', cursor: 'pointer' }} onClick={() => setSelectedVideoId(selectedVideoId === v.id ? '' : v.id)}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: '2px solid', borderColor: selectedVideoId === v.id ? '#7c3aed' : '#d1d5db', background: selectedVideoId === v.id ? '#7c3aed' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {selectedVideoId === v.id && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />}
+                        </div>
+                        <span style={{ fontSize: '13px', fontWeight: '500', color: '#374151' }}>{v.name}</span>
+                        <span style={{ fontSize: '11px', color: '#9ca3af', background: '#f3f4f6', padding: '1px 6px', borderRadius: '4px' }}>{animationCategories.find(c => c.value === v.category)?.name || v.category}</span>
+                      </div>
+                      <button onClick={(e) => { e.stopPropagation(); setPreviewVideoUrl(previewVideoUrl === v.video_url ? null : v.video_url) }} style={{ fontSize: '11px', color: '#6b7280', background: '#f3f4f6', border: 'none', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer' }}>{previewVideoUrl === v.video_url ? '閉じる' : '▶'}</button>
+                    </div>
+                    {previewVideoUrl === v.video_url && (
+                      <video src={v.video_url} autoPlay controls style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', background: '#000' }} />
+                    )}
                   </div>
                 ))}
               </div>
-            )}
+              <button onClick={handleAddPrizeVideo} disabled={!selectedVideoId} style={{ width: '100%', padding: '12px', background: selectedVideoId ? '#7c3aed' : '#9ca3af', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold', cursor: selectedVideoId ? 'pointer' : 'not-allowed', marginTop: '12px' }}>追加する</button>
+            </div>
           </div>
-
-          {/* 動画追加 */}
-          <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', marginBottom: '8px' }}>動画を追加</div>
-            <select
-              value={selectedVideoId}
-              onChange={(e) => setSelectedVideoId(e.target.value)}
-              style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: '6px', padding: '8px 10px', fontSize: '13px', background: 'white', marginBottom: '10px' }}
-            >
-              <option value="">動画を選択してください</option>
-              {animationVideos.map((v) => (
-                <option key={v.id} value={v.id}>{v.name}</option>
-              ))}
-            </select>
-            <button
-              onClick={handleAddPrizeVideo}
-              disabled={!selectedVideoId}
-              style={{ width: '100%', padding: '10px', background: selectedVideoId ? '#7c3aed' : '#9ca3af', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 'bold', cursor: selectedVideoId ? 'pointer' : 'not-allowed' }}
-            >
-              追加する
-            </button>
+          <div style={{ padding: '12px 24px', borderTop: '1px solid #f3f4f6', background: '#f9fafb' }}>
+            <p style={{ fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>複数登録するとランダムで再生されます。最高グレードの動画が優先されます。</p>
           </div>
-
-          <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '12px', textAlign: 'center' }}>
-            複数登録するとランダムで再生されます。最高グレードの動画が優先されます。
-          </p>
         </div>
       </div>
     )}
