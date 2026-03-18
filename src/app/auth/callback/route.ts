@@ -7,6 +7,8 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/'
 
+  console.log('callback called, code:', code ? 'exists' : 'none', 'origin:', origin)
+
   if (code) {
     const cookieStore = await cookies()
     const supabase = createServerClient(
@@ -26,9 +28,11 @@ export async function GET(req: NextRequest) {
       }
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
+    console.log('exchange error:', error)
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`)
     }
+    return NextResponse.redirect(`${origin}/auth/login?error=callback_error&detail=${error.message}`)
   }
-  return NextResponse.redirect(`${origin}/auth/login?error=callback_error`)
+  return NextResponse.redirect(`${origin}/auth/login?error=callback_error&detail=no_code`)
 }
