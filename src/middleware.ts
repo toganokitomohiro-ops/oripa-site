@@ -3,8 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // 認証コールバックはBasic認証をスキップ
-  if (pathname.startsWith('/auth/callback')) {
+  // 認証関連のパスはBasic認証をスキップ
+  if (
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/api/')
+  ) {
     return NextResponse.next()
   }
 
