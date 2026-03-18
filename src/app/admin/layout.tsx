@@ -53,6 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { href: '/admin/marketing', icon: '📣', label: 'マーケティング' },
         { href: '/admin/points', icon: '🪙', label: 'ポイント管理' },
         { href: '/admin/animations', icon: '🎬', label: '演出動画' },
+        { href: '/admin/fp-exchange', icon: '🪙', label: 'FP交換所' },
       ]
     },
     {

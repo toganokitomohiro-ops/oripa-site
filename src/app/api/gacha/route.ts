@@ -137,6 +137,23 @@ export async function POST(req: NextRequest) {
       type: 'gacha',
       description: `${event.name}を${actualCount}回開封`,
     })
+    // FPコイン付与
+    const { data: fpSetting } = await supabase
+      .from('fp_settings')
+      .select('fp_rate')
+      .single()
+    const fpRate = fpSetting?.fp_rate || 1.0
+    const fpEarned = Math.floor(actualCost * fpRate)
+    if (fpEarned > 0) {
+      const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('fp_points')
+        .eq('id', user_id)
+        .single()
+      await supabase.from('profiles').update({
+        fp_points: (currentProfile?.fp_points || 0) + fpEarned,
+      }).eq('id', user_id)
+    }
 
     // 天井カウンター更新
     if (event.ceiling_count > 0) {

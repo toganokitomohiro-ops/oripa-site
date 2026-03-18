@@ -366,7 +366,7 @@ export default function Home() {
             { href: '/', icon: '🎴', label: 'オリパガチャ' },
             { href: '/prizes', icon: '🏆', label: '獲得商品' },
             { href: '/history', icon: '🕐', label: '当選履歴' },
-            { href: '/reports', icon: '📢', label: '当選報告' },
+            { href: '/fp-exchange', icon: '🪙', label: 'FP交換所' },
             { href: '/mypage', icon: '👤', label: 'マイページ' },
           ].map((item) => (
             <a key={item.label} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#888', gap: '2px' }}>
