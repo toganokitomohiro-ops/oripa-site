@@ -24,6 +24,7 @@ type Prize = {
   remaining_count: number
   pt_exchange: number
   products: { name: string; market_value: number; image_url: string }
+  prize_animation_videos?: { id: string; animation_video_id: string; animation_videos: { id: string; name: string; video_url: string } }[]
 }
 
 type Product = {
