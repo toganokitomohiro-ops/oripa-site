@@ -9,5 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    storageKey: 'oripa-auth',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   }
 })
