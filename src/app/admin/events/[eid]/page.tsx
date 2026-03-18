@@ -131,9 +131,8 @@ export default function AdminEventDetailPage() {
       count: Number(prizeForm.count),
       remaining_count: Number(prizeForm.count),
       pt_exchange: Number(prizeForm.pt_exchange),
-      animation_video_id: prizeForm.animation_video_id || null,
     })
-    setPrizeForm({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0, animation_video_id: '' })
+    setPrizeForm({ product_id: '', grade: 'C賞', count: 1, pt_exchange: 0 })
     fetchAll()
   }
 
