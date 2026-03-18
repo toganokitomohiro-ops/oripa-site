@@ -44,6 +44,16 @@ export default function Home() {
   useEffect(() => {
     fetchEvents()
     fetchBanners()
+    // 初回ロード時にセッションを取得
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user)
+        supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data: profile }) => {
+          if (profile) setUserPoints(profile.points)
+        })
+        fetchPoints(session.user.id)
+      }
+    })
     supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setUser(session.user)
