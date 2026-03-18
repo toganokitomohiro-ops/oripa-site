@@ -402,6 +402,10 @@ export default function Home() {
         </div>
       )}
 
+      {/* 一時的な管理画面リンク */}
+      <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
+        <a href="/admin" style={{ background: '#1f2937', color: 'white', padding: '10px 16px', borderRadius: '999px', fontSize: '13px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>⚙️ 管理画面</a>
+      </div>
       {/* 動画再生 */}
       {showVideo && videoUrl && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
