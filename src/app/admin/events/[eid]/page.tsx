@@ -359,7 +359,7 @@ export default function AdminEventDetailPage() {
                         <div style={{ fontSize: '12px', color: '#6b7280' }}>{prize.count}口 / PT交換:{prize.pt_exchange}pt / ¥{prize.products?.market_value?.toLocaleString()}</div>
                       </div>
                       <button onClick={() => { setVideoModalPrizeId(prize.id); setSelectedVideoId('') }} style={{ fontSize: '12px', color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', marginRight: '6px' }}>
-                        🎬 動画{prize.prize_animation_videos?.length > 0 ? `(${prize.prize_animation_videos.length})` : ''}
+                        🎬 動画{(prize.prize_animation_videos?.length ?? 0) > 0 ? `(${prize.prize_animation_videos!.length})` : ''}
                       </button>
                       <button onClick={() => handleDeletePrize(prize.id)} style={{ fontSize: '12px', color: '#ef4444', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer' }}>削除</button>
                     </div>
