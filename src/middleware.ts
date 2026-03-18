@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl
+
+  // 認証コールバックはBasic認証をスキップ
+  if (pathname.startsWith('/auth/callback')) {
+    return NextResponse.next()
+  }
+
   const basicAuth = req.headers.get('authorization')
 
   if (basicAuth) {
