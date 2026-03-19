@@ -39,6 +39,7 @@ export default function PrizesPage() {
       .from('draws')
       .select('*, prizes(pt_exchange), products(name, image_url, market_value)')
       .eq('user_id', session.user.id)
+      .is('sold_at', null)
       .order('created_at', { ascending: false })
 
     if (data) setDraws(data)
@@ -238,14 +239,15 @@ export default function PrizesPage() {
       <nav style={{ position: 'fixed', bottom: tab === 'pending' ? '130px' : '0', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', display: 'flex', zIndex: 50 }}>
         {[
           { href: '/', icon: '🎴', label: 'オリパガチャ' },
-          { href: '/prizes', icon: '🎁', label: '獲得商品' },
-          { href: '/buy-points', icon: '💰', label: 'ポイント' },
+          { href: '/prizes', icon: '🏆', label: '獲得商品' },
+          { href: '/history', icon: '🕐', label: '当選履歴' },
+          { href: '/fp-exchange', icon: '🪙', label: 'FP交換所' },
           { href: '/mypage', icon: '👤', label: 'マイページ' },
         ].map((item) => (
-          <button key={item.href} onClick={() => router.push(item.href)} style={{ flex: 1, padding: '10px 0', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-            <span style={{ fontSize: '20px' }}>{item.icon}</span>
-            <span style={{ fontSize: '10px', color: item.href === '/prizes' ? '#f59e0b' : '#9ca3af', fontWeight: item.href === '/prizes' ? 'bold' : 'normal' }}>{item.label}</span>
-          </button>
+          <a key={item.href} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: item.href === '/prizes' ? '#e67e00' : '#888', gap: '2px', padding: '10px 0' }}>
+            <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
+            <span style={{ fontSize: '10px', fontWeight: '600' }}>{item.label}</span>
+          </a>
         ))}
       </nav>
     </div>
