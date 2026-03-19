@@ -167,8 +167,14 @@ export default function Home() {
       {/* ヘッダー */}
       <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00', textDecoration: 'none', letterSpacing: '1px' }}>
-            ORIPA🃏
+          <a href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '13px', marginRight: '2px' }}>🏋️</span>
+              <span style={{ fontSize: '20px', fontWeight: '900', background: 'linear-gradient(135deg, #1e40af, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '1px' }}>フィットネス</span>
+              <span style={{ fontSize: '20px', fontWeight: '900', background: 'linear-gradient(135deg, #ea580c, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '1px' }}>オリパ</span>
+              <span style={{ fontSize: '13px', marginLeft: '2px' }}>🏋️</span>
+            </div>
+            <span style={{ fontSize: '9px', fontWeight: '700', color: '#6b7280', letterSpacing: '1.5px' }}>LET'S WORKOUT & GET PRIZES!</span>
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {user ? (
