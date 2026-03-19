@@ -237,6 +237,7 @@ export default function PrizesPage() {
 
       {/* ボトムナビ */}
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '2px solid #e0e0e0', zIndex: 50, boxShadow: '0 -2px 8px rgba(0,0,0,0.08)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '56px' }}>
         {[
           { href: '/', icon: '🎴', label: 'オリパガチャ' },
           { href: '/prizes', icon: '🏆', label: '獲得商品' },
@@ -249,6 +250,7 @@ export default function PrizesPage() {
             <span style={{ fontSize: '10px', fontWeight: '600' }}>{item.label}</span>
           </a>
         ))}
+        </div>
       </nav>
     </div>
   )
