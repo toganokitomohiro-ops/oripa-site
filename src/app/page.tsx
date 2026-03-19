@@ -125,17 +125,8 @@ export default function Home() {
       if (!res.ok) { alert(data.error || 'エラー'); setPulling(false); return }
       setUserPoints(data.remaining_points)
       setPendingDrawIds(data.draw_ids || [])
-      // 最高グレード動画を探す
-      const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
-      const prizes = confirmEvent.prizes || []
-      let bestVideo = ''
-      for (const grade of gradeOrder) {
-        const hit = data.results.find((r: any) => r.grade === grade)
-        if (hit) {
-          const prize = prizes.find((p: any) => p.grade === grade)
-          if (prize?.animation_videos?.video_url) { bestVideo = prize.animation_videos.video_url; break }
-        }
-      }
+      // APIから返ってきたvideo_urlを使う
+      const bestVideo = data.video_url || ''
       if (bestVideo) {
         setVideoUrl(bestVideo)
         setShowVideo(true)
