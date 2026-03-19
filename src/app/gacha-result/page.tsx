@@ -103,7 +103,7 @@ function GachaResultInner() {
       if (data.success) {
         alert(`✅ ${data.sold_count}枚交換！+${data.total_points.toLocaleString()}コイン獲得！`)
         setSelected([])
-        fetchResults()
+        window.location.href = '/'
       } else {
         alert('エラー: ' + data.error)
       }
