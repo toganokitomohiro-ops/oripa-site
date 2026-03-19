@@ -195,8 +195,8 @@ export default function PrizesPage() {
 
       {/* 固定フッター */}
       {tab === 'pending' && (
-        <div style={{ position: 'fixed', bottom: '60px', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
-          <div>
+        <div style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
