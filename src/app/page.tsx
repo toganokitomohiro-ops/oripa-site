@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type Event = {
@@ -25,6 +26,7 @@ type Banner = {
 }
 
 export default function Home() {
+  const pathname = usePathname()
   const [events, setEvents] = useState<Event[]>([])
   const [banners, setBanners] = useState<Banner[]>([])
   const [user, setUser] = useState<any>(null)
@@ -165,31 +167,44 @@ export default function Home() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#333', paddingBottom: '70px' }}>
 
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '13px', marginRight: '2px' }}>🏋️</span>
-              <span style={{ fontSize: '20px', fontWeight: '900', background: 'linear-gradient(135deg, #1e40af, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '1px' }}>フィットネス</span>
-              <span style={{ fontSize: '20px', fontWeight: '900', background: 'linear-gradient(135deg, #ea580c, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '1px' }}>オリパ</span>
-              <span style={{ fontSize: '13px', marginLeft: '2px' }}>🏋️</span>
+      <header style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #1d4ed8 70%, #ea580c 100%)', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 2px 16px rgba(30,58,138,0.4)' }}>
+        {/* アクセントライン */}
+        <div style={{ height: '3px', background: 'linear-gradient(90deg, #3b82f6, #f97316, #fb923c, #3b82f6)', backgroundSize: '200% 100%' }} />
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <a href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1, gap: '2px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {/* ダンベルSVGアイコン */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="10" width="3" height="4" rx="1" fill="#f97316"/>
+                <rect x="5" y="8" width="2" height="8" rx="1" fill="#fb923c"/>
+                <rect x="7" y="11" width="10" height="2" rx="1" fill="white"/>
+                <rect x="17" y="8" width="2" height="8" rx="1" fill="#fb923c"/>
+                <rect x="19" y="10" width="3" height="4" rx="1" fill="#f97316"/>
+              </svg>
+              <span style={{ fontSize: '19px', fontWeight: '900', color: 'white', letterSpacing: '0.5px', textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>フィットネス</span>
+              <span style={{ fontSize: '19px', fontWeight: '900', background: 'linear-gradient(135deg, #fb923c, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.5px', filter: 'drop-shadow(0 1px 2px rgba(249,115,22,0.5))' }}>オリパ</span>
             </div>
-            <span style={{ fontSize: '9px', fontWeight: '700', color: '#6b7280', letterSpacing: '1.5px' }}>LET'S WORKOUT & GET PRIZES!</span>
+            <span style={{ fontSize: '8px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', letterSpacing: '2px' }}>LET'S WORKOUT & GET PRIZES!</span>
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {user ? (
               <>
-                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f5c518', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none' }}>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
-                  <span style={{ fontSize: '11px', color: '#1a1a1a', fontWeight: '700' }}>PT+</span>
+                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #f97316, #ea580c)', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', boxShadow: '0 2px 8px rgba(249,115,22,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.9"/><text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="900" fill="#ea580c">P</text></svg>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: 'white' }}>{points.toLocaleString()}</span>
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>+</span>
                 </a>
-                <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>🔔</a>
-                <a href="/mypage" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>👤</a>
+                <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.12)', borderRadius: '50%', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="white"/></svg>
+                </a>
+                <a href="/mypage" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.12)', borderRadius: '50%', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/></svg>
+                </a>
               </>
             ) : (
               <>
-                <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 14px', border: '1px solid #ddd', borderRadius: '4px' }}>ログイン</a>
-                <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: '#e67e00', borderRadius: '4px' }}>新規登録</a>
+                <a href="/auth/login" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)', textDecoration: 'none', padding: '6px 14px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '6px', fontWeight: '600' }}>ログイン</a>
+                <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: 'linear-gradient(135deg, #f97316, #ea580c)', borderRadius: '6px', boxShadow: '0 2px 8px rgba(249,115,22,0.4)' }}>新規登録</a>
               </>
             )}
           </div>
@@ -356,21 +371,86 @@ export default function Home() {
         )}
       </div>
 
-      {/* ボトムナビ（オリパワン風） */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '2px solid #e0e0e0', zIndex: 50, boxShadow: '0 -2px 8px rgba(0,0,0,0.08)' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '56px' }}>
+      {/* ボトムナビ */}
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'linear-gradient(180deg, #0f172a 0%, #1e3a8a 100%)', borderTop: '2px solid transparent', zIndex: 50, boxShadow: '0 -4px 20px rgba(30,58,138,0.5)', backgroundClip: 'padding-box' }}>
+        {/* トップアクセントライン */}
+        <div style={{ height: '2px', background: 'linear-gradient(90deg, #3b82f6, #f97316, #3b82f6)', position: 'absolute', top: 0, left: 0, right: 0 }} />
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '60px' }}>
           {[
-            { href: '/', icon: '🎴', label: 'オリパガチャ' },
-            { href: '/prizes', icon: '🏆', label: '獲得商品' },
-            { href: '/history', icon: '🕐', label: '当選履歴' },
-            { href: '/fp-exchange', icon: '🪙', label: 'FP交換所' },
-            { href: '/mypage', icon: '👤', label: 'マイページ' },
-          ].map((item) => (
-            <a key={item.label} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#888', gap: '2px' }}>
-              <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
-              <span style={{ fontSize: '10px', fontWeight: '600' }}>{item.label}</span>
-            </a>
-          ))}
+            {
+              href: '/',
+              label: 'オリパ',
+              icon: (active: boolean) => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="4" width="11" height="16" rx="2" fill={active ? '#f97316' : 'rgba(255,255,255,0.3)'} stroke={active ? '#fb923c' : 'rgba(255,255,255,0.15)'} strokeWidth="1"/>
+                  <rect x="6" y="2" width="11" height="16" rx="2" fill={active ? '#ea580c' : 'rgba(255,255,255,0.2)'} stroke={active ? '#f97316' : 'rgba(255,255,255,0.1)'} strokeWidth="1"/>
+                  <rect x="9" y="4" width="11" height="16" rx="2" fill={active ? '#f97316' : 'rgba(255,255,255,0.5)'} stroke={active ? '#fb923c' : 'rgba(255,255,255,0.3)'} strokeWidth="1.2"/>
+                  <circle cx="14.5" cy="12" r="2.5" fill={active ? 'white' : 'rgba(30,58,138,0.6)'}/>
+                </svg>
+              ),
+            },
+            {
+              href: '/prizes',
+              label: '獲得商品',
+              icon: (active: boolean) => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill={active ? '#f97316' : 'rgba(255,255,255,0.4)'} stroke={active ? '#fb923c' : 'none'} strokeWidth="0.5"/>
+                </svg>
+              ),
+            },
+            {
+              href: '/history',
+              label: '当選履歴',
+              icon: (active: boolean) => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" stroke={active ? '#f97316' : 'rgba(255,255,255,0.4)'} strokeWidth="2" fill="none"/>
+                  <path d="M12 7V12L15.5 15.5" stroke={active ? '#f97316' : 'rgba(255,255,255,0.4)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ),
+            },
+            {
+              href: '/fp-exchange',
+              label: 'FP交換',
+              icon: (active: boolean) => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" fill={active ? '#f97316' : 'rgba(255,255,255,0.3)'} stroke={active ? '#fb923c' : 'rgba(255,255,255,0.2)'} strokeWidth="1.5"/>
+                  <text x="12" y="16.5" textAnchor="middle" fontSize="10" fontWeight="900" fill={active ? 'white' : 'rgba(30,58,138,0.8)'}>FP</text>
+                </svg>
+              ),
+            },
+            {
+              href: '/mypage',
+              label: 'マイページ',
+              icon: (active: boolean) => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="8" r="4" fill={active ? '#f97316' : 'rgba(255,255,255,0.4)'} stroke={active ? '#fb923c' : 'none'} strokeWidth="0.5"/>
+                  <path d="M4 20c0-3.31 3.58-6 8-6s8 2.69 8 6" stroke={active ? '#f97316' : 'rgba(255,255,255,0.4)'} strokeWidth="2" strokeLinecap="round" fill="none"/>
+                </svg>
+              ),
+            },
+          ].map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: '3px', position: 'relative', transition: 'all 0.2s' }}
+              >
+                {/* アクティブインジケーター */}
+                {isActive && (
+                  <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: '3px', background: 'linear-gradient(90deg, #f97316, #fb923c)', borderRadius: '0 0 3px 3px' }} />
+                )}
+                {/* アクティブ背景 */}
+                {isActive && (
+                  <div style={{ position: 'absolute', inset: '6px 8px', background: 'rgba(249,115,22,0.15)', borderRadius: '10px', border: '1px solid rgba(249,115,22,0.3)' }} />
+                )}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  {item.icon(isActive)}
+                </div>
+                <span style={{ fontSize: '9px', fontWeight: '700', color: isActive ? '#fb923c' : 'rgba(255,255,255,0.5)', letterSpacing: '0.3px', position: 'relative', zIndex: 1 }}>{item.label}</span>
+              </a>
+            )
+          })}
         </div>
       </nav>
     {/* 確認ポップアップ */}
