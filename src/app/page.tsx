@@ -250,15 +250,15 @@ export default function Home() {
             <div style={{ color: '#999', fontSize: '15px' }}>現在開催中のオリパはありません</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {filteredEvents.map((event) => {
               const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
               return (
-                <div key={event.id} style={{ background: 'white', borderRadius: '10px', overflow: 'hidden', border: '1px solid #ebebeb', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', transition: 'transform 0.15s, box-shadow 0.15s' }}>
+                <div key={event.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ebebeb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                   {/* バナー画像 */}
-                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
+                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '52%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
                       <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
@@ -266,42 +266,42 @@ export default function Home() {
                     )}
                     {isSoldOut && (
                       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: 'white', fontWeight: '800', fontSize: '18px', border: '2px solid white', padding: '4px 16px' }}>SOLD OUT</span>
+                        <span style={{ color: 'white', fontWeight: '800', fontSize: '20px', border: '2px solid white', padding: '6px 20px' }}>SOLD OUT</span>
                       </div>
                     )}
                   </a>
 
                   {/* 情報エリア */}
-                  <div style={{ padding: '8px 10px 10px' }}>
-                    {/* コイン・残り口数 */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  <div style={{ padding: '12px 14px 14px' }}>
+                    {/* 価格・残り口数 */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '18px', height: '18px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '900', color: '#333', flexShrink: 0 }}>P</div>
-                        <span style={{ fontSize: '16px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-                        <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
+                        <div style={{ width: '20px', height: '20px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '900', color: '#333', flexShrink: 0 }}>P</div>
+                        <span style={{ fontSize: '20px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
+                        <span style={{ fontSize: '13px', color: '#999' }}>/1回</span>
                       </div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
+                      <div style={{ marginLeft: 'auto', fontSize: '13px', color: '#666' }}>
                         残り<span style={{ fontWeight: '700', color: '#333' }}>{event.remaining_count.toLocaleString()}</span>/{event.total_count.toLocaleString()}
                       </div>
                     </div>
 
                     {/* 残り口数バー */}
-                    <div style={{ background: '#eee', borderRadius: '999px', height: '5px', marginBottom: '8px' }}>
+                    <div style={{ background: '#eee', borderRadius: '999px', height: '6px', marginBottom: '12px' }}>
                       <div style={{ background: remainingPercent > 50 ? '#4caf50' : remainingPercent > 20 ? '#ff9800' : '#f44336', borderRadius: '999px', height: '6px', width: remainingPercent + '%' }} />
                     </div>
 
                     {/* ガチャボタン */}
                     {isSoldOut ? (
-                      <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0', borderRadius: '6px', color: '#999', fontSize: '13px', fontWeight: '700' }}>売り切れ</div>
+                      <div style={{ textAlign: 'center', padding: '12px', background: '#f0f0f0', borderRadius: '8px', color: '#999', fontSize: '14px', fontWeight: '700' }}>売り切れ</div>
                     ) : sortedOptions.length > 0 ? (
-                      <div style={{ display: 'flex', gap: '6px' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
                         {sortedOptions.map((opt) => (
-                          <button key={opt.id} onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: opt.color, color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>{opt.label}</button>
+                          <button key={opt.id} onClick={() => openConfirm(event, opt)} style={{ flex: 1, textAlign: 'center', padding: '13px 4px', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer', lineHeight: '1.3' }}>{opt.label}</button>
                         ))}
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#e67e00', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, textAlign: 'center', padding: '13px 0', background: '#e67e00', color: 'white', borderRadius: '8px', fontSize: '15px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
                       </div>
                     )}
                   </div>
