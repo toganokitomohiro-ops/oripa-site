@@ -171,12 +171,26 @@ export default function Home() {
 
       {/* バナースライダー */}
       {banners.length > 0 && (
-        <div style={{ position: 'relative', overflow: 'hidden', background: '#000' }}>
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* 左矢印 */}
+          {currentBanner > 0 && (
+            <button
+              onClick={() => setCurrentBanner(prev => Math.max(0, prev - 1))}
+              style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >‹</button>
+          )}
+          {/* 右矢印 */}
+          {currentBanner < banners.length - 1 && (
+            <button
+              onClick={() => setCurrentBanner(prev => Math.min(banners.length - 1, prev + 1))}
+              style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >›</button>
+          )}
           {/* バナー本体 */}
-          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)`, width: '100%' }}>
+          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(calc(-${currentBanner} * 52% - 28%))`, gap: '8px', padding: '4px 0' }}>
             {/* 最後のバナーを先頭に */}
             {banners.length > 0 && (
-              <div style={{ display: 'none' }}>
+              <div style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', opacity: 0.7, transform: 'scale(0.95)' }}>
                 <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
@@ -184,14 +198,14 @@ export default function Home() {
               <div
                 key={banner.id}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
-                style={{ flexShrink: 0, width: '100%', borderRadius: '0px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
+                style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default', transition: 'transform 0.4s, opacity 0.4s', transform: index === currentBanner ? 'scale(1)' : 'scale(0.95)', opacity: index === currentBanner ? 1 : 0.7 }}
               >
                 <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             ))}
             {/* 最初のバナーを末尾に */}
             {banners.length > 0 && (
-              <div style={{ display: 'none' }}>
+              <div style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', opacity: 0.7, transform: 'scale(0.95)' }}>
                 <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
@@ -224,41 +238,44 @@ export default function Home() {
             </button>
           ))}
         </div>
-        {/* 絞り込みドロップダウン */}
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '13px', color: '#666', fontWeight: '600' }}>🔥 {filteredEvents.length}件開催中！</span>
-          <select
-            value={sortFilter}
-            onChange={(e) => setSortFilter(e.target.value)}
-            style={{ padding: '6px 32px 6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
-          >
-            <option value="">おすすめ順</option>
-            <option value="high_point">ポイントが高い順</option>
-            <option value="low_point">ポイントが低い順</option>
-            <option value="new">公開が新しい順</option>
-            <option value="old">公開が古い順</option>
-            <option value="remaining_high">残り割合が多い順</option>
-            <option value="remaining_low">残り割合が少ない順</option>
-          </select>
+        {/* 絞り込みボタン */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {[
+            { key: 'recommended', label: 'おすすめ順 ↕' },
+            { key: 'high_point', label: 'ポイントが高い順' },
+            { key: 'low_point', label: 'ポイントが低い順' },
+            { key: 'new', label: '公開が新しい順' },
+            { key: 'old', label: '公開が古い順' },
+            { key: 'remaining_high', label: '残り割合が多い順' },
+            { key: 'remaining_low', label: '残り割合が少ない順' },
+          ].map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setSortFilter(sortFilter === f.key ? '' : f.key)}
+              style={{ padding: '6px 14px', borderRadius: '999px', border: '1px solid', borderColor: sortFilter === f.key ? '#e67e00' : '#e5e7eb', background: sortFilter === f.key ? '#e67e00' : 'white', color: sortFilter === f.key ? 'white' : '#374151', fontSize: '12px', fontWeight: sortFilter === f.key ? 'bold' : 'normal', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* オリパ一覧 */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 8px 80px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
         {filteredEvents.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '8px' }}>
             <div style={{ color: '#999', fontSize: '15px' }}>現在開催中のオリパはありません</div>
           </div>
         ) : (
-          <div className='oripa-grid'>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
             {filteredEvents.map((event) => {
               const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
               return (
-                <div key={event.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ebebeb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                <div key={event.id} style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e8e8e8', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                   {/* バナー画像 */}
-                  <a href={'/event/' + event.id} className='oripa-card-img' style={{ display: 'block', position: 'relative', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
+                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
                       <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
@@ -266,42 +283,42 @@ export default function Home() {
                     )}
                     {isSoldOut && (
                       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: 'white', fontWeight: '800', fontSize: '20px', border: '2px solid white', padding: '6px 20px' }}>SOLD OUT</span>
+                        <span style={{ color: 'white', fontWeight: '800', fontSize: '18px', border: '2px solid white', padding: '4px 16px' }}>SOLD OUT</span>
                       </div>
                     )}
                   </a>
 
                   {/* 情報エリア */}
-                  <div className='oripa-card-info'>
-                    {/* 価格・残り口数 */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <div style={{ padding: '10px 12px' }}>
+                    {/* コイン・残り口数 */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '20px', height: '20px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '900', color: '#333', flexShrink: 0 }}>P</div>
-                        <span className='oripa-price' style={{ fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-                        <span style={{ fontSize: '13px', color: '#999' }}>/1回</span>
+                        <div style={{ width: '18px', height: '18px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '900', color: '#333', flexShrink: 0 }}>P</div>
+                        <span style={{ fontSize: '18px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
+                        <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
                       </div>
-                      <div style={{ marginLeft: 'auto', fontSize: '13px', color: '#666' }}>
+                      <div style={{ fontSize: '12px', color: '#666' }}>
                         残り<span style={{ fontWeight: '700', color: '#333' }}>{event.remaining_count.toLocaleString()}</span>/{event.total_count.toLocaleString()}
                       </div>
                     </div>
 
                     {/* 残り口数バー */}
-                    <div className='oripa-bar' style={{ background: '#eee', borderRadius: '999px', width: '100%' }}>
+                    <div style={{ background: '#eee', borderRadius: '999px', height: '6px', marginBottom: '10px' }}>
                       <div style={{ background: remainingPercent > 50 ? '#4caf50' : remainingPercent > 20 ? '#ff9800' : '#f44336', borderRadius: '999px', height: '6px', width: remainingPercent + '%' }} />
                     </div>
 
                     {/* ガチャボタン */}
                     {isSoldOut ? (
-                      <div style={{ textAlign: 'center', padding: '12px', background: '#f0f0f0', borderRadius: '8px', color: '#999', fontSize: '14px', fontWeight: '700' }}>売り切れ</div>
+                      <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0', borderRadius: '6px', color: '#999', fontSize: '13px', fontWeight: '700' }}>売り切れ</div>
                     ) : sortedOptions.length > 0 ? (
-                      <div style={{ display: 'flex', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '6px' }}>
                         {sortedOptions.map((opt) => (
-                          <button key={opt.id} onClick={() => openConfirm(event, opt)} className='oripa-btn' style={{ flex: 1, textAlign: 'center', background: opt.color, color: 'white', fontWeight: '900', border: 'none', cursor: 'pointer', lineHeight: '1.3' }}>{opt.label}</button>
+                          <button key={opt.id} onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: opt.color, color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>{opt.label}</button>
                         ))}
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} className='oripa-btn' style={{ flex: 1, textAlign: 'center', background: '#e67e00', color: 'white', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#e67e00', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
                       </div>
                     )}
                   </div>
