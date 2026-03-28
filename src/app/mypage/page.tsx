@@ -1,5 +1,6 @@
 'use client'
 import BottomNav from '@/components/BottomNav'
+import Header from '@/components/Header'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -71,14 +72,7 @@ export default function MyPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '70px' }}>
 
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00', textDecoration: 'none' }}>ORIPA🃏</a>
-          {profile.is_admin && (
-            <a href="/admin" style={{ fontSize: '12px', color: 'white', background: '#db2777', padding: '4px 12px', borderRadius: '4px', textDecoration: 'none', fontWeight: '700' }}>管理画面</a>
-          )}
-        </div>
-      </header>
+      <Header />
 
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '20px' }}>マイページ</h1>

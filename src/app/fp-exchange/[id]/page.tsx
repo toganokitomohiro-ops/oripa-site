@@ -1,5 +1,6 @@
 'use client'
 import BottomNav from '@/components/BottomNav'
+import Header from '@/components/Header'
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -113,18 +114,7 @@ export default function FpExchangeDetailPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <button onClick={() => router.push('/fp-exchange')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            ← FP交換所一覧へ戻る
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '999px', padding: '6px 14px' }}>
-            <span style={{ fontSize: '18px' }}>🪙</span>
-            <span style={{ fontSize: '15px', fontWeight: '800', color: '#ea580c' }}>{userFp.toLocaleString()}</span>
-            <span style={{ fontSize: '12px', color: '#9a3412' }}>FP</span>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px 16px' }}>
         {/* 商品画像 */}

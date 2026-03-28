@@ -1,5 +1,6 @@
 'use client'
 import BottomNav from '@/components/BottomNav'
+import Header from '@/components/Header'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -91,18 +92,7 @@ export default function BuyPointsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '80px' }}>
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button onClick={() => router.back()} style={{ color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>← 戻る</button>
-            <a href="/" style={{ fontSize: '20px', fontWeight: '900', color: '#e67e00', textDecoration: 'none' }}>ORIPA🃏</a>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f5c518', padding: '6px 14px', borderRadius: '4px' }}>
-            <span style={{ fontSize: '15px', fontWeight: '900', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
-            <span style={{ fontSize: '11px', color: '#1a1a1a', fontWeight: '700' }}>PT</span>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '24px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '20px' }}>コイン購入</h1>

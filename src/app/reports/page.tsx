@@ -1,5 +1,6 @@
 'use client'
 import BottomNav from '@/components/BottomNav'
+import Header from '@/components/Header'
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -49,11 +50,7 @@ export default function ReportsPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '70px' }}>
 
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center' }}>
-          <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00', textDecoration: 'none' }}>ORIPA🃏</a>
-        </div>
-      </header>
+      <Header />
 
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '6px' }}>当選報告</h1>

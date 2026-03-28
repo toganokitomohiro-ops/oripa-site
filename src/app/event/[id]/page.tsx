@@ -1,4 +1,5 @@
 'use client'
+import Header from '@/components/Header'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -176,29 +177,7 @@ export default function EventDetailPage() {
       `}</style>
 
       {/* ヘッダー - TOPと同じ */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00', textDecoration: 'none', letterSpacing: '1px' }}>ORIPA 🎴</a>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {userId ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f5c518', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none' }}>
-                  <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'white', fontSize: '9px', fontWeight: '900' }}>C</span>
-                  </div>
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: '#1a1a1a' }}>{userPoints.toLocaleString()} PT</span>
-                  <span style={{ fontSize: '16px', fontWeight: '900', color: '#e67e00' }}>+</span>
-                </a>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 14px', border: '1px solid #ddd', borderRadius: '4px' }}>ログイン</a>
-                <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: '#e67e00', borderRadius: '4px' }}>新規登録</a>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* パンくずリスト */}
       <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6' }}>

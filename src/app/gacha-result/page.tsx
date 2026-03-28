@@ -1,4 +1,5 @@
 'use client'
+import Header from '@/components/Header'
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -132,17 +133,7 @@ function GachaResultInner() {
   return (
     <div style={{ minHeight: '100vh', background: '#f0f0f0' }}>
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1f2937' }}>ガチャ結果</h1>
-          <button
-            onClick={() => router.push(eventId ? '/event/' + eventId : '/')}
-            style={{ fontSize: '14px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}
-          >
-            あとで
-          </button>
-        </div>
-      </header>
+      <Header />
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '12px 16px' }}>
         {/* 表示切替・ソート */}

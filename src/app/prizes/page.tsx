@@ -1,5 +1,6 @@
 'use client'
 import BottomNav from '@/components/BottomNav'
+import Header from '@/components/Header'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -115,24 +116,7 @@ export default function PrizesPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '160px' }}>
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 16px', height: '52px', display: 'flex', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1f2937' }}>獲得商品</h1>
-        </div>
-        {/* タブ */}
-        <div style={{ display: 'flex', borderTop: '1px solid #f3f4f6', maxWidth: '640px', margin: '0 auto' }}>
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => { setTab(t.key as any); setSelected([]) }}
-              style={{ flex: 1, padding: '12px 0', border: 'none', background: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: tab === t.key ? 'bold' : 'normal', color: tab === t.key ? '#f59e0b' : '#6b7280', borderBottom: tab === t.key ? '2px solid #f59e0b' : '2px solid transparent' }}
-            >
-              {t.label}
-              {t.count > 0 && <span style={{ marginLeft: '4px', fontSize: '11px' }}>({t.count})</span>}
-            </button>
-          ))}
-        </div>
-      </header>
+      <Header />
 
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '12px 16px' }}>
         {loading ? (
