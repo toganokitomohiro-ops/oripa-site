@@ -1,4 +1,5 @@
 'use client'
+import BottomNav from '@/components/BottomNav'
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -105,6 +106,7 @@ function ShipmentPageInner() {
         <a href="/prizes" style={{ display: 'block', padding: '12px', background: '#e67e00', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none', marginBottom: '10px' }}>獲得商品を見る</a>
         <a href="/" style={{ display: 'block', padding: '12px', background: '#f3f4f6', color: '#374151', borderRadius: '8px', fontSize: '14px', textDecoration: 'none' }}>トップに戻る</a>
       </div>
+      <BottomNav />
     </div>
   )
 

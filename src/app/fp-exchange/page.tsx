@@ -1,4 +1,5 @@
 'use client'
+import BottomNav from '@/components/BottomNav'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -169,16 +170,7 @@ export default function FpExchangePage() {
       </div>
 
       {/* フッターナビ */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '2px solid #e0e0e0', zIndex: 50, boxShadow: '0 -2px 8px rgba(0,0,0,0.08)' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '56px' }}>
-          {navItems.map((item) => (
-            <a key={item.label} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: item.active ? '#e67e00' : '#888', gap: '2px' }}>
-              <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
-              <span style={{ fontSize: '10px', fontWeight: '600' }}>{item.label}</span>
-            </a>
-          ))}
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   )
 }

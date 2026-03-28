@@ -1,4 +1,5 @@
 'use client'
+import BottomNav from '@/components/BottomNav'
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -97,6 +98,7 @@ export default function FpExchangeDetailPage() {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
       <div style={{ textAlign: 'center', color: '#999' }}>読み込み中...</div>
+      <BottomNav />
     </div>
   )
 

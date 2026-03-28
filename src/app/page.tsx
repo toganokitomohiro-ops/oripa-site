@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import BottomNav from '@/components/BottomNav'
 
 type Event = {
   id: string
@@ -26,7 +26,6 @@ type Banner = {
 }
 
 export default function Home() {
-  const pathname = usePathname()
   const [events, setEvents] = useState<Event[]>([])
   const [banners, setBanners] = useState<Banner[]>([])
   const [user, setUser] = useState<any>(null)
@@ -167,9 +166,8 @@ export default function Home() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#333', paddingBottom: '70px' }}>
 
       {/* ヘッダー */}
-      <header style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #1d4ed8 70%, #ea580c 100%)', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 2px 16px rgba(30,58,138,0.4)' }}>
-        {/* アクセントライン */}
-        <div style={{ height: '3px', background: 'linear-gradient(90deg, #3b82f6, #f97316, #fb923c, #3b82f6)', backgroundSize: '200% 100%' }} />
+      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
+
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/" style={{ textDecoration: 'none' }}>
             <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/logo.png" alt="fitオリパ" style={{ height: '56px', width: 'auto', objectFit: 'contain', mixBlendMode: 'screen' }} />
@@ -191,7 +189,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <a href="/auth/login" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)', textDecoration: 'none', padding: '6px 14px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '6px', fontWeight: '600' }}>ログイン</a>
+                <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 14px', border: '1px solid #ddd', borderRadius: '4px' }}>ログイン</a>
                 <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: 'linear-gradient(135deg, #f97316, #ea580c)', borderRadius: '6px', boxShadow: '0 2px 8px rgba(249,115,22,0.4)' }}>新規登録</a>
               </>
             )}
@@ -358,89 +356,7 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      {/* ボトムナビ */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'linear-gradient(180deg, #0f172a 0%, #1e3a8a 100%)', borderTop: '2px solid transparent', zIndex: 50, boxShadow: '0 -4px 20px rgba(30,58,138,0.5)', backgroundClip: 'padding-box' }}>
-        {/* トップアクセントライン */}
-        <div style={{ height: '2px', background: 'linear-gradient(90deg, #3b82f6, #f97316, #3b82f6)', position: 'absolute', top: 0, left: 0, right: 0 }} />
-        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '60px' }}>
-          {[
-            {
-              href: '/',
-              label: 'オリパ',
-              icon: (active: boolean) => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="4" width="11" height="16" rx="2" fill={active ? '#f97316' : 'rgba(255,255,255,0.3)'} stroke={active ? '#fb923c' : 'rgba(255,255,255,0.15)'} strokeWidth="1"/>
-                  <rect x="6" y="2" width="11" height="16" rx="2" fill={active ? '#ea580c' : 'rgba(255,255,255,0.2)'} stroke={active ? '#f97316' : 'rgba(255,255,255,0.1)'} strokeWidth="1"/>
-                  <rect x="9" y="4" width="11" height="16" rx="2" fill={active ? '#f97316' : 'rgba(255,255,255,0.5)'} stroke={active ? '#fb923c' : 'rgba(255,255,255,0.3)'} strokeWidth="1.2"/>
-                  <circle cx="14.5" cy="12" r="2.5" fill={active ? 'white' : 'rgba(30,58,138,0.6)'}/>
-                </svg>
-              ),
-            },
-            {
-              href: '/prizes',
-              label: '獲得商品',
-              icon: (active: boolean) => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill={active ? '#f97316' : 'rgba(255,255,255,0.4)'} stroke={active ? '#fb923c' : 'none'} strokeWidth="0.5"/>
-                </svg>
-              ),
-            },
-            {
-              href: '/history',
-              label: '当選履歴',
-              icon: (active: boolean) => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="9" stroke={active ? '#f97316' : 'rgba(255,255,255,0.4)'} strokeWidth="2" fill="none"/>
-                  <path d="M12 7V12L15.5 15.5" stroke={active ? '#f97316' : 'rgba(255,255,255,0.4)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              ),
-            },
-            {
-              href: '/fp-exchange',
-              label: 'FP交換',
-              icon: (active: boolean) => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="9" fill={active ? '#f97316' : 'rgba(255,255,255,0.3)'} stroke={active ? '#fb923c' : 'rgba(255,255,255,0.2)'} strokeWidth="1.5"/>
-                  <text x="12" y="16.5" textAnchor="middle" fontSize="10" fontWeight="900" fill={active ? 'white' : 'rgba(30,58,138,0.8)'}>FP</text>
-                </svg>
-              ),
-            },
-            {
-              href: '/mypage',
-              label: 'マイページ',
-              icon: (active: boolean) => (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="8" r="4" fill={active ? '#f97316' : 'rgba(255,255,255,0.4)'} stroke={active ? '#fb923c' : 'none'} strokeWidth="0.5"/>
-                  <path d="M4 20c0-3.31 3.58-6 8-6s8 2.69 8 6" stroke={active ? '#f97316' : 'rgba(255,255,255,0.4)'} strokeWidth="2" strokeLinecap="round" fill="none"/>
-                </svg>
-              ),
-            },
-          ].map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <a
-                key={item.label}
-                href={item.href}
-                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: '3px', position: 'relative', transition: 'all 0.2s' }}
-              >
-                {/* アクティブインジケーター */}
-                {isActive && (
-                  <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: '3px', background: 'linear-gradient(90deg, #f97316, #fb923c)', borderRadius: '0 0 3px 3px' }} />
-                )}
-                {/* アクティブ背景 */}
-                {isActive && (
-                  <div style={{ position: 'absolute', inset: '6px 8px', background: 'rgba(249,115,22,0.15)', borderRadius: '10px', border: '1px solid rgba(249,115,22,0.3)' }} />
-                )}
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  {item.icon(isActive)}
-                </div>
-                <span style={{ fontSize: '9px', fontWeight: '700', color: isActive ? '#fb923c' : 'rgba(255,255,255,0.5)', letterSpacing: '0.3px', position: 'relative', zIndex: 1 }}>{item.label}</span>
-              </a>
-            )
-          })}
-        </div>
-      </nav>
+      <BottomNav />
     {/* 確認ポップアップ */}
       {showConfirm && confirmOption && confirmEvent && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
