@@ -190,23 +190,23 @@ export default function Home() {
           <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(calc(-${currentBanner} * 52% - 28%))`, gap: '8px', padding: '4px 0' }}>
             {/* 最後のバナーを先頭に */}
             {banners.length > 0 && (
-              <div style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', opacity: 0.7, transform: 'scale(0.95)' }}>
-                <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
+              <div style={{ display: 'none' }}>
+                <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
             {banners.map((banner, index) => (
               <div
                 key={banner.id}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
-                style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default', transition: 'transform 0.4s, opacity 0.4s', transform: index === currentBanner ? 'scale(1)' : 'scale(0.95)', opacity: index === currentBanner ? 1 : 0.7 }}
+                style={{ flexShrink: 0, width: '100%', borderRadius: '0px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default', display: index === currentBanner ? 'block' : 'none' }}
               >
-                <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
+                <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
             ))}
             {/* 最初のバナーを末尾に */}
             {banners.length > 0 && (
-              <div style={{ flexShrink: 0, width: '52%', borderRadius: '8px', overflow: 'hidden', opacity: 0.7, transform: 'scale(0.95)' }}>
-                <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
+              <div style={{ display: 'none' }}>
+                <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
           </div>
@@ -238,42 +238,39 @@ export default function Home() {
             </button>
           ))}
         </div>
-        {/* 絞り込みボタン */}
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', gap: '6px', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {[
-            { key: 'recommended', label: 'おすすめ順 ↕' },
-            { key: 'high_point', label: 'ポイントが高い順' },
-            { key: 'low_point', label: 'ポイントが低い順' },
-            { key: 'new', label: '公開が新しい順' },
-            { key: 'old', label: '公開が古い順' },
-            { key: 'remaining_high', label: '残り割合が多い順' },
-            { key: 'remaining_low', label: '残り割合が少ない順' },
-          ].map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setSortFilter(sortFilter === f.key ? '' : f.key)}
-              style={{ padding: '6px 14px', borderRadius: '999px', border: '1px solid', borderColor: sortFilter === f.key ? '#e67e00' : '#e5e7eb', background: sortFilter === f.key ? '#e67e00' : 'white', color: sortFilter === f.key ? 'white' : '#374151', fontSize: '12px', fontWeight: sortFilter === f.key ? 'bold' : 'normal', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
-            >
-              {f.label}
-            </button>
-          ))}
+        {/* 絞り込みドロップダウン */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '13px', color: '#666', fontWeight: '600' }}>🔥 {filteredEvents.length}件開催中！</span>
+          <select
+            value={sortFilter}
+            onChange={(e) => setSortFilter(e.target.value)}
+            style={{ padding: '6px 32px 6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+          >
+            <option value="">おすすめ順</option>
+            <option value="high_point">ポイントが高い順</option>
+            <option value="low_point">ポイントが低い順</option>
+            <option value="new">公開が新しい順</option>
+            <option value="old">公開が古い順</option>
+            <option value="remaining_high">残り割合が多い順</option>
+            <option value="remaining_low">残り割合が少ない順</option>
+          </select>
         </div>
       </div>
 
       {/* オリパ一覧 */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 8px 80px' }}>
         {filteredEvents.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '8px' }}>
             <div style={{ color: '#999', fontSize: '15px' }}>現在開催中のオリパはありません</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
             {filteredEvents.map((event) => {
               const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
               return (
-                <div key={event.id} style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e8e8e8', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                <div key={event.id} style={{ background: 'white', borderRadius: '10px', overflow: 'hidden', border: '1px solid #ebebeb', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', transition: 'transform 0.15s, box-shadow 0.15s' }}>
                   {/* バナー画像 */}
                   <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
@@ -289,12 +286,12 @@ export default function Home() {
                   </a>
 
                   {/* 情報エリア */}
-                  <div style={{ padding: '10px 12px' }}>
+                  <div style={{ padding: '8px 10px 10px' }}>
                     {/* コイン・残り口数 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <div style={{ width: '18px', height: '18px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '900', color: '#333', flexShrink: 0 }}>P</div>
-                        <span style={{ fontSize: '18px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
+                        <span style={{ fontSize: '16px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
                       </div>
                       <div style={{ fontSize: '12px', color: '#666' }}>
@@ -303,7 +300,7 @@ export default function Home() {
                     </div>
 
                     {/* 残り口数バー */}
-                    <div style={{ background: '#eee', borderRadius: '999px', height: '6px', marginBottom: '10px' }}>
+                    <div style={{ background: '#eee', borderRadius: '999px', height: '5px', marginBottom: '8px' }}>
                       <div style={{ background: remainingPercent > 50 ? '#4caf50' : remainingPercent > 20 ? '#ff9800' : '#f44336', borderRadius: '999px', height: '6px', width: remainingPercent + '%' }} />
                     </div>
 
