@@ -171,20 +171,8 @@ export default function Home() {
         {/* アクセントライン */}
         <div style={{ height: '3px', background: 'linear-gradient(90deg, #3b82f6, #f97316, #fb923c, #3b82f6)', backgroundSize: '200% 100%' }} />
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', lineHeight: 1, gap: '2px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              {/* ダンベルSVGアイコン */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="10" width="3" height="4" rx="1" fill="#f97316"/>
-                <rect x="5" y="8" width="2" height="8" rx="1" fill="#fb923c"/>
-                <rect x="7" y="11" width="10" height="2" rx="1" fill="white"/>
-                <rect x="17" y="8" width="2" height="8" rx="1" fill="#fb923c"/>
-                <rect x="19" y="10" width="3" height="4" rx="1" fill="#f97316"/>
-              </svg>
-              <span style={{ fontSize: '19px', fontWeight: '900', color: 'white', letterSpacing: '0.5px', textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>フィットネス</span>
-              <span style={{ fontSize: '19px', fontWeight: '900', background: 'linear-gradient(135deg, #fb923c, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '0.5px', filter: 'drop-shadow(0 1px 2px rgba(249,115,22,0.5))' }}>オリパ</span>
-            </div>
-            <span style={{ fontSize: '8px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', letterSpacing: '2px' }}>LET'S WORKOUT & GET PRIZES!</span>
+          <a href="/" style={{ textDecoration: 'none' }}>
+            <img src="/logo.png" alt="fitオリパ" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {user ? (
