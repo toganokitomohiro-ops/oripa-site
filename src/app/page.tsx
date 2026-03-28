@@ -359,6 +359,35 @@ export default function Home() {
         )}
       </div>
 
+
+      {/* あるぷー走り回る */}
+      <style>{`
+        @keyframes arupu-run {
+          0% { left: -100px; transform: scaleX(1); }
+          49% { left: calc(100% + 100px); transform: scaleX(1); }
+          50% { left: calc(100% + 100px); transform: scaleX(-1); }
+          99% { left: -100px; transform: scaleX(-1); }
+          100% { left: -100px; transform: scaleX(1); }
+        }
+        @keyframes arupu-bounce {
+          0%, 100% { bottom: 70px; }
+          50% { bottom: 80px; }
+        }
+      `}</style>
+      <div style={{
+        position: 'fixed',
+        bottom: '70px',
+        left: '-100px',
+        zIndex: 45,
+        animation: 'arupu-run 8s linear infinite, arupu-bounce 0.4s ease-in-out infinite',
+        pointerEvents: 'none',
+      }}>
+        <img
+          src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/arupu-run.png"
+          alt="あるぷー"
+          style={{ width: '60px', height: 'auto' }}
+        />
+      </div>
       {/* ボトムナビ */}
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'linear-gradient(180deg, #0f172a 0%, #1e3a8a 100%)', borderTop: '2px solid transparent', zIndex: 50, boxShadow: '0 -4px 20px rgba(30,58,138,0.5)', backgroundClip: 'padding-box' }}>
         {/* トップアクセントライン */}
