@@ -171,42 +171,28 @@ export default function Home() {
 
       {/* バナースライダー */}
       {banners.length > 0 && (
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
-          {/* 左矢印 */}
-          {currentBanner > 0 && (
-            <button
-              onClick={() => setCurrentBanner(prev => Math.max(0, prev - 1))}
-              style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >‹</button>
-          )}
-          {/* 右矢印 */}
-          {currentBanner < banners.length - 1 && (
-            <button
-              onClick={() => setCurrentBanner(prev => Math.min(banners.length - 1, prev + 1))}
-              style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >›</button>
-          )}
+        <div style={{ position: 'relative', overflow: 'hidden', background: '#000' }}>
           {/* バナー本体 */}
-          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(calc(-${currentBanner} * 52% - 28%))`, gap: '8px', padding: '4px 0' }}>
+          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)`, width: '100%' }}>
             {/* 最後のバナーを先頭に */}
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
-                <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
+                <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
             {banners.map((banner, index) => (
               <div
                 key={banner.id}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
-                style={{ flexShrink: 0, width: '100%', borderRadius: '0px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default', display: index === currentBanner ? 'block' : 'none' }}
+                style={{ flexShrink: 0, width: '100%', borderRadius: '0px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
               >
-                <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
+                <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             ))}
             {/* 最初のバナーを末尾に */}
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
-                <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
+                <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '1050/318', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
           </div>
