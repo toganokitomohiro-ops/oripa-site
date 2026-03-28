@@ -172,7 +172,7 @@ export default function Home() {
         <div style={{ height: '3px', background: 'linear-gradient(90deg, #3b82f6, #f97316, #fb923c, #3b82f6)', backgroundSize: '200% 100%' }} />
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/" style={{ textDecoration: 'none' }}>
-            <img src="/logo.png" alt="fitオリパ" style={{ height: '56px', width: 'auto', objectFit: 'contain', mixBlendMode: 'screen' }} />
+            <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/logo.png" alt="fitオリパ" style={{ height: '56px', width: 'auto', objectFit: 'contain', mixBlendMode: 'screen' }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {user ? (
