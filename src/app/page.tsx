@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
+import Header from '@/components/Header'
 
 type Event = {
   id: string
@@ -166,36 +167,7 @@ export default function Home() {
     <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#333', paddingBottom: '70px' }}>
 
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/" style={{ textDecoration: 'none' }}>
-            <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/logo.png" alt="fitオリパ" style={{ height: '56px', width: 'auto', objectFit: 'contain', mixBlendMode: 'screen' }} />
-          </a>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {user ? (
-              <>
-                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #f97316, #ea580c)', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', boxShadow: '0 2px 8px rgba(249,115,22,0.4)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.9"/><text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="900" fill="#ea580c">P</text></svg>
-                  <span style={{ fontSize: '14px', fontWeight: '900', color: 'white' }}>{points.toLocaleString()}</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>+</span>
-                </a>
-                <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.12)', borderRadius: '50%', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="white"/></svg>
-                </a>
-                <a href="/mypage" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.12)', borderRadius: '50%', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="white"/></svg>
-                </a>
-              </>
-            ) : (
-              <>
-                <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 14px', border: '1px solid #ddd', borderRadius: '4px' }}>ログイン</a>
-                <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: 'linear-gradient(135deg, #f97316, #ea580c)', borderRadius: '6px', boxShadow: '0 2px 8px rgba(249,115,22,0.4)' }}>新規登録</a>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* バナースライダー */}
       {banners.length > 0 && (
