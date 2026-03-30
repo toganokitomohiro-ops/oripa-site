@@ -179,7 +179,7 @@ export default function Home() {
           .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
           .banner-slider::-webkit-scrollbar { display: none; }
           .banner-item { flex-shrink: 0 !important; width: 260px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
-          .banner-item img { width: 260px !important; height: 100px !important; aspect-ratio: unset !important; object-fit: cover !important; display: block !important; }
+          .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 320px !important; min-width: 200px !important; } .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
           .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
           .oripa-card-pc { border-radius: 12px; overflow: hidden; background: white; border: 1px solid #e8e8e8; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
           .oripa-card-pc-img { padding-bottom: 60% !important; }
