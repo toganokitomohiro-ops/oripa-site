@@ -245,8 +245,8 @@ export default function Home() {
       )}
 
       {/* カテゴリータブ */}
-      <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: '56px', zIndex: 40 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
+      <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: '60px', zIndex: 40 }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {categories.map((cat) => (
             <button
               key={cat.value}
@@ -258,7 +258,7 @@ export default function Home() {
           ))}
         </div>
         {/* 絞り込みドロップダウン */}
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '13px', color: '#666', fontWeight: '600' }}>🔥 {filteredEvents.length}件開催中！</span>
           <select
             value={sortFilter}

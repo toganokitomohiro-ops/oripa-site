@@ -29,13 +29,13 @@ export default function Header() {
   }, [])
 
   return (
-    <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50 }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <a href="/" style={{ textDecoration: 'none' }}>
           <img
             src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/logo.png"
             alt="fitオリパ"
-            style={{ height: '72px', width: 'auto', objectFit: 'contain' }}
+            style={{ height: '44px', width: 'auto', objectFit: 'contain' }}
           />
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
