@@ -227,8 +227,8 @@ export default function PrizesPage() {
 
       {/* コイン交換確認モーダル */}
       {showSellModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'white', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: '500px', padding: '24px 20px 40px' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
+          <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '400px', padding: '28px 24px' }}>
             <h3 style={{ textAlign: 'center', fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: '#1f2937' }}>コインに交換</h3>
             <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>選択した商品をコインに交換します。<br/>よろしいですか？</p>
             <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '20px' }}>
