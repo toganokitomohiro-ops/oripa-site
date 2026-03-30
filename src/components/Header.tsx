@@ -14,7 +14,7 @@ export default function Header() {
         supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
           if (data) {
             setPoints(data.points)
-            setFpPoints(data.fp_points || 0)
+            setFpPoints(0) // TODO: fp_pointsカラム追加後に data.fp_points に変更
           }
         })
       }
@@ -25,7 +25,7 @@ export default function Header() {
         supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
           if (data) {
             setPoints(data.points)
-            setFpPoints(data.fp_points || 0)
+            setFpPoints(0) // TODO: fp_pointsカラム追加後に data.fp_points に変更
           }
         })
       } else {
