@@ -198,7 +198,7 @@ export default function Home() {
               <div
                 key={banner.id}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
-                style={{ flexShrink: 0, width: '100%', borderRadius: '0px', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default', display: index === currentBanner ? 'block' : 'none' }}
+                style={{ flexShrink: 0, width: '100%', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
               >
                 <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
@@ -264,7 +264,7 @@ export default function Home() {
             <div style={{ color: '#999', fontSize: '15px' }}>現在開催中のオリパはありません</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+          <div className='oripa-grid'>
             {filteredEvents.map((event) => {
               const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
               const isSoldOut = event.remaining_count <= 0
