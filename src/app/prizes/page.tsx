@@ -237,7 +237,7 @@ export default function PrizesPage() {
             <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-                <span style={{ fontSize: '24px', fontWeight: '900', color: '#1f2937' }}>{draws.filter(d => selected.includes(d.id) && d.status === 'pending').reduce((s, d) => s, 0)}{/* 現在のコイン数は非表示 */}</span>
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#1f2937' }}>{userPoints.toLocaleString()}</span>
               </div>
               <span style={{ fontSize: '24px', color: '#9ca3af', fontWeight: 'bold' }}>›</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
