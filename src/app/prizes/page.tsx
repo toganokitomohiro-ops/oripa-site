@@ -28,6 +28,7 @@ export default function PrizesPage() {
   const [selected, setSelected] = useState<string[]>([])
   const [selling, setSelling] = useState(false)
   const [tab, setTab] = useState<'pending' | 'sold' | 'shipped'>('pending')
+  const [showSellModal, setShowSellModal] = useState(false)
 
   useEffect(() => { fetchData() }, [])
 
@@ -70,7 +71,10 @@ export default function PrizesPage() {
 
   const handleSell = async () => {
     if (!userId || selected.length === 0) return
-    if (!confirm(`${selected.length}枚をコインに交換しますか？`)) return
+    setShowSellModal(true)
+  }
+  const handleSellConfirm = async () => {
+    setShowSellModal(false)
     setSelling(true)
     try {
       const res = await fetch('/api/sell', {
@@ -220,6 +224,33 @@ export default function PrizesPage() {
         </div>
       )}
       <BottomNav />
+
+      {/* コイン交換確認モーダル */}
+      {showSellModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: '500px', padding: '24px 20px 40px' }}>
+            <h3 style={{ textAlign: 'center', fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: '#1f2937' }}>コインに交換</h3>
+            <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>選択した商品をコインに交換します。<br/>よろしいですか？</p>
+            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '24px' }}>🪙</span>
+                <span style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937' }}>{selected.length}枚選択中</span>
+              </div>
+              <span style={{ fontSize: '20px', color: '#9ca3af' }}>›</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '24px' }}>🪙</span>
+                <span style={{ fontSize: '20px', fontWeight: '800', color: '#16a34a' }}>{selected.length}枚をコインに交換</span>
+              </div>
+            </div>
+            <button onClick={handleSellConfirm} style={{ width: '100%', padding: '16px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer', marginBottom: '12px' }}>
+              コインに交換する
+            </button>
+            <button onClick={() => setShowSellModal(false)} style={{ width: '100%', padding: '16px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '16px', cursor: 'pointer' }}>
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
