@@ -83,7 +83,7 @@ export default function ReportsPage() {
                     <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{report.events?.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '14px', height: '14px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: '900', color: '#333' }}>P</div>
+                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} />
                         <span style={{ fontSize: '13px', fontWeight: '700', color: '#e67e00' }}>{report.products?.market_value?.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>コイン</span>
                       </div>

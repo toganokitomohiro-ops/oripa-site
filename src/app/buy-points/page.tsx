@@ -141,7 +141,7 @@ export default function BuyPointsPage() {
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '14px' }}>
                   {/* コインアイコン */}
                   <div style={{ position: 'relative', flexShrink: 0 }}>
-                    <div style={{ width: '40px', height: '40px', background: 'radial-gradient(circle at 35% 35%, #ffe566, #f5c518, #e6a800)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 3px 8px rgba(245,197,24,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)' }}>
+                    <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain', flexShrink: 0 }} /><div style={{ display: 'none' }}>
                       <span style={{ fontSize: '16px', fontWeight: '900', color: '#7a5500', lineHeight: 1 }}>P</span>
                     </div>
                   </div>
