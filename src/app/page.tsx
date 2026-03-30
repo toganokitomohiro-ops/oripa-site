@@ -169,6 +169,12 @@ export default function Home() {
       {/* ヘッダー */}
       <Header />
 
+      <style>{`
+        .oripa-grid { display: flex; flex-direction: column; gap: 12px; }
+        @media (min-width: 768px) {
+          .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
+      `}</style>
       {/* バナースライダー */}
       {banners.length > 0 && (
         <div style={{ position: 'relative', overflow: 'hidden' }}>
