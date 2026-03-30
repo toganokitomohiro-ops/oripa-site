@@ -238,7 +238,7 @@ export default function PrizesPage() {
               </div>
               <span style={{ fontSize: '20px', color: '#9ca3af' }}>›</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ fontSize: '24px' }}>🪙</span>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                 <span style={{ fontSize: '20px', fontWeight: '800', color: '#16a34a' }}>{selected.length}枚をコインに交換</span>
               </div>
             </div>
