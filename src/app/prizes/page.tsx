@@ -231,15 +231,15 @@ export default function PrizesPage() {
           <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '400px', padding: '28px 24px' }}>
             <h3 style={{ textAlign: 'center', fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: '#1f2937' }}>コインに交換</h3>
             <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>選択した商品をコインに交換します。<br/>よろしいですか？</p>
-            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                <span style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937' }}>{selected.length}枚選択中</span>
+            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#1f2937' }}>{draws.filter(d => selected.includes(d.id) && d.status === 'pending').reduce((s, d) => s, 0)}{/* 現在のコイン数は非表示 */}</span>
               </div>
-              <span style={{ fontSize: '20px', color: '#9ca3af' }}>›</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                <span style={{ fontSize: '20px', fontWeight: '800', color: '#16a34a' }}>{selected.length}枚をコインに交換</span>
+              <span style={{ fontSize: '24px', color: '#9ca3af', fontWeight: 'bold' }}>›</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#16a34a' }}>+{selected.reduce((sum, id) => { const d = draws.find(dr => dr.id === id); return sum + (d?.prizes?.pt_exchange || 0); }, 0).toLocaleString()}</span>
               </div>
             </div>
             <button onClick={handleSellConfirm} style={{ width: '100%', padding: '16px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer', marginBottom: '12px' }}>
