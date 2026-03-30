@@ -282,6 +282,33 @@ function GachaResultInner() {
           )}
         </div>
       </div>
+
+      {/* コイン交換確認モーダル */}
+      {showSellModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
+          <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '400px', padding: '28px 24px' }}>
+            <h3 style={{ textAlign: 'center', fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: '#1f2937' }}>コインに交換</h3>
+            <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>選択した商品をコインに交換します。<br/>よろしいですか？</p>
+            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#1f2937' }}>{userPoints.toLocaleString()}</span>
+              </div>
+              <span style={{ fontSize: '24px', color: '#9ca3af', fontWeight: 'bold' }}>›</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#16a34a' }}>{(userPoints + selected.reduce((sum, id) => { const d = results.find(r => r.id === id); return sum + (d?.prizes?.pt_exchange || 0); }, 0)).toLocaleString()}</span>
+              </div>
+            </div>
+            <button onClick={handleSellConfirm} style={{ width: '100%', padding: '16px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer', marginBottom: '12px' }}>
+              コインに交換する
+            </button>
+            <button onClick={() => setShowSellModal(false)} style={{ width: '100%', padding: '16px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '16px', cursor: 'pointer' }}>
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
