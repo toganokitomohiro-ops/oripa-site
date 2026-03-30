@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function Header() {
   const [points, setPoints] = useState(0)
+  const [fpPoints, setFpPoints] = useState(0)
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
@@ -11,7 +12,10 @@ export default function Header() {
       if (session?.user) {
         setUser(session.user)
         supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
-          if (data) setPoints(data.points)
+          if (data) {
+            setPoints(data.points)
+            setFpPoints(data.fp_points || 0)
+          }
         })
       }
     })
@@ -19,7 +23,10 @@ export default function Header() {
       if (session?.user) {
         setUser(session.user)
         supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
-          if (data) setPoints(data.points)
+          if (data) {
+            setPoints(data.points)
+            setFpPoints(data.fp_points || 0)
+          }
         })
       } else {
         setUser(null)
@@ -41,10 +48,19 @@ export default function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {user ? (
             <>
-              <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f5c518', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none' }}>
-                <span style={{ fontSize: '14px', fontWeight: '900', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
-                <span style={{ fontSize: '11px', color: '#1a1a1a', fontWeight: '700' }}>PT+</span>
-              </a>
+              {/* FPコイン */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f3f4f6', padding: '6px 10px', borderRadius: '20px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-1bac3859-a4d0-4504-8497-3ef4cef6a13f.png" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{fpPoints.toLocaleString()}</span>
+              </div>
+              {/* 肉球コイン＋購入ボタン */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f3f4f6', padding: '6px 10px', borderRadius: '20px 0 0 20px' }}>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                  <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
+                </div>
+                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '34px', background: '#e67e00', borderRadius: '0 20px 20px 0', textDecoration: 'none', color: 'white', fontSize: '18px', fontWeight: '900' }}>+</a>
+              </div>
               <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>🔔</a>
               <a href="/mypage" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>👤</a>
             </>
