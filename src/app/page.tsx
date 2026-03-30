@@ -309,7 +309,7 @@ export default function Home() {
                     {/* コイン・残り口数 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '18px', height: '18px', background: '#f5c518', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '900', color: '#333', flexShrink: 0 }}>P</div>
+                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0 }} />
                         <span style={{ fontSize: '16px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
                       </div>
@@ -361,12 +361,12 @@ export default function Home() {
               </p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', background: '#f9fafb', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'24px', height:'24px', borderRadius:'50%', background:'linear-gradient(135deg,#f5c518,#e67e00)', color:'white', fontSize:'12px', fontWeight:'900', flexShrink:0 }}>C</span>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
                 </div>
                 <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'24px', height:'24px', borderRadius:'50%', background:'linear-gradient(135deg,#f5c518,#e67e00)', color:'white', fontSize:'12px', fontWeight:'900', flexShrink:0 }}>C</span>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>{(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}</span>
                 </div>
               </div>
