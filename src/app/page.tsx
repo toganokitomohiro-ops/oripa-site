@@ -176,10 +176,10 @@ export default function Home() {
         .banner-item { flex-shrink: 0; width: 100%; }
         @media (min-width: 768px) {
           .banner-outer { max-width: 1100px; margin: 12px auto; padding: 0 16px; overflow: hidden; position: relative; }
-          .banner-slider { display: flex; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+          .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
           .banner-slider::-webkit-scrollbar { display: none; }
-          .banner-item { flex-shrink: 0; width: 240px; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-          .banner-item img { aspect-ratio: 3/1 !important; width: 240px; height: 80px; object-fit: cover; }
+          .banner-item { flex-shrink: 0 !important; width: 260px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
+          .banner-item img { width: 260px !important; height: 100px !important; aspect-ratio: unset !important; object-fit: cover !important; display: block !important; }
           .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
           .oripa-card-pc { border-radius: 12px; overflow: hidden; background: white; border: 1px solid #e8e8e8; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
           .oripa-card-pc-img { padding-bottom: 60% !important; }
