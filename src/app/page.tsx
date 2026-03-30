@@ -187,7 +187,7 @@ export default function Home() {
             >›</button>
           )}
           {/* バナー本体 */}
-          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(calc(-${currentBanner} * 52% - 28%))`, gap: '8px', padding: '4px 0' }}>
+          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)` }}>
             {/* 最後のバナーを先頭に */}
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
