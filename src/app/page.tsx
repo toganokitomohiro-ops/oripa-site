@@ -175,8 +175,17 @@ export default function Home() {
         .banner-slider { display: flex; transition: transform 0.4s ease; }
         .banner-item { flex-shrink: 0; width: 100%; }
         @media (min-width: 768px) {
-          .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-          .banner-outer { max-width: 900px; margin: 16px auto; border-radius: 12px; overflow: hidden; }
+          .banner-outer { max-width: 1100px; margin: 16px auto; padding: 0 16px; overflow: visible; position: relative; }
+          .banner-slider { display: flex; gap: 12px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 4px; }
+          .banner-slider::-webkit-scrollbar { display: none; }
+          .banner-item { flex-shrink: 0; width: 280px; scroll-snap-align: start; border-radius: 10px; overflow: hidden; }
+          .banner-item img { aspect-ratio: 16/9 !important; }
+          .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+          .oripa-card-pc { border-radius: 12px; overflow: hidden; background: white; border: 1px solid #e8e8e8; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+          .oripa-card-pc-img { padding-bottom: 60% !important; }
+          .oripa-card-pc-info { padding: 14px 16px 16px !important; }
+          .oripa-card-pc-price { font-size: 22px !important; }
+          .oripa-card-pc-btn { padding: 14px 4px !important; font-size: 15px !important; border-radius: 8px !important; }
         }
       `}</style>
       {/* バナースライダー */}
