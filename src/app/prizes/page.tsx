@@ -234,7 +234,7 @@ export default function PrizesPage() {
             <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                <span style={ fontSize: '20px', fontWeight: '800', color: '#1f2937' }>{selected.length}枚選択中</span>
+                <span style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937' }}>{selected.length}枚選択中</span>
               </div>
               <span style={{ fontSize: '20px', color: '#9ca3af' }}>›</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
