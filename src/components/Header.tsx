@@ -30,12 +30,12 @@ export default function Header() {
 
   return (
     <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 16px', height: '76px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <a href="/" style={{ textDecoration: 'none' }}>
           <img
             src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-4941278f-6db2-42b2-aeb8-0a3928705de1.png"
             alt="fitオリパ"
-            style={{ height: '64px', width: 'auto', objectFit: 'contain' }}
+            style={{ height: '76px', width: 'auto', objectFit: 'contain' }}
           />
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
