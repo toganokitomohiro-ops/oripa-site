@@ -162,7 +162,7 @@ export default function PrizesPage() {
                     <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 'bold', color: gradeColors[draw.grade] || '#6b7280', background: `${gradeColors[draw.grade] || '#6b7280'}20`, padding: '2px 8px', borderRadius: '999px', marginBottom: '4px' }}>{draw.grade}</div>
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>{draw.products?.name || '不明な商品'}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '18px', height: '18px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '10px', fontWeight: '900' }}>C</span>
+                      <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "18px", height: "18px", objectFit: "contain" }} />
                       <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#f59e0b' }}>{draw.prizes?.pt_exchange?.toLocaleString() || 0}</span>
                       <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
                     </div>
@@ -191,7 +191,7 @@ export default function PrizesPage() {
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
                 <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{getTotalPt().toLocaleString()}</span>
                 <span style={{ fontSize: '13px', color: '#9ca3af' }}>コイン</span>
               </div>

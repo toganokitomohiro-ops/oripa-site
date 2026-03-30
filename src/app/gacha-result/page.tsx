@@ -30,6 +30,8 @@ function GachaResultInner() {
   const [loading, setLoading] = useState(true)
   const [selling, setSelling] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
+  const [showSellModal, setShowSellModal] = useState(false)
+  const [userPoints, setUserPoints] = useState(0)
 
   useEffect(() => {
     fetchResults()
@@ -40,6 +42,8 @@ function GachaResultInner() {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { router.push('/auth/login'); return }
     setUserId(session.user.id)
+    const { data: profile } = await supabase.from('profiles').select('points').eq('id', session.user.id).single()
+    if (profile) setUserPoints(profile.points)
 
     if (!drawIdsParam) { router.push('/'); return }
     const drawIds = drawIdsParam.split(',')
@@ -92,7 +96,10 @@ function GachaResultInner() {
 
   const handleSell = async () => {
     if (!userId || selected.length === 0) return
-    if (!confirm(`${selected.length}枚をコインに交換しますか？`)) return
+    setShowSellModal(true)
+  }
+  const handleSellConfirm = async () => {
+    setShowSellModal(false)
     setSelling(true)
     try {
       const res = await fetch('/api/sell', {
