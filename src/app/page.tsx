@@ -171,13 +171,17 @@ export default function Home() {
 
       <style>{`
         .oripa-grid { display: flex; flex-direction: column; gap: 12px; }
+        .banner-outer { overflow: hidden; }
+        .banner-slider { display: flex; transition: transform 0.4s ease; }
+        .banner-item { flex-shrink: 0; width: 100%; }
         @media (min-width: 768px) {
           .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+          .banner-outer { max-width: 900px; margin: 16px auto; border-radius: 12px; overflow: hidden; }
         }
       `}</style>
       {/* バナースライダー */}
       {banners.length > 0 && (
-        <div style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className='banner-outer' style={{ position: 'relative' }}>
           {/* 左矢印 */}
           {currentBanner > 0 && (
             <button
@@ -193,7 +197,7 @@ export default function Home() {
             >›</button>
           )}
           {/* バナー本体 */}
-          <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)` }}>
+          <div className='banner-slider' style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)` }}>
             {/* 最後のバナーを先頭に */}
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
@@ -204,7 +208,7 @@ export default function Home() {
               <div
                 key={banner.id}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
-                style={{ flexShrink: 0, width: '100%', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
+                className='banner-item' style={{ flexShrink: 0, width: '100%', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
               >
                 <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
