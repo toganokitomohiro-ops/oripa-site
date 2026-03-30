@@ -38,6 +38,8 @@ export default function PrizesPage() {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { router.push('/auth/login'); return }
     setUserId(session.user.id)
+    const { data: profile } = await supabase.from('profiles').select('points').eq('id', session.user.id).single()
+    if (profile) setUserPoints(profile.points)
 
     const { data } = await supabase
       .from('draws')
