@@ -31,6 +31,8 @@ export default function FpExchangePage() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(true)
   const [cols, setCols] = useState('repeat(2, 1fr)')
+  const [showLoginBonus, setShowLoginBonus] = useState(false)
+  const [loginBonusAmount, setLoginBonusAmount] = useState(0)
 
   useEffect(() => {
     const update = () => setCols(window.innerWidth >= 768 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)')
@@ -39,11 +41,31 @@ export default function FpExchangePage() {
     return () => window.removeEventListener('resize', update)
   }, [])
 
+  const checkFpSystem = async (uid: string) => {
+    await fetch('/api/fp-expire', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: uid }),
+    })
+    const res = await fetch('/api/login-bonus', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: uid }),
+    })
+    const data = await res.json()
+    if (!data.alreadyReceived && data.bonus > 0) {
+      setLoginBonusAmount(data.bonus)
+      setShowLoginBonus(true)
+      setTimeout(() => setShowLoginBonus(false), 3000)
+    }
+    fetchUserFp(uid)
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setIsLoggedIn(true)
-        fetchUserFp(session.user.id)
+        checkFpSystem(session.user.id)
       } else {
         setIsLoggedIn(false)
       }
@@ -79,6 +101,17 @@ export default function FpExchangePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
+      {showLoginBonus && (
+        <div style={{
+          position: 'fixed', top: '70px', left: '50%', transform: 'translateX(-50%)',
+          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          color: 'white', borderRadius: '12px', padding: '12px 24px',
+          boxShadow: '0 4px 20px rgba(249,115,22,0.4)', zIndex: 9999,
+          fontSize: '15px', fontWeight: '800', whiteSpace: 'nowrap',
+        }}>
+          🎉 ログインボーナス +{loginBonusAmount}FP 獲得！
+        </div>
+      )}
       <Header />
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>

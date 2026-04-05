@@ -29,6 +29,12 @@ type Category = {
 type FpSetting = {
   id: string
   fp_rate: number
+  s_bonus: number
+  a_bonus: number
+  b_bonus: number
+  c_bonus: number
+  login_bonus: number
+  fp_expiry_months: number
 }
 
 type Order = {
@@ -59,6 +65,15 @@ export default function AdminFpExchangePage() {
   const [activeTab, setActiveTab] = useState<'items' | 'orders' | 'categories' | 'settings'>('items')
   const [editingRate, setEditingRate] = useState(false)
   const [newRate, setNewRate] = useState('')
+  const [editingBonuses, setEditingBonuses] = useState(false)
+  const [newSBonus, setNewSBonus] = useState('')
+  const [newABonus, setNewABonus] = useState('')
+  const [newBBonus, setNewBBonus] = useState('')
+  const [newCBonus, setNewCBonus] = useState('')
+  const [editingLoginBonus, setEditingLoginBonus] = useState(false)
+  const [newLoginBonus, setNewLoginBonus] = useState('')
+  const [editingExpiry, setEditingExpiry] = useState(false)
+  const [newExpiryMonths, setNewExpiryMonths] = useState('')
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all')
   const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>({})
 
@@ -91,6 +106,12 @@ export default function AdminFpExchangePage() {
     if (settingRes.data) {
       setFpSetting(settingRes.data)
       setNewRate(String(settingRes.data.fp_rate))
+      setNewSBonus(String(settingRes.data.s_bonus ?? 50))
+      setNewABonus(String(settingRes.data.a_bonus ?? 20))
+      setNewBBonus(String(settingRes.data.b_bonus ?? 5))
+      setNewCBonus(String(settingRes.data.c_bonus ?? 0))
+      setNewLoginBonus(String(settingRes.data.login_bonus ?? 5))
+      setNewExpiryMonths(String(settingRes.data.fp_expiry_months ?? 6))
     }
     if (ordersRes.data) setOrders(ordersRes.data as Order[])
     setLoading(false)
@@ -102,6 +123,33 @@ export default function AdminFpExchangePage() {
     await supabase.from('fp_settings').update({ fp_rate: Number(newRate), updated_at: new Date().toISOString() }).eq('id', fpSetting.id)
     setFpSetting({ ...fpSetting, fp_rate: Number(newRate) })
     setEditingRate(false)
+  }
+
+  const saveBonuses = async () => {
+    if (!fpSetting) return
+    await supabase.from('fp_settings').update({
+      s_bonus: Number(newSBonus),
+      a_bonus: Number(newABonus),
+      b_bonus: Number(newBBonus),
+      c_bonus: Number(newCBonus),
+      updated_at: new Date().toISOString(),
+    }).eq('id', fpSetting.id)
+    setFpSetting({ ...fpSetting, s_bonus: Number(newSBonus), a_bonus: Number(newABonus), b_bonus: Number(newBBonus), c_bonus: Number(newCBonus) })
+    setEditingBonuses(false)
+  }
+
+  const saveLoginBonus = async () => {
+    if (!fpSetting) return
+    await supabase.from('fp_settings').update({ login_bonus: Number(newLoginBonus), updated_at: new Date().toISOString() }).eq('id', fpSetting.id)
+    setFpSetting({ ...fpSetting, login_bonus: Number(newLoginBonus) })
+    setEditingLoginBonus(false)
+  }
+
+  const saveExpiry = async () => {
+    if (!fpSetting) return
+    await supabase.from('fp_settings').update({ fp_expiry_months: Number(newExpiryMonths), updated_at: new Date().toISOString() }).eq('id', fpSetting.id)
+    setFpSetting({ ...fpSetting, fp_expiry_months: Number(newExpiryMonths) })
+    setEditingExpiry(false)
   }
 
   // カテゴリー保存
@@ -535,7 +583,8 @@ export default function AdminFpExchangePage() {
 
       {/* ===== FP設定タブ ===== */}
       {activeTab === 'settings' && (
-        <div style={{ maxWidth: '500px' }}>
+        <div style={{ maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* FP還元率 */}
           <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '28px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>🪙 FPコイン還元率設定</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '24px' }}>ガチャ消費コイン100に対して何FPを付与するか設定します</p>
@@ -563,6 +612,115 @@ export default function AdminFpExchangePage() {
             ) : (
               <button onClick={() => setEditingRate(true)} style={{ width: '100%', padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
                 還元率を変更する
+              </button>
+            )}
+          </div>
+
+          {/* レアリティボーナス */}
+          <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '28px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>🏆 レアリティボーナス設定</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>ガチャ結果の賞ごとに追加付与するFP量を設定します</p>
+            {editingBonuses ? (
+              <div>
+                {[
+                  { label: 'S賞ボーナス', value: newSBonus, onChange: setNewSBonus },
+                  { label: 'A賞ボーナス', value: newABonus, onChange: setNewABonus },
+                  { label: 'B賞ボーナス', value: newBBonus, onChange: setNewBBonus },
+                  { label: 'C賞ボーナス', value: newCBonus, onChange: setNewCBonus },
+                ].map(({ label, value, onChange }) => (
+                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '13px', color: '#374151', fontWeight: '600', width: '90px' }}>{label}：</span>
+                    <input type="number" min="0" value={value} onChange={e => onChange(e.target.value)}
+                      style={{ width: '80px', border: '2px solid #f97316', borderRadius: '8px', padding: '8px 10px', fontSize: '16px', fontWeight: '700', textAlign: 'center', boxSizing: 'border-box' }} />
+                    <span style={{ fontSize: '13px', color: '#6b7280' }}>FP</span>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                  <button onClick={() => setEditingBonuses(false)} style={{ flex: 1, padding: '12px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>キャンセル</button>
+                  <button onClick={saveBonuses} style={{ flex: 1, padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', marginBottom: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  {[
+                    { label: 'S賞', value: fpSetting?.s_bonus ?? 50, color: '#f59e0b' },
+                    { label: 'A賞', value: fpSetting?.a_bonus ?? 20, color: '#8b5cf6' },
+                    { label: 'B賞', value: fpSetting?.b_bonus ?? 5, color: '#3b82f6' },
+                    { label: 'C賞', value: fpSetting?.c_bonus ?? 0, color: '#6b7280' },
+                  ].map(({ label, value, color }) => (
+                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#6b7280' }}>{label}：</span>
+                      <span style={{ fontSize: '18px', fontWeight: '900', color }}>{value}</span>
+                      <span style={{ fontSize: '12px', color: '#9ca3af' }}>FP</span>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={() => setEditingBonuses(true)} style={{ width: '100%', padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
+                  ボーナスを変更する
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ログインボーナス */}
+          <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '28px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>🎁 ログインボーナス設定</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>毎日ログイン時に付与するFP量を設定します</p>
+            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '13px', color: '#6b7280' }}>現在の付与量：</span>
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#f97316' }}>{fpSetting?.login_bonus ?? 5}</span>
+                <span style={{ fontSize: '13px', color: '#6b7280' }}>FP / 日</span>
+              </div>
+            </div>
+            {editingLoginBonus ? (
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>新しい付与量</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input type="number" min="0" value={newLoginBonus} onChange={e => setNewLoginBonus(e.target.value)}
+                    style={{ width: '100px', border: '2px solid #f97316', borderRadius: '8px', padding: '10px 14px', fontSize: '18px', fontWeight: '700', textAlign: 'center', boxSizing: 'border-box' }} />
+                  <span style={{ fontSize: '13px', color: '#6b7280' }}>FP / 日</span>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                  <button onClick={() => setEditingLoginBonus(false)} style={{ flex: 1, padding: '12px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>キャンセル</button>
+                  <button onClick={saveLoginBonus} style={{ flex: 1, padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setEditingLoginBonus(true)} style={{ width: '100%', padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
+                付与量を変更する
+              </button>
+            )}
+          </div>
+
+          {/* FP有効期限 */}
+          <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '28px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>⏰ FP有効期限設定</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>獲得したFPの有効期限を設定します（0の場合は無期限）</p>
+            <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '13px', color: '#6b7280' }}>現在の有効期限：</span>
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#f97316' }}>{fpSetting?.fp_expiry_months ?? 6}</span>
+                <span style={{ fontSize: '13px', color: '#6b7280' }}>ヶ月</span>
+              </div>
+            </div>
+            {editingExpiry ? (
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>新しい有効期限（ヶ月）</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input type="number" min="0" value={newExpiryMonths} onChange={e => setNewExpiryMonths(e.target.value)}
+                    style={{ width: '100px', border: '2px solid #f97316', borderRadius: '8px', padding: '10px 14px', fontSize: '18px', fontWeight: '700', textAlign: 'center', boxSizing: 'border-box' }} />
+                  <span style={{ fontSize: '13px', color: '#6b7280' }}>ヶ月（0＝無期限）</span>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                  <button onClick={() => setEditingExpiry(false)} style={{ flex: 1, padding: '12px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>キャンセル</button>
+                  <button onClick={saveExpiry} style={{ flex: 1, padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setEditingExpiry(true)} style={{ width: '100%', padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
+                有効期限を変更する
               </button>
             )}
           </div>

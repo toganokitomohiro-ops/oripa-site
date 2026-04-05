@@ -140,10 +140,11 @@ export async function POST(req: NextRequest) {
     // FPコイン付与
     const { data: fpSetting } = await supabase
       .from('fp_settings')
-      .select('fp_rate')
+      .select('fp_rate, s_bonus, a_bonus, b_bonus, c_bonus, fp_expiry_months')
       .single()
     const fpRate = fpSetting?.fp_rate || 1.0
     const fpEarned = Math.floor(actualCost * fpRate)
+    const expiryMonths = fpSetting?.fp_expiry_months || 6
     if (fpEarned > 0) {
       const { data: currentProfile } = await supabase
         .from('profiles')
@@ -153,6 +154,43 @@ export async function POST(req: NextRequest) {
       await supabase.from('profiles').update({
         fp_points: (currentProfile?.fp_points || 0) + fpEarned,
       }).eq('id', user_id)
+      // fp_transactionsに記録
+      const expiresAtGacha = new Date()
+      expiresAtGacha.setMonth(expiresAtGacha.getMonth() + expiryMonths)
+      await supabase.from('fp_transactions').insert({
+        user_id,
+        amount: fpEarned,
+        type: 'gacha_earn',
+        description: `ガチャFP獲得（${event.name} ${actualCount}回）`,
+        expires_at: expiresAtGacha.toISOString(),
+      })
+    }
+    // レアリティボーナスFP付与
+    const gradeBonus: Record<string, number> = {
+      'S賞': fpSetting?.s_bonus || 50,
+      'A賞': fpSetting?.a_bonus || 20,
+      'B賞': fpSetting?.b_bonus || 5,
+      'C賞': fpSetting?.c_bonus || 0,
+    }
+    let totalRarityBonus = 0
+    for (const result of results) {
+      const bonus = gradeBonus[result.grade] || 0
+      totalRarityBonus += bonus
+    }
+    if (totalRarityBonus > 0) {
+      const { data: currentProfile2 } = await supabase.from('profiles').select('fp_points').eq('id', user_id).single()
+      await supabase.from('profiles').update({
+        fp_points: (currentProfile2?.fp_points || 0) + totalRarityBonus,
+      }).eq('id', user_id)
+      const expiresAtBonus = new Date()
+      expiresAtBonus.setMonth(expiresAtBonus.getMonth() + expiryMonths)
+      await supabase.from('fp_transactions').insert({
+        user_id,
+        amount: totalRarityBonus,
+        type: 'rarity_bonus',
+        description: `レアリティボーナス（${results.map((r: any) => r.grade).join(', ')}）`,
+        expires_at: expiresAtBonus.toISOString(),
+      })
     }
 
     // 天井カウンター更新
