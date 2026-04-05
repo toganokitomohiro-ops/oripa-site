@@ -292,12 +292,12 @@ function GachaResultInner() {
             <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>選択した商品をコインに交換します。<br/>よろしいですか？</p>
             <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain', background: '#fef3c7', borderRadius: '50%', padding: '3px' }} />
                 <span style={{ fontSize: '24px', fontWeight: '900', color: '#1f2937' }}>{userPoints.toLocaleString()}</span>
               </div>
               <span style={{ fontSize: '24px', color: '#9ca3af', fontWeight: 'bold' }}>›</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '40px', height: '40px', objectFit: 'contain', background: '#fef3c7', borderRadius: '50%', padding: '3px' }} />
                 <span style={{ fontSize: '24px', fontWeight: '900', color: '#16a34a' }}>{(userPoints + selected.reduce((sum, id) => { const d = results.find(r => r.id === id); return sum + (d?.pt_exchange || 0); }, 0)).toLocaleString()}</span>
               </div>
             </div>
