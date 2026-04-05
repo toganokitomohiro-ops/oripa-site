@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -61,6 +62,9 @@ export default function RegisterPage() {
       </header>
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '24px 16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <Image src="/logo.png" alt="fitオリパ" width={180} height={60} style={{ height: 'auto', display: 'inline-block' }} />
+        </div>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '16px' }}>新規登録</h1>
 
         {/* バナー */}
@@ -173,6 +177,10 @@ export default function RegisterPage() {
 
           <div style={{ textAlign: 'center', marginTop: '16px' }}>
             <a href="/auth/login" style={{ fontSize: '14px', color: '#f97316', fontWeight: '700', textDecoration: 'none' }}>ログインはこちら</a>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+            <Image src="/characters/alpoo-standby.png" alt="あるぷー" width={100} height={100} style={{ width: '100px', height: 'auto' }} />
           </div>
         </div>
 

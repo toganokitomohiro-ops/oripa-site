@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -45,6 +46,10 @@ export default function LoginPage() {
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
         <div style={{ width: '100%', maxWidth: '400px' }}>
 
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+            <Image src="/logo.png" alt="fitオリパ" width={180} height={60} style={{ height: 'auto', display: 'inline-block' }} />
+          </div>
+
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>ログイン</h1>
             <p style={{ fontSize: '14px', color: '#6b7280' }}>アカウントにログインしてガチャを楽しもう！</p>
@@ -82,7 +87,7 @@ export default function LoginPage() {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151' }}>パスワード</label>
-                <a href="#" style={{ fontSize: '12px', color: '#f97316', textDecoration: 'none' }}>パスワードを忘れた方</a>
+                <span className="text-gray-400 text-sm cursor-not-allowed">パスワードを忘れた方</span>
               </div>
               <input
                 type="password"
@@ -105,6 +110,10 @@ export default function LoginPage() {
             <div style={{ textAlign: 'center', marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #f3f4f6' }}>
               <span style={{ fontSize: '13px', color: '#6b7280' }}>アカウントをお持ちでない方は</span>
               <a href="/auth/register" style={{ fontSize: '13px', color: '#f97316', fontWeight: '700', textDecoration: 'none', marginLeft: '4px' }}>新規登録</a>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+              <Image src="/characters/arukun-mini.jpg" alt="あーるくん" width={120} height={120} style={{ width: '120px', height: 'auto', borderRadius: '8px' }} />
             </div>
           </div>
 
