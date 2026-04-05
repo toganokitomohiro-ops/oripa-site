@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
 import Header from '@/components/Header'
@@ -244,6 +245,18 @@ export default function Home() {
         </div>
       )}
 
+      {/* キャラクターコンセプトセクション */}
+      <div style={{ background: 'linear-gradient(to right, #eff6ff, #fff7ed)', padding: '32px 16px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+          <Image src="/characters/arukun-greeting.png" alt="あーるくん" width={200} height={200} style={{ width: '200px', height: 'auto', flexShrink: 0 }} />
+          <div style={{ textAlign: 'center', maxWidth: '480px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1f2937', marginBottom: '12px', lineHeight: '1.4' }}>歩いて、ポイントを貯めて、オリパを楽しもう！</h2>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.7' }}>fitオリパは歩数に応じてFPポイントが貯まるオリパサービス。当たりは全部本物のトレカ！</p>
+          </div>
+          <Image src="/characters/alpoo-standby.png" alt="あるぷー" width={160} height={160} style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+        </div>
+      </div>
+
       {/* カテゴリータブ */}
       <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: '60px', zIndex: 40 }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -381,10 +394,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* 一時的な管理画面リンク */}
-      <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
-        <a href="/admin" style={{ background: '#1f2937', color: 'white', padding: '10px 16px', borderRadius: '999px', fontSize: '13px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>⚙️ 管理画面</a>
-      </div>
       {/* 動画再生 */}
       {showVideo && videoUrl && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
