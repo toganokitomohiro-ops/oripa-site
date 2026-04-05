@@ -281,8 +281,10 @@ export default function Home() {
       {/* オリパ一覧 */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 8px 80px' }}>
         {filteredEvents.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '8px' }}>
-            <div style={{ color: '#999', fontSize: '15px' }}>現在開催中のオリパはありません</div>
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+            <img src="/characters/arukun-greeting.png" alt="あーるくん" style={{ width: '96px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>現在開催中のオリパはありません</div>
+            <div style={{ fontSize: '13px', color: '#9ca3af' }}>近日公開予定！お楽しみに！</div>
           </div>
         ) : (
           <div className='oripa-grid'>
@@ -291,7 +293,7 @@ export default function Home() {
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
               return (
-                <div key={event.id} style={{ background: 'white', borderRadius: '10px', overflow: 'hidden', border: '1px solid #ebebeb', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', transition: 'transform 0.15s, box-shadow 0.15s' }}>
+                <div key={event.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'transform 0.15s, box-shadow 0.15s' }}>
                   {/* バナー画像 */}
                   <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (

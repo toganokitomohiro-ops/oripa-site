@@ -109,7 +109,7 @@ export default function FpExchangePage() {
           boxShadow: '0 4px 20px rgba(249,115,22,0.4)', zIndex: 9999,
           fontSize: '15px', fontWeight: '800', whiteSpace: 'nowrap',
         }}>
-          🎉 ログインボーナス +{loginBonusAmount}FP 獲得！
+          🎉 ログインボーナス +{loginBonusAmount}FPコイン 獲得！
         </div>
       )}
       <Header />
@@ -129,11 +129,11 @@ export default function FpExchangePage() {
             boxShadow: '0 4px 16px rgba(249,115,22,0.35)'
           }}>
             <div>
-              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px', fontWeight: '600' }}>あなたのFP残高</p>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px', fontWeight: '600' }}>あなたのFPコイン残高</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '28px' }}>🪙</span>
                 <span style={{ fontSize: '32px', fontWeight: '900', color: 'white' }}>{userFp.toLocaleString()}</span>
-                <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>FP</span>
+                <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>FPコイン</span>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -154,7 +154,7 @@ export default function FpExchangePage() {
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <p style={{ fontSize: '14px', color: '#374151' }}>🪙 ログインするとFP残高を確認できます</p>
+            <p style={{ fontSize: '14px', color: '#374151' }}>🪙 ログインするとFPコイン残高を確認できます</p>
             <a href="/auth/login" style={{
               fontSize: '13px', fontWeight: '700', color: 'white',
               background: '#f97316', padding: '8px 16px', borderRadius: '8px', textDecoration: 'none'
@@ -165,7 +165,7 @@ export default function FpExchangePage() {
         {/* タイトル */}
         <div style={{ marginBottom: '16px' }}>
           <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>🪙 FPコイン交換所</h1>
-          <p style={{ fontSize: '13px', color: '#6b7280' }}>ガチャで貯めたFPコインを商品と交換できます</p>
+          <p style={{ fontSize: '13px', color: '#6b7280' }}>ガチャを回すともらえるFPコインを商品と交換できます</p>
         </div>
 
         {/* カテゴリータブ */}
@@ -205,9 +205,10 @@ export default function FpExchangePage() {
             <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#999' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🪙</div>
-            <div style={{ fontSize: '15px' }}>商品がありません</div>
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+            <img src="/characters/alpoo-standby.png" alt="あるぷー" style={{ width: '96px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>商品がありません</div>
+            <div style={{ fontSize: '13px', color: '#9ca3af' }}>別のカテゴリーも確認してみてください</div>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '12px' }}>
@@ -242,7 +243,7 @@ export default function FpExchangePage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff7ed', borderRadius: '6px', padding: '6px 10px' }}>
                     <span style={{ fontSize: '14px' }}>🪙</span>
                     <span style={{ fontSize: '14px', fontWeight: '800', color: '#f97316' }}>{item.fp_price.toLocaleString()}</span>
-                    <span style={{ fontSize: '11px', color: '#9a3412' }}>FP</span>
+                    <span style={{ fontSize: '11px', color: '#9a3412' }}>FPコイン</span>
                   </div>
                 </div>
               </div>

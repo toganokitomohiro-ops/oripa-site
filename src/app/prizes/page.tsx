@@ -148,9 +148,14 @@ export default function PrizesPage() {
             <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
           </div>
         ) : filteredDraws.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#9ca3af' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>📦</div>
-            <div style={{ maxWidth: '640px', margin: '0 auto' }}>{tab === 'pending' ? 'まだ獲得した商品がありません' : tab === 'sold' ? '発送待ちの商品はありません' : '発送済みの商品はありません'}</div>
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+            <img src="/characters/arukun-greeting.png" alt="あーるくん" style={{ width: '96px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>
+              {tab === 'pending' ? 'まだ獲得した商品がありません' : tab === 'sold' ? '交換済みの商品はありません' : '発送申請した商品はありません'}
+            </div>
+            <div style={{ fontSize: '13px', color: '#9ca3af' }}>
+              {tab === 'pending' ? 'ガチャを引いて商品をゲットしよう！' : 'コインに交換するとここに表示されます'}
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -160,11 +165,11 @@ export default function PrizesPage() {
                 <div
                   key={draw.id}
                   onClick={() => tab === 'pending' && handleSelect(draw.id)}
-                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: tab === 'pending' ? 'pointer' : 'default', border: '2px solid', borderColor: isSelected ? '#fbbf24' : 'transparent' }}
+                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: tab === 'pending' ? 'pointer' : 'default', border: '2px solid', borderColor: isSelected ? '#f97316' : 'transparent' }}
                 >
                   {/* チェック */}
                   {tab === 'pending' && (
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#fbbf24' : '#d1d5db', background: isSelected ? '#fbbf24' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#f97316' : '#d1d5db', background: isSelected ? '#f97316' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       {isSelected && <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
                     </div>
                   )}
@@ -182,7 +187,7 @@ export default function PrizesPage() {
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>{draw.products?.name || '不明な商品'}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "18px", height: "18px", objectFit: "contain" }} />
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#fbbf24' }}>{draw.prizes?.pt_exchange?.toLocaleString() || 0}</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#f97316' }}>{draw.prizes?.pt_exchange?.toLocaleString() || 0}</span>
                       <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
                     </div>
                     {tab === 'sold' && draw.sold_at && (
@@ -211,7 +216,7 @@ export default function PrizesPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fbbf24' }}>{getTotalPt().toLocaleString()}</span>
+                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f97316' }}>{getTotalPt().toLocaleString()}</span>
                 <span style={{ fontSize: '13px', color: '#9ca3af' }}>コイン</span>
               </div>
               <div style={{ display: 'flex', gap: '16px' }}>
@@ -234,7 +239,7 @@ export default function PrizesPage() {
               <button
                 onClick={() => router.push('/shipment')}
                 disabled={selected.length === 0}
-                style={{ flex: 1, padding: '14px', background: selected.length === 0 ? '#d1d5db' : '#fbbf24', color: selected.length === 0 ? '#9ca3af' : '#1f2937', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 'bold', cursor: selected.length === 0 ? 'not-allowed' : 'pointer' }}
+                style={{ flex: 1, padding: '14px', background: selected.length === 0 ? '#d1d5db' : '#3b82f6', color: selected.length === 0 ? '#9ca3af' : 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 'bold', cursor: selected.length === 0 ? 'not-allowed' : 'pointer' }}
               >
                 発送依頼
               </button>

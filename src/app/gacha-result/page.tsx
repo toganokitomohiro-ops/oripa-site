@@ -163,7 +163,7 @@ function GachaResultInner() {
           </div>
           <button
             onClick={() => setSortMode(sortMode === 'high' ? 'low' : 'high')}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 14px', borderRadius: '999px', border: '1px solid #e5e7eb', background: 'white', color: '#fbbf24', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 14px', borderRadius: '999px', border: '1px solid #e5e7eb', background: 'white', color: '#f97316', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}
           >
             {sortMode === 'high' ? '↑ コインが高い順' : '↓ コインが低い順'}
           </button>
@@ -178,10 +178,10 @@ function GachaResultInner() {
                 <div
                   key={result.id}
                   onClick={() => handleSelect(result.id)}
-                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#fbbf24' : 'transparent', position: 'relative' }}
+                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#f97316' : 'transparent', position: 'relative' }}
                 >
                   {/* 選択チェック */}
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#fbbf24' : '#d1d5db', background: isSelected ? '#fbbf24' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#f97316' : '#d1d5db', background: isSelected ? '#f97316' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {isSelected && <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
                   </div>
 
@@ -198,7 +198,7 @@ function GachaResultInner() {
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>{result.product.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span style={{ fontSize: '16px' }}>🪙</span>
-                      <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#fbbf24' }}>{result.pt_exchange.toLocaleString()}</span>
+                      <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#f97316' }}>{result.pt_exchange.toLocaleString()}</span>
                       <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
                     </div>
                   </div>
@@ -215,10 +215,10 @@ function GachaResultInner() {
                 <div
                   key={result.id}
                   onClick={() => handleSelect(result.id)}
-                  style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#fbbf24' : 'transparent', position: 'relative' }}
+                  style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#f97316' : 'transparent', position: 'relative' }}
                 >
                   {/* 選択チェック */}
-                  <div style={{ position: 'absolute', top: '8px', right: '8px', width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#fbbf24' : '#d1d5db', background: isSelected ? '#fbbf24' : 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#f97316' : '#d1d5db', background: isSelected ? '#f97316' : 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
                     {isSelected && <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
                   </div>
 
@@ -235,7 +235,7 @@ function GachaResultInner() {
                     <div style={{ fontSize: '12px', fontWeight: '600', color: '#1f2937', marginBottom: '4px', lineHeight: 1.3 }}>{result.product.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                       <span style={{ fontSize: '14px' }}>🪙</span>
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#fbbf24' }}>{result.pt_exchange.toLocaleString()}</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#f97316' }}>{result.pt_exchange.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ function GachaResultInner() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '20px' }}>🪙</span>
-              <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fbbf24' }}>{getTotalPt().toLocaleString()}</span>
+              <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f97316' }}>{getTotalPt().toLocaleString()}</span>
               <span style={{ fontSize: '13px', color: '#9ca3af' }}>コイン</span>
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
@@ -274,7 +274,7 @@ function GachaResultInner() {
             <button
               onClick={() => router.push('/shipment')}
               disabled={selected.length === 0}
-              style={{ flex: 1, padding: '14px', background: selected.length === 0 ? '#d1d5db' : '#fbbf24', color: selected.length === 0 ? '#9ca3af' : '#1f2937', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 'bold', cursor: selected.length === 0 ? 'not-allowed' : 'pointer' }}
+              style={{ flex: 1, padding: '14px', background: selected.length === 0 ? '#d1d5db' : '#3b82f6', color: selected.length === 0 ? '#9ca3af' : 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 'bold', cursor: selected.length === 0 ? 'not-allowed' : 'pointer' }}
             >
               発送依頼
             </button>
