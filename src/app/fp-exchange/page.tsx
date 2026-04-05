@@ -28,11 +28,25 @@ export default function FpExchangePage() {
   const [items, setItems] = useState<Item[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [userFp, setUserFp] = useState<number>(0)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(true)
+  const [cols, setCols] = useState('repeat(2, 1fr)')
+
+  useEffect(() => {
+    const update = () => setCols(window.innerWidth >= 768 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)')
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) fetchUserFp(session.user.id)
+      if (session?.user) {
+        setIsLoggedIn(true)
+        fetchUserFp(session.user.id)
+      } else {
+        setIsLoggedIn(false)
+      }
     })
     fetchCategories()
     fetchItems()
@@ -63,20 +77,58 @@ export default function FpExchangePage() {
     ? items
     : items.filter(i => i.category_id === activeCategory)
 
-  const navItems = [
-    { href: '/', icon: '🎴', label: 'オリパガチャ' },
-    { href: '/prizes', icon: '🏆', label: '獲得商品' },
-    { href: '/history', icon: '🕐', label: '当選履歴' },
-    { href: '/fp-exchange', icon: '🪙', label: 'FP交換所', active: true },
-    { href: '/mypage', icon: '👤', label: 'マイページ' },
-  ]
-
   return (
     <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
-      {/* ヘッダー */}
       <Header />
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '16px' }}>
+
+        {/* FP残高バナー */}
+        {isLoggedIn === true && (
+          <div style={{
+            background: 'linear-gradient(135deg, #f97316, #ea580c)',
+            borderRadius: '16px',
+            padding: '20px 24px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 4px 16px rgba(249,115,22,0.35)'
+          }}>
+            <div>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px', fontWeight: '600' }}>あなたのFP残高</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '28px' }}>🪙</span>
+                <span style={{ fontSize: '32px', fontWeight: '900', color: 'white' }}>{userFp.toLocaleString()}</span>
+                <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>FP</span>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.75)', lineHeight: '1.5' }}>ガチャを回すと<br />FPが貯まります</p>
+            </div>
+          </div>
+        )}
+
+        {/* 未ログインバナー */}
+        {isLoggedIn === false && (
+          <div style={{
+            background: 'white',
+            border: '2px dashed #f97316',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <p style={{ fontSize: '14px', color: '#374151' }}>🪙 ログインするとFP残高を確認できます</p>
+            <a href="/auth/login" style={{
+              fontSize: '13px', fontWeight: '700', color: 'white',
+              background: '#f97316', padding: '8px 16px', borderRadius: '8px', textDecoration: 'none'
+            }}>ログイン</a>
+          </div>
+        )}
+
         {/* タイトル */}
         <div style={{ marginBottom: '16px' }}>
           <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>🪙 FPコイン交換所</h1>
@@ -92,7 +144,7 @@ export default function FpExchangePage() {
                 padding: '8px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap',
                 background: activeCategory === 'all' ? '#f97316' : 'white',
                 color: activeCategory === 'all' ? 'white' : '#374151',
-                boxShadow: activeCategory === 'all' ? '0 2px 8px rgba(234,88,12,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                boxShadow: activeCategory === 'all' ? '0 2px 8px rgba(249,115,22,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
               }}>
               すべて（{items.length}）
             </button>
@@ -106,7 +158,7 @@ export default function FpExchangePage() {
                     padding: '8px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap',
                     background: activeCategory === cat.id ? '#f97316' : 'white',
                     color: activeCategory === cat.id ? 'white' : '#374151',
-                    boxShadow: activeCategory === cat.id ? '0 2px 8px rgba(234,88,12,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                    boxShadow: activeCategory === cat.id ? '0 2px 8px rgba(249,115,22,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
                   }}>
                   {cat.name}（{count}）
                 </button>
@@ -127,7 +179,7 @@ export default function FpExchangePage() {
             <div style={{ fontSize: '15px' }}>商品がありません</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '12px' }}>
             {filtered.map(item => (
               <div
                 key={item.id}
@@ -143,7 +195,7 @@ export default function FpExchangePage() {
                 {/* 商品画像 */}
                 <div style={{ background: '#f9fafb', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                   {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '8px' }} />
+                    <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <span style={{ fontSize: '48px' }}>🎴</span>
                   )}
@@ -151,7 +203,11 @@ export default function FpExchangePage() {
                 {/* 商品情報 */}
                 <div style={{ padding: '10px 12px' }}>
                   <p style={{ fontSize: '13px', fontWeight: '700', color: '#1f2937', marginBottom: '4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{item.name}</p>
-                  <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '8px' }}>残り {item.remaining_stock} 枚</p>
+                  {item.remaining_stock > 0 && item.remaining_stock <= 3 ? (
+                    <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: '700', marginBottom: '8px' }}>残りわずか！（{item.remaining_stock}枚）</p>
+                  ) : item.remaining_stock > 0 ? (
+                    <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '8px' }}>残り {item.remaining_stock} 枚</p>
+                  ) : null}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff7ed', borderRadius: '6px', padding: '6px 10px' }}>
                     <span style={{ fontSize: '14px' }}>🪙</span>
                     <span style={{ fontSize: '14px', fontWeight: '800', color: '#f97316' }}>{item.fp_price.toLocaleString()}</span>
@@ -164,7 +220,6 @@ export default function FpExchangePage() {
         )}
       </div>
 
-      {/* フッターナビ */}
       <BottomNav />
     </div>
   )

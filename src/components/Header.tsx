@@ -11,10 +11,10 @@ export default function Header() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user)
-        supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
+        supabase.from('profiles').select('points, fp_points').eq('id', session.user.id).single().then(({ data }) => {
           if (data) {
             setPoints(data.points)
-            setFpPoints(0) // fp_pointsカラムがprofilesに追加されたら data.fp_points に変更する
+            setFpPoints(data.fp_points || 0)
           }
         })
       }
@@ -22,10 +22,10 @@ export default function Header() {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setUser(session.user)
-        supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
+        supabase.from('profiles').select('points, fp_points').eq('id', session.user.id).single().then(({ data }) => {
           if (data) {
             setPoints(data.points)
-            setFpPoints(0) // fp_pointsカラムがprofilesに追加されたら data.fp_points に変更する
+            setFpPoints(data.fp_points || 0)
           }
         })
       } else {

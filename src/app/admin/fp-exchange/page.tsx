@@ -31,15 +31,36 @@ type FpSetting = {
   fp_rate: number
 }
 
+type Order = {
+  id: string
+  user_id: string
+  fp_used: number
+  status: string
+  name: string
+  postal_code: string
+  prefecture: string
+  address: string
+  address2: string
+  phone: string
+  tracking_number: string
+  shipped_at: string
+  created_at: string
+  fp_exchange_items: { name: string; image_url: string } | null
+  profiles: { email: string } | null
+}
+
 export default function AdminFpExchangePage() {
   const router = useRouter()
   const [items, setItems] = useState<Item[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [fpSetting, setFpSetting] = useState<FpSetting | null>(null)
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'items' | 'categories' | 'settings'>('items')
+  const [activeTab, setActiveTab] = useState<'items' | 'orders' | 'categories' | 'settings'>('items')
   const [editingRate, setEditingRate] = useState(false)
   const [newRate, setNewRate] = useState('')
+  const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all')
+  const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>({})
 
   // カテゴリーフォーム
   const [catForm, setCatForm] = useState({ name: '', slug: '', sort_order: 0 })
@@ -59,10 +80,11 @@ export default function AdminFpExchangePage() {
 
   const fetchAll = async () => {
     setLoading(true)
-    const [itemsRes, catsRes, settingRes] = await Promise.all([
+    const [itemsRes, catsRes, settingRes, ordersRes] = await Promise.all([
       supabase.from('fp_exchange_items').select('*, fp_exchange_categories(name)').order('sort_order'),
       supabase.from('fp_exchange_categories').select('*').order('sort_order'),
       supabase.from('fp_settings').select('*').single(),
+      supabase.from('fp_exchange_orders').select('*, fp_exchange_items(name, image_url), profiles(email)').order('created_at', { ascending: false }),
     ])
     if (itemsRes.data) setItems(itemsRes.data)
     if (catsRes.data) setCategories(catsRes.data)
@@ -70,6 +92,7 @@ export default function AdminFpExchangePage() {
       setFpSetting(settingRes.data)
       setNewRate(String(settingRes.data.fp_rate))
     }
+    if (ordersRes.data) setOrders(ordersRes.data as Order[])
     setLoading(false)
   }
 
@@ -148,22 +171,59 @@ export default function AdminFpExchangePage() {
     fetchAll()
   }
 
+  // 注文ステータス更新
+  const updateOrderStatus = async (orderId: string, status: string) => {
+    const trackingNumber = trackingInputs[orderId] || ''
+    const update: Record<string, string> = { status, updated_at: new Date().toISOString() }
+    if (status === 'shipped') {
+      update.shipped_at = new Date().toISOString()
+      if (trackingNumber) update.tracking_number = trackingNumber
+    }
+    await supabase.from('fp_exchange_orders').update(update).eq('id', orderId)
+    fetchAll()
+  }
+
+  const statusLabel: Record<string, string> = {
+    pending: '受付中',
+    processing: '処理中',
+    shipped: '発送済み',
+  }
+
+  const statusColor: Record<string, string> = {
+    pending: '#f97316',
+    processing: '#3b82f6',
+    shipped: '#22c55e',
+  }
+
+  const filteredOrders = orderStatusFilter === 'all'
+    ? orders
+    : orders.filter(o => o.status === orderStatusFilter)
+
   const btnStyle = (active: boolean) => ({
     padding: '10px 20px', fontSize: '14px', fontWeight: '600' as const, border: 'none',
-    background: 'none', cursor: 'pointer', color: active ? '#ea580c' : '#6b7280',
-    borderBottom: active ? '2px solid #ea580c' : '2px solid transparent', marginBottom: '-2px'
+    background: 'none', cursor: 'pointer',
+    color: active ? '#f97316' : '#6b7280',
+    borderBottom: active ? '2px solid #f97316' : '2px solid transparent', marginBottom: '-2px'
   })
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ padding: '24px', maxWidth: '1100px', margin: '0 auto', background: '#f8f8f8', minHeight: '100vh' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
         <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1f2937' }}>🪙 FPコイン交換所 管理</h1>
-        <a href="/fp-exchange" target="_blank" style={{ fontSize: '13px', color: '#ea580c', textDecoration: 'none' }}>フロント確認 →</a>
+        <a href="/fp-exchange" target="_blank" style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>フロント確認 →</a>
       </div>
 
       {/* タブ */}
-      <div style={{ borderBottom: '2px solid #e5e7eb', marginBottom: '24px', display: 'flex' }}>
+      <div style={{ borderBottom: '2px solid #e5e7eb', marginBottom: '24px', display: 'flex', background: 'white', borderRadius: '12px 12px 0 0', padding: '0 8px' }}>
         <button style={btnStyle(activeTab === 'items')} onClick={() => setActiveTab('items')}>商品管理</button>
+        <button style={btnStyle(activeTab === 'orders')} onClick={() => setActiveTab('orders')}>
+          注文管理
+          {orders.filter(o => o.status === 'pending').length > 0 && (
+            <span style={{ marginLeft: '6px', background: '#ef4444', color: 'white', borderRadius: '10px', fontSize: '11px', padding: '2px 7px', fontWeight: '700' }}>
+              {orders.filter(o => o.status === 'pending').length}
+            </span>
+          )}
+        </button>
         <button style={btnStyle(activeTab === 'categories')} onClick={() => setActiveTab('categories')}>カテゴリー管理</button>
         <button style={btnStyle(activeTab === 'settings')} onClick={() => setActiveTab('settings')}>FP設定</button>
       </div>
@@ -173,7 +233,7 @@ export default function AdminFpExchangePage() {
         <div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
             <button onClick={() => { resetItemForm(); setShowItemForm(true) }}
-              style={{ background: '#ea580c', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
+              style={{ background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
               ＋ 商品追加
             </button>
           </div>
@@ -258,38 +318,154 @@ export default function AdminFpExchangePage() {
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '16px', justifyContent: 'flex-end' }}>
                 <button onClick={resetItemForm} style={{ padding: '10px 20px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>キャンセル</button>
-                <button onClick={saveItem} style={{ padding: '10px 20px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
+                <button onClick={saveItem} style={{ padding: '10px 20px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
               </div>
             </div>
           )}
 
-          {/* 商品一覧 */}
+          {/* 商品一覧（グリッド） */}
           {loading ? <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>読み込み中...</div> : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
               {items.map(item => (
-                <div key={item.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '56px', height: '56px', flexShrink: 0, background: '#f9fafb', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {item.image_url ? <img src={item.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <span style={{ fontSize: '24px' }}>🎴</span>}
+                <div key={item.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', border: '1px solid #e5e7eb' }}>
+                  <div style={{ background: '#f9fafb', height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {item.image_url ? <img src={item.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '48px' }}>🎴</span>}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#1f2937' }}>{item.name}</span>
-                      {!item.is_active && <span style={{ fontSize: '11px', background: '#f3f4f6', color: '#9ca3af', padding: '2px 8px', borderRadius: '4px' }}>非公開</span>}
+                  <div style={{ padding: '14px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#1f2937', flex: 1 }}>{item.name}</span>
+                      <span style={{
+                        fontSize: '11px', padding: '2px 8px', borderRadius: '4px', fontWeight: '600',
+                        background: item.is_active ? '#dcfce7' : '#f3f4f6',
+                        color: item.is_active ? '#166534' : '#9ca3af'
+                      }}>{item.is_active ? '公開' : '非公開'}</span>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#6b7280' }}>
-                      <span>🪙 {item.fp_price.toLocaleString()} FP</span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#6b7280', marginBottom: '12px' }}>
+                      <span style={{ background: '#fff7ed', color: '#f97316', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>🪙 {item.fp_price.toLocaleString()} FP</span>
                       <span>在庫: {item.remaining_stock}/{item.stock}</span>
                       {item.fp_exchange_categories && <span>{item.fp_exchange_categories.name}</span>}
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => startEditItem(item)} style={{ padding: '6px 14px', background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>編集</button>
-                    <button onClick={() => deleteItem(item.id)} style={{ padding: '6px 14px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>削除</button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button onClick={() => startEditItem(item)} style={{ flex: 1, padding: '8px', background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>編集</button>
+                      <button onClick={() => deleteItem(item.id)} style={{ flex: 1, padding: '8px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>削除</button>
+                    </div>
                   </div>
                 </div>
               ))}
               {items.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '40px', background: 'white', borderRadius: '12px', color: '#9ca3af' }}>商品がまだありません</div>
+                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', background: 'white', borderRadius: '12px', color: '#9ca3af' }}>商品がまだありません</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ===== 注文管理タブ ===== */}
+      {activeTab === 'orders' && (
+        <div>
+          {/* ステータスフィルター */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+            {[
+              { key: 'all', label: `すべて（${orders.length}）` },
+              { key: 'pending', label: `受付中（${orders.filter(o => o.status === 'pending').length}）` },
+              { key: 'processing', label: `処理中（${orders.filter(o => o.status === 'processing').length}）` },
+              { key: 'shipped', label: `発送済み（${orders.filter(o => o.status === 'shipped').length}）` },
+            ].map(tab => (
+              <button key={tab.key} onClick={() => setOrderStatusFilter(tab.key)}
+                style={{
+                  padding: '8px 18px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '700',
+                  background: orderStatusFilter === tab.key ? '#f97316' : 'white',
+                  color: orderStatusFilter === tab.key ? 'white' : '#374151',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                }}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {loading ? <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>読み込み中...</div> : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {filteredOrders.map(order => (
+                <div key={order.id} style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', border: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                    {/* 商品画像 */}
+                    <div style={{ width: '72px', height: '72px', flexShrink: 0, background: '#f9fafb', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {order.fp_exchange_items?.image_url
+                        ? <img src={order.fp_exchange_items.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : <span style={{ fontSize: '32px' }}>🎴</span>}
+                    </div>
+
+                    {/* 注文情報 */}
+                    <div style={{ flex: 1, minWidth: '200px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937' }}>
+                          {order.fp_exchange_items?.name || '商品不明'}
+                        </span>
+                        <span style={{
+                          fontSize: '12px', padding: '3px 10px', borderRadius: '999px', fontWeight: '700',
+                          background: statusColor[order.status] + '20',
+                          color: statusColor[order.status] || '#666'
+                        }}>
+                          {statusLabel[order.status] || order.status}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+                          {new Date(order.created_at).toLocaleDateString('ja-JP')}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>
+                        👤 {order.profiles?.email || order.user_id}
+                        <span style={{ marginLeft: '12px', color: '#f97316', fontWeight: '700' }}>🪙 {order.fp_used?.toLocaleString()} FP</span>
+                      </p>
+                      {order.name && (
+                        <div style={{ fontSize: '13px', color: '#374151', background: '#f9fafb', borderRadius: '8px', padding: '10px 14px', marginTop: '8px' }}>
+                          <p style={{ fontWeight: '700', marginBottom: '4px' }}>📦 {order.name}</p>
+                          <p>〒{order.postal_code} {order.prefecture}{order.address}{order.address2 ? ` ${order.address2}` : ''}</p>
+                          <p>📞 {order.phone}</p>
+                          {order.tracking_number && (
+                            <p style={{ color: '#22c55e', fontWeight: '700', marginTop: '4px' }}>🚚 追跡番号: {order.tracking_number}</p>
+                          )}
+                        </div>
+                      )}
+                      {!order.name && (
+                        <p style={{ fontSize: '12px', color: '#f97316', marginTop: '6px' }}>⚠️ 住所未入力</p>
+                      )}
+                    </div>
+
+                    {/* アクション */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '160px' }}>
+                      {order.status === 'pending' && (
+                        <button
+                          onClick={() => updateOrderStatus(order.id, 'processing')}
+                          style={{ padding: '8px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '700' }}>
+                          処理中にする
+                        </button>
+                      )}
+                      {order.status === 'processing' && (
+                        <>
+                          <input
+                            value={trackingInputs[order.id] || ''}
+                            onChange={e => setTrackingInputs(prev => ({ ...prev, [order.id]: e.target.value }))}
+                            placeholder="追跡番号（任意）"
+                            style={{ padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', width: '100%', boxSizing: 'border-box' }}
+                          />
+                          <button
+                            onClick={() => updateOrderStatus(order.id, 'shipped')}
+                            style={{ padding: '8px 16px', background: '#22c55e', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '700' }}>
+                            発送済みにする
+                          </button>
+                        </>
+                      )}
+                      {order.status === 'shipped' && order.shipped_at && (
+                        <p style={{ fontSize: '12px', color: '#22c55e', fontWeight: '600' }}>
+                          発送日: {new Date(order.shipped_at).toLocaleDateString('ja-JP')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredOrders.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#9ca3af' }}>注文がありません</div>
               )}
             </div>
           )}
@@ -326,7 +502,7 @@ export default function AdminFpExchangePage() {
                   </button>
                 )}
                 <button onClick={saveCategory}
-                  style={{ padding: '9px 20px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', whiteSpace: 'nowrap' }}>
+                  style={{ padding: '9px 20px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', whiteSpace: 'nowrap' }}>
                   {editingCat ? '更新' : '追加'}
                 </button>
               </div>
@@ -366,7 +542,7 @@ export default function AdminFpExchangePage() {
             <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '13px', color: '#6b7280' }}>現在の還元率：</span>
-                <span style={{ fontSize: '24px', fontWeight: '900', color: '#ea580c' }}>{fpSetting?.fp_rate || 0}</span>
+                <span style={{ fontSize: '24px', fontWeight: '900', color: '#f97316' }}>{fpSetting?.fp_rate || 0}</span>
                 <span style={{ fontSize: '13px', color: '#6b7280' }}>FP / 100コイン</span>
               </div>
               <p style={{ fontSize: '12px', color: '#9ca3af' }}>例）還元率1.0 → 100コイン消費で1FP付与、1000コイン消費で10FP付与</p>
@@ -376,16 +552,16 @@ export default function AdminFpExchangePage() {
                 <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '8px' }}>新しい還元率</label>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <input type="number" step="0.1" min="0" value={newRate} onChange={e => setNewRate(e.target.value)}
-                    style={{ width: '120px', border: '2px solid #ea580c', borderRadius: '8px', padding: '10px 14px', fontSize: '18px', fontWeight: '700', textAlign: 'center', boxSizing: 'border-box' }} />
+                    style={{ width: '120px', border: '2px solid #f97316', borderRadius: '8px', padding: '10px 14px', fontSize: '18px', fontWeight: '700', textAlign: 'center', boxSizing: 'border-box' }} />
                   <span style={{ fontSize: '13px', color: '#6b7280' }}>FP / 100コイン</span>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
                   <button onClick={() => setEditingRate(false)} style={{ flex: 1, padding: '12px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>キャンセル</button>
-                  <button onClick={saveFpRate} style={{ flex: 1, padding: '12px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
+                  <button onClick={saveFpRate} style={{ flex: 1, padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700' }}>保存</button>
                 </div>
               </div>
             ) : (
-              <button onClick={() => setEditingRate(true)} style={{ width: '100%', padding: '12px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
+              <button onClick={() => setEditingRate(true)} style={{ width: '100%', padding: '12px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '700', fontSize: '15px' }}>
                 還元率を変更する
               </button>
             )}

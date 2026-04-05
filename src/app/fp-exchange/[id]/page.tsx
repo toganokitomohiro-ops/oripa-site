@@ -20,6 +20,8 @@ type Item = {
   fp_exchange_categories: { name: string } | null
 }
 
+const PREFECTURES = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']
+
 export default function FpExchangeDetailPage() {
   const router = useRouter()
   const params = useParams()
@@ -31,7 +33,12 @@ export default function FpExchangeDetailPage() {
   const [loading, setLoading] = useState(true)
   const [exchanging, setExchanging] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [done, setDone] = useState(false)
+  const [step, setStep] = useState<'detail' | 'address' | 'done'>('detail')
+  const [orderId, setOrderId] = useState<string | null>(null)
+  const [addressForm, setAddressForm] = useState({
+    name: '', postal_code: '', prefecture: '', address: '', address2: '', phone: ''
+  })
+  const [savingAddress, setSavingAddress] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -79,21 +86,52 @@ export default function FpExchangeDetailPage() {
         .eq('id', item.id)
       if (stockError) throw stockError
 
-      // 交換履歴
-      await supabase.from('fp_exchange_orders').insert({
-        user_id: userId,
-        item_id: item.id,
-        fp_used: item.fp_price,
-      })
+      // 交換履歴（insert して id を取得）
+      const { data: orderData, error: orderError } = await supabase
+        .from('fp_exchange_orders')
+        .insert({
+          user_id: userId,
+          item_id: item.id,
+          fp_used: item.fp_price,
+          status: 'pending',
+        })
+        .select('id')
+        .single()
+      if (orderError) throw orderError
 
+      setOrderId(orderData?.id || null)
       setUserFp(prev => prev - item.fp_price)
       setItem(prev => prev ? { ...prev, remaining_stock: prev.remaining_stock - 1 } : prev)
       setShowConfirm(false)
-      setDone(true)
+      setStep('address')
     } catch (e) {
       alert('エラーが発生しました')
     }
     setExchanging(false)
+  }
+
+  const saveAddress = async () => {
+    if (!orderId) return
+    if (!addressForm.name || !addressForm.postal_code || !addressForm.prefecture || !addressForm.address || !addressForm.phone) {
+      alert('必須項目を入力してください')
+      return
+    }
+    setSavingAddress(true)
+    try {
+      await supabase.from('fp_exchange_orders').update({
+        name: addressForm.name,
+        postal_code: addressForm.postal_code,
+        prefecture: addressForm.prefecture,
+        address: addressForm.address,
+        address2: addressForm.address2,
+        phone: addressForm.phone,
+        status: 'pending',
+      }).eq('id', orderId)
+      setStep('done')
+    } catch (e) {
+      alert('住所の保存に失敗しました')
+    }
+    setSavingAddress(false)
   }
 
   if (loading) return (
@@ -112,9 +150,17 @@ export default function FpExchangeDetailPage() {
 
   const canExchange = userId && userFp >= item.fp_price && item.remaining_stock > 0
 
+  const inputStyle = {
+    width: '100%', border: '1px solid #d1d5db', borderRadius: '8px',
+    padding: '10px 14px', fontSize: '15px', boxSizing: 'border-box' as const
+  }
+  const labelStyle = {
+    fontSize: '13px', fontWeight: '600' as const, color: '#374151',
+    display: 'block' as const, marginBottom: '6px'
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '40px' }}>
-      {/* ヘッダー */}
       <Header />
 
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px 16px' }}>
@@ -132,7 +178,11 @@ export default function FpExchangeDetailPage() {
         {/* 商品情報カード */}
         <div style={{ background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
           <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>{item.name}</h1>
-          <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>残り {item.remaining_stock} 枚</p>
+          {item.remaining_stock > 0 && item.remaining_stock <= 3 ? (
+            <p style={{ fontSize: '14px', color: '#ef4444', fontWeight: '700', marginBottom: '16px' }}>残りわずか！（{item.remaining_stock}枚）</p>
+          ) : (
+            <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>残り {item.remaining_stock} 枚</p>
+          )}
 
           {/* FP価格 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff7ed', border: '2px solid #fed7aa', borderRadius: '12px', padding: '14px 20px', marginBottom: '16px' }}>
@@ -220,15 +270,68 @@ export default function FpExchangeDetailPage() {
         </div>
       )}
 
+      {/* 住所入力モーダル */}
+      {step === 'address' && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', borderRadius: '20px 20px 0 0', padding: '28px 24px', width: '100%', maxWidth: '540px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1f2937', marginBottom: '6px' }}>📦 お届け先を入力してください</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>交換商品の発送先住所を入力してください</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={labelStyle}>お名前 <span style={{ color: '#ef4444' }}>*</span></label>
+                <input value={addressForm.name} onChange={e => setAddressForm({ ...addressForm, name: e.target.value })}
+                  placeholder="山田 太郎" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>郵便番号 <span style={{ color: '#ef4444' }}>*</span></label>
+                <input value={addressForm.postal_code} onChange={e => setAddressForm({ ...addressForm, postal_code: e.target.value })}
+                  placeholder="123-4567" style={{ ...inputStyle, maxWidth: '180px' }} />
+              </div>
+              <div>
+                <label style={labelStyle}>都道府県 <span style={{ color: '#ef4444' }}>*</span></label>
+                <select value={addressForm.prefecture} onChange={e => setAddressForm({ ...addressForm, prefecture: e.target.value })}
+                  style={{ ...inputStyle, background: 'white' }}>
+                  <option value="">選択してください</option>
+                  {PREFECTURES.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>住所 <span style={{ color: '#ef4444' }}>*</span></label>
+                <input value={addressForm.address} onChange={e => setAddressForm({ ...addressForm, address: e.target.value })}
+                  placeholder="市区町村・番地" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>建物名・部屋番号（任意）</label>
+                <input value={addressForm.address2} onChange={e => setAddressForm({ ...addressForm, address2: e.target.value })}
+                  placeholder="〇〇マンション 101号室" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>電話番号 <span style={{ color: '#ef4444' }}>*</span></label>
+                <input value={addressForm.phone} onChange={e => setAddressForm({ ...addressForm, phone: e.target.value })}
+                  placeholder="090-1234-5678" style={{ ...inputStyle, maxWidth: '220px' }} />
+              </div>
+            </div>
+
+            <button
+              onClick={saveAddress}
+              disabled={savingAddress}
+              style={{ width: '100%', marginTop: '24px', padding: '16px', background: '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer' }}>
+              {savingAddress ? '保存中...' : 'この住所で申請する'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 完了モーダル */}
-      {done && (
+      {step === 'done' && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
           <div style={{ background: 'white', borderRadius: '20px', padding: '32px 24px', maxWidth: '360px', width: '100%', textAlign: 'center' }}>
             <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎉</div>
-            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>交換完了！</h3>
-            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '24px' }}>商品の発送をお待ちください</p>
+            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>交換申請完了！</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '24px' }}>発送までしばらくお待ちください</p>
             <button onClick={() => router.push('/fp-exchange')} style={{ width: '100%', padding: '14px', background: '#f97316', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}>
-              交換所トップへ
+              FP交換所へ戻る
             </button>
           </div>
         </div>
