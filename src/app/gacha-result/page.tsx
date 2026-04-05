@@ -1,5 +1,6 @@
 'use client'
 import Header from '@/components/Header'
+import BottomNav from '@/components/BottomNav'
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -139,11 +140,11 @@ function GachaResultInner() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '80px' }}>
       {/* ヘッダー */}
       <Header />
 
-      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '12px 16px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '12px 16px' }}>
         {/* 表示切替・ソート */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -245,8 +246,8 @@ function GachaResultInner() {
       </div>
 
       {/* 固定フッター */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
-        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+      <div style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '20px' }}>🪙</span>
@@ -283,6 +284,8 @@ function GachaResultInner() {
           )}
         </div>
       </div>
+
+      <BottomNav />
 
       {/* コイン交換確認モーダル */}
       {showSellModal && (

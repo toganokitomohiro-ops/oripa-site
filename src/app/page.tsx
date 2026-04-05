@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
 import Header from '@/components/Header'
+import { useToast } from '@/components/Toast'
 
 type Event = {
   id: string
@@ -28,6 +28,7 @@ type Banner = {
 }
 
 export default function Home() {
+  const { showToast } = useToast()
   const [events, setEvents] = useState<Event[]>([])
   const [banners, setBanners] = useState<Banner[]>([])
   const [user, setUser] = useState<any>(null)
@@ -125,7 +126,7 @@ export default function Home() {
         body: JSON.stringify({ event_id: confirmEvent.id, user_id: user.id, count: confirmOption.count }),
       })
       const data = await res.json()
-      if (!res.ok) { alert(data.error || 'エラー'); setPulling(false); return }
+      if (!res.ok) { showToast(data.error || 'エラー', 'error'); setPulling(false); return }
       setUserPoints(data.remaining_points)
       setPendingDrawIds(data.draw_ids || [])
       // APIから返ってきたvideo_urlを使う
@@ -136,7 +137,7 @@ export default function Home() {
       } else {
         window.location.href = '/gacha-result?draw_ids=' + (data.draw_ids || []).join(',') + '&event_id=' + confirmEvent.id
       }
-    } catch { alert('通信エラー') }
+    } catch { showToast('通信エラー', 'error') }
     setPulling(false)
   }
 
@@ -245,18 +246,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* キャラクターコンセプトセクション */}
-      <div style={{ background: 'linear-gradient(to right, #eff6ff, #fff7ed)', padding: '32px 16px' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
-          <Image src="/characters/arukun-greeting.png" alt="あーるくん" width={200} height={200} style={{ width: '200px', height: 'auto', flexShrink: 0 }} />
-          <div style={{ textAlign: 'center', maxWidth: '480px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#1f2937', marginBottom: '12px', lineHeight: '1.4' }}>歩いて、ポイントを貯めて、オリパを楽しもう！</h2>
-            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.7' }}>fitオリパは歩数に応じてFPポイントが貯まるオリパサービス。当たりは全部本物のトレカ！</p>
-          </div>
-          <Image src="/characters/alpoo-standby.png" alt="あるぷー" width={160} height={160} style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
-        </div>
-      </div>
-
       {/* カテゴリータブ */}
       <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: '60px', zIndex: 40 }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -319,6 +308,10 @@ export default function Home() {
 
                   {/* 情報エリア */}
                   <div style={{ padding: '8px 10px 10px' }}>
+                    {/* オリパ名 */}
+                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '6px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      {event.name}
+                    </div>
                     {/* コイン・残り口数 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

@@ -115,7 +115,7 @@ function ShipmentPageInner() {
     <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '40px' }}>
       <Header />
 
-      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px 16px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 16px' }}>
         <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1f2937', marginBottom: '6px' }}>発送申請</h1>
         <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px' }}>当選カードの発送先を入力してください</p>
 

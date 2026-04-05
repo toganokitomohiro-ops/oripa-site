@@ -115,9 +115,9 @@ export default function PrizesPage() {
   }
 
   const tabs = [
-    { key: 'pending', label: '未選択', count: draws.filter(d => d.status === 'pending').length },
-    { key: 'sold', label: '発送待ち', count: draws.filter(d => d.status === 'sold').length },
-    { key: 'shipped', label: '発送済み', count: draws.filter(d => d.status === 'shipped').length },
+    { key: 'pending', label: '保管中', count: draws.filter(d => d.status === 'pending').length },
+    { key: 'sold', label: '交換済み', count: draws.filter(d => d.status === 'sold').length },
+    { key: 'shipped', label: '発送申請', count: draws.filter(d => d.status === 'shipped').length },
   ]
 
   return (
@@ -125,7 +125,23 @@ export default function PrizesPage() {
       {/* ヘッダー */}
       <Header />
 
-      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '12px 16px' }}>
+      {/* タブナビゲーション */}
+    <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ maxWidth: '480px', width: '100%', display: 'flex' }}>
+        {tabs.map(t => (
+          <button
+            key={t.key}
+            onClick={() => { setTab(t.key as 'pending' | 'sold' | 'shipped'); setSelected([]) }}
+            style={{ flex: 1, padding: '14px 8px', fontSize: '13px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', color: tab === t.key ? '#f97316' : '#666', borderBottom: tab === t.key ? '3px solid #f97316' : '3px solid transparent', whiteSpace: 'nowrap' }}
+          >
+            {t.label}
+            {t.count > 0 && <span style={{ marginLeft: '4px', fontSize: '11px', background: tab === t.key ? '#f97316' : '#e5e7eb', color: tab === t.key ? 'white' : '#666', borderRadius: '999px', padding: '1px 6px' }}>{t.count}</span>}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '12px 16px' }}>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
             <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />

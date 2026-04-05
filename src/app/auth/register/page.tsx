@@ -56,7 +56,6 @@ export default function RegisterPage() {
       <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', textDecoration: 'none' }}>fitオリパ</a>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <a href="/auth/register" style={{ fontSize: '13px', color: 'white', background: '#f97316', padding: '6px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: '700' }}>新規登録</a>
           <a href="/auth/login" style={{ fontSize: '13px', color: '#374151', border: '1px solid #d1d5db', padding: '6px 16px', borderRadius: '4px', textDecoration: 'none' }}>ログイン</a>
         </div>
       </header>

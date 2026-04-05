@@ -1,5 +1,6 @@
 'use client'
 import Header from '@/components/Header'
+import BottomNav from '@/components/BottomNav'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -169,7 +170,7 @@ export default function EventDetailPage() {
   const remainingPercent = Math.min(100, Math.round((event.remaining_count / event.total_count) * 100))
 
   return (
-    <div style={{ minHeight: '100vh', background: 'white', paddingBottom: '120px' }}>
+    <div style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -361,6 +362,8 @@ export default function EventDetailPage() {
           )}
         </div>
       </div>
+
+      <BottomNav />
 
       {/* 確認ポップアップ */}
       {showConfirm && confirmOption && (

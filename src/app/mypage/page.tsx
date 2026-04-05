@@ -124,14 +124,17 @@ export default function MyPage() {
         {/* アカウントメニュー */}
         <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: '12px' }}>
           <div style={{ padding: '14px 16px', borderBottom: '1px solid #f3f4f6', fontSize: '13px', fontWeight: '700', color: '#6b7280' }}>アカウント</div>
+          <span className="opacity-50 cursor-not-allowed" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', color: '#1f2937', fontSize: '14px' }}>
+            <span>クーポンの利用</span>
+            <span style={{ color: '#9ca3af', fontSize: '16px' }}>›</span>
+          </span>
           {[
-            { label: 'クーポンの利用', href: '#' },
             { label: '購入履歴', href: '/history' },
             { label: '発送申請', href: '/shipment' },
             { label: 'ポイント購入', href: '/buy-points' },
             { label: '獲得賞品', href: '/prizes' },
           ].map((item, i) => (
-            <a key={i} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: i > 0 ? '1px solid #f3f4f6' : 'none', textDecoration: 'none', color: '#1f2937', fontSize: '14px' }}>
+            <a key={i} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: '1px solid #f3f4f6', textDecoration: 'none', color: '#1f2937', fontSize: '14px' }}>
               <span>{item.label}</span>
               <span style={{ color: '#9ca3af', fontSize: '16px' }}>›</span>
             </a>
@@ -141,14 +144,11 @@ export default function MyPage() {
         {/* サポート */}
         <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: '12px' }}>
           <div style={{ padding: '14px 16px', borderBottom: '1px solid #f3f4f6', fontSize: '13px', fontWeight: '700', color: '#6b7280' }}>サポート</div>
-          {[
-            { label: 'お知らせ', href: '#' },
-            { label: 'よくある質問/問い合わせ', href: '#' },
-          ].map((item, i) => (
-            <a key={i} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: i > 0 ? '1px solid #f3f4f6' : 'none', textDecoration: 'none', color: '#1f2937', fontSize: '14px' }}>
-              <span>{item.label}</span>
+          {['お知らせ', 'よくある質問/問い合わせ'].map((label, i) => (
+            <span key={i} className="opacity-50 cursor-not-allowed" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: i > 0 ? '1px solid #f3f4f6' : 'none', color: '#1f2937', fontSize: '14px' }}>
+              <span>{label}</span>
               <span style={{ color: '#9ca3af', fontSize: '16px' }}>›</span>
-            </a>
+            </span>
           ))}
         </div>
 

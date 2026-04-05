@@ -76,7 +76,7 @@ export default function HistoryPage() {
     <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
       <Header />
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 16px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>当選履歴</h1>
         <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '16px' }}>S賞・A賞の当選履歴です（合計: {totalCoins.toLocaleString()}コイン）</p>
 
