@@ -169,15 +169,14 @@ export default function FpExchangePage() {
         </div>
 
         {/* カテゴリータブ */}
-        <div style={{ overflowX: 'auto', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', gap: '8px', minWidth: 'max-content', paddingBottom: '4px' }}>
+        <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', borderRadius: '12px 12px 0 0', marginBottom: '16px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', minWidth: 'max-content' }}>
             <button
               onClick={() => setActiveCategory('all')}
               style={{
-                padding: '8px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap',
-                background: activeCategory === 'all' ? '#f97316' : 'white',
-                color: activeCategory === 'all' ? 'white' : '#374151',
-                boxShadow: activeCategory === 'all' ? '0 2px 8px rgba(249,115,22,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s',
+                color: activeCategory === 'all' ? '#f97316' : '#666',
+                borderBottom: activeCategory === 'all' ? '3px solid #f97316' : '3px solid transparent',
               }}>
               すべて（{items.length}）
             </button>
@@ -188,10 +187,9 @@ export default function FpExchangePage() {
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   style={{
-                    padding: '8px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap',
-                    background: activeCategory === cat.id ? '#f97316' : 'white',
-                    color: activeCategory === cat.id ? 'white' : '#374151',
-                    boxShadow: activeCategory === cat.id ? '0 2px 8px rgba(249,115,22,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+                    padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s',
+                    color: activeCategory === cat.id ? '#f97316' : '#666',
+                    borderBottom: activeCategory === cat.id ? '3px solid #f97316' : '3px solid transparent',
                   }}>
                   {cat.name}（{count}）
                 </button>
