@@ -36,37 +36,44 @@ export default function Header() {
   }, [])
 
   return (
-    <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ textDecoration: 'none' }}>
+    <header style={{ background: 'white', borderBottom: '1px solid #e8e8e8', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 12px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
           <img
             src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-4941278f-6db2-42b2-aeb8-0a3928705de1.png"
             alt="fitオリパ"
-            style={{ height: '52px', width: 'auto', objectFit: 'contain' }}
+            style={{ height: '52px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }}
           />
         </a>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {user ? (
             <>
-              {/* FPコイン */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fef3c7', padding: '6px 10px', borderRadius: '20px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-1bac3859-a4d0-4504-8497-3ef4cef6a13f.png" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+              {/* FPコイン：背景なし・画像大きく・白透過 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                <img
+                  src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-1bac3859-a4d0-4504-8497-3ef4cef6a13f.png"
+                  style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }}
+                  alt="FPコイン"
+                />
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{fpPoints.toLocaleString()}</span>
               </div>
-              {/* 肉球コイン＋購入ボタン */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fef3c7', padding: '6px 10px', borderRadius: '20px 0 0 20px' }}>
-                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
-                </div>
-                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '40px', background: '#f97316', borderRadius: '0 20px 20px 0', textDecoration: 'none', color: 'white', fontSize: '18px', fontWeight: '900' }}>+</a>
+              {/* 肉球コイン＋購入ボタン：背景なし・画像大きく・白透過 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                <img
+                  src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png"
+                  style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }}
+                  alt="コイン"
+                />
+                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
+                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', background: '#f97316', borderRadius: '50%', textDecoration: 'none', color: 'white', fontSize: '14px', fontWeight: '900', marginLeft: '2px' }}>+</a>
               </div>
-              <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>🔔</a>
+              {/* ベル：背景なし */}
+              <a href="/notices" style={{ textDecoration: 'none', fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center' }}>🔔</a>
             </>
           ) : (
             <>
-              <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 14px', border: '1px solid #ddd', borderRadius: '4px' }}>ログイン</a>
-              <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: '#f97316', borderRadius: '4px' }}>新規登録</a>
+              <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 12px', border: '1px solid #ddd', borderRadius: '6px' }}>ログイン</a>
+              <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 12px', background: '#f97316', borderRadius: '6px' }}>新規登録</a>
             </>
           )}
         </div>
