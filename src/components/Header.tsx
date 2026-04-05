@@ -37,32 +37,31 @@ export default function Header() {
 
   return (
     <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 16px', height: '76px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <a href="/" style={{ textDecoration: 'none' }}>
           <img
             src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-4941278f-6db2-42b2-aeb8-0a3928705de1.png"
             alt="fitオリパ"
-            style={{ height: '76px', width: 'auto', objectFit: 'contain' }}
+            style={{ height: '52px', width: 'auto', objectFit: 'contain' }}
           />
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {user ? (
             <>
               {/* FPコイン */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f3f4f6', padding: '6px 10px', borderRadius: '20px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-1bac3859-a4d0-4504-8497-3ef4cef6a13f.png" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fef3c7', padding: '6px 10px', borderRadius: '20px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-1bac3859-a4d0-4504-8497-3ef4cef6a13f.png" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{fpPoints.toLocaleString()}</span>
               </div>
               {/* 肉球コイン＋購入ボタン */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f3f4f6', padding: '6px 10px', borderRadius: '20px 0 0 20px' }}>
-                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fef3c7', padding: '6px 10px', borderRadius: '20px 0 0 20px' }}>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                   <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
                 </div>
-                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '34px', background: '#f97316', borderRadius: '0 20px 20px 0', textDecoration: 'none', color: 'white', fontSize: '18px', fontWeight: '900' }}>+</a>
+                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '40px', background: '#f97316', borderRadius: '0 20px 20px 0', textDecoration: 'none', color: 'white', fontSize: '18px', fontWeight: '900' }}>+</a>
               </div>
               <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>🔔</a>
-              <a href="/mypage" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>👤</a>
             </>
           ) : (
             <>

@@ -86,7 +86,7 @@ export default function MyPage() {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>{profile.email}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0 }} />
+              <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0, background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
               <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316' }}>{profile.points?.toLocaleString()}</span>
               <span style={{ fontSize: '12px', color: '#999' }}>PT保有</span>
             </div>

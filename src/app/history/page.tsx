@@ -166,7 +166,7 @@ export default function HistoryPage() {
                   {/* コインと日時 */}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#f3f4f6', borderRadius: '6px', padding: '6px 12px', marginBottom: '8px' }}>
-                      <img src="/coin.png" alt="コイン" style={{ width: '20px', height: '20px' }} onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
+                      <img src="/coin.png" alt="コイン" style={{ width: '20px', height: '20px', background: '#fef3c7', borderRadius: '50%', padding: '2px' }} onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
                       <span style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937' }}>{draw.products?.market_value?.toLocaleString()}</span>
                       <span style={{ fontSize: '12px', color: '#6b7280' }}>コイン</span>
                     </div>

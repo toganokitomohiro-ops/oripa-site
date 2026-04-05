@@ -309,7 +309,7 @@ export default function Home() {
                     {/* コイン・残り口数 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0 }} />
+                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
                         <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
                       </div>
@@ -361,12 +361,12 @@ export default function Home() {
               </p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', background: '#f9fafb', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain", background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fbbf24' }}>{userPoints.toLocaleString()}</span>
                 </div>
                 <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain", background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>{(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}</span>
                 </div>
               </div>
