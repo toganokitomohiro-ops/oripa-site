@@ -78,21 +78,13 @@ export default function HistoryPage() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>当選履歴</h1>
-        <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '16px' }}>S賞・A賞の当選履歴です（合計: {totalCoins.toLocaleString()}コイン）</p>
+        <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '16px' }}>
+          高額当選（S賞・A賞）の記録です
+          {draws.length > 0 && <span style={{ marginLeft: '6px', background: '#fff7ed', color: '#f97316', fontWeight: '700', padding: '2px 8px', borderRadius: '999px', fontSize: '12px' }}>合計 {totalCoins.toLocaleString()} コイン相当</span>}
+        </p>
 
         {/* コントロールバー */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', background: 'white', borderRadius: '999px', border: '1px solid #e1e1e1', padding: '4px', overflow: 'hidden' }}>
-          {/* リスト表示ボタン */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', flex: 1, justifyContent: 'center' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3BE20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/>
-              <path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/>
-            </svg>
-            <span style={{ fontSize: '14px', fontWeight: '700', color: '#2e2e2e' }}>リスト表示</span>
-          </div>
-
-          <div style={{ width: '1px', height: '40px', background: '#e1e1e1' }} />
-
           {/* ソートボタン */}
           <div style={{ position: 'relative', flex: 1 }}>
             <button

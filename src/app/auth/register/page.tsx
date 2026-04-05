@@ -53,17 +53,15 @@ export default function RegisterPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f8f7f5' }}>
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', textDecoration: 'none' }}>fitオリパ</a>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <a href="/auth/login" style={{ fontSize: '13px', color: '#374151', border: '1px solid #d1d5db', padding: '6px 16px', borderRadius: '4px', textDecoration: 'none' }}>ログイン</a>
+      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+            <img src="/logo.png" alt="fitオリパ" style={{ height: '32px', width: 'auto' }} />
+          </a>
         </div>
       </header>
 
-      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '24px 16px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          <Image src="/logo.png" alt="fitオリパ" width={180} height={60} style={{ height: 'auto', display: 'inline-block' }} />
-        </div>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '16px' }}>新規登録</h1>
 
         {/* バナー */}
@@ -178,8 +176,8 @@ export default function RegisterPage() {
             <a href="/auth/login" style={{ fontSize: '14px', color: '#f97316', fontWeight: '700', textDecoration: 'none' }}>ログインはこちら</a>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-            <Image src="/characters/alpoo-standby.png" alt="あるぷー" width={100} height={100} style={{ width: '100px', height: 'auto' }} />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <Image src="/characters/alpoo-standby.png" alt="あるぷー" width={100} height={100} style={{ width: '100px', height: 'auto', mixBlendMode: 'multiply' }} />
           </div>
         </div>
 

@@ -37,18 +37,16 @@ export default function LoginPage() {
     <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column' }}>
 
       {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', textDecoration: 'none' }}>fitオリパ</a>
+      <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+            <img src="/logo.png" alt="fitオリパ" style={{ height: '32px', width: 'auto' }} />
+          </a>
         </div>
       </header>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
         <div style={{ width: '100%', maxWidth: '400px' }}>
-
-          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-            <Image src="/logo.png" alt="fitオリパ" width={180} height={60} style={{ height: 'auto', display: 'inline-block' }} />
-          </div>
 
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>ログイン</h1>
@@ -113,7 +111,7 @@ export default function LoginPage() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-              <Image src="/characters/arukun-mini.jpg" alt="あーるくん" width={120} height={120} style={{ width: '120px', height: 'auto', borderRadius: '8px' }} />
+              <Image src="/characters/arukun-mini.jpg" alt="あーるくん" width={120} height={120} style={{ width: '120px', height: 'auto', borderRadius: '8px', mixBlendMode: 'multiply' }} />
             </div>
           </div>
 

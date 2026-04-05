@@ -120,7 +120,7 @@ export default function BuyPointsPage() {
                 <span style={{ fontSize: '13px', fontWeight: '700', color: '#10b981' }}>{coupon.code} 適用中！</span>
                 <div style={{ fontSize: '12px', color: '#6b7280' }}>
                   {coupon.discount_percent > 0 && `${coupon.discount_percent}%割引 `}
-                  {coupon.bonus_points > 0 && `+${coupon.bonus_points}PTボーナス`}
+                  {coupon.bonus_points > 0 && `+${coupon.bonus_points}コインボーナス`}
                 </div>
               </div>
               <button onClick={() => { setCoupon(null); setCouponCode('') }} style={{ fontSize: '12px', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
@@ -136,7 +136,10 @@ export default function BuyPointsPage() {
             const bonusPoints = Math.floor(plan.points * plan.bonus_percent / 100) + (coupon?.bonus_points || 0)
             const isLoading = loading === plan.id
             return (
-              <div key={plan.id} style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+              <div key={plan.id} style={{ background: 'white', borderRadius: '12px', border: plan.is_popular ? '2px solid #f97316' : '1px solid #e5e7eb', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: plan.is_popular ? '0 2px 12px rgba(249,115,22,0.15)' : '0 1px 4px rgba(0,0,0,0.04)', position: 'relative' }}>
+                {plan.is_popular && (
+                  <div style={{ position: 'absolute', top: '-12px', left: '16px', background: '#f97316', color: 'white', fontSize: '11px', fontWeight: '900', padding: '3px 12px', borderRadius: '999px', letterSpacing: '0.5px' }}>人気</div>
+                )}
                 {/* 左：コインアイコン＋枚数 */}
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '14px' }}>
                   {/* コインアイコン */}
@@ -153,7 +156,7 @@ export default function BuyPointsPage() {
                       {bonusPoints > 0 && (
                         <span style={{ fontSize: '12px', background: 'white', color: '#ef4444', padding: '3px 10px', borderRadius: '999px', fontWeight: '800', border: '1px solid #fca5a5' }}>
                           {plan.bonus_percent > 0 && `${plan.bonus_percent}%増量`}
-                          {coupon?.bonus_points > 0 && ` +${coupon.bonus_points}PTボーナス`}
+                          {coupon?.bonus_points > 0 && ` +${coupon.bonus_points}コインボーナス`}
                         </span>
                       )}
                     </div>
@@ -191,7 +194,7 @@ export default function BuyPointsPage() {
                     <div style={{ fontSize: '11px', color: '#9ca3af' }}>{formatDate(log.created_at)}</div>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '800', color: log.amount > 0 ? '#10b981' : '#ef4444' }}>
-                    {log.amount > 0 ? '+' : ''}{log.amount.toLocaleString()}PT
+                    {log.amount > 0 ? '+' : ''}{log.amount.toLocaleString()}コイン
                   </div>
                 </div>
               ))}
