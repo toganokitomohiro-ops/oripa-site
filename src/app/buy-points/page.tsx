@@ -91,7 +91,7 @@ export default function BuyPointsPage() {
   const formatDate = (d: string) => new Date(d).toLocaleDateString('ja-JP', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '80px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '80px' }}>
       <Header />
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '24px 16px' }}>
@@ -168,7 +168,7 @@ export default function BuyPointsPage() {
                   <button
                     onClick={() => handlePurchase(plan)}
                     disabled={isLoading}
-                    style={{ padding: '14px 0', background: isLoading ? '#9ca3af' : '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '22px', fontWeight: '900', cursor: isLoading ? 'not-allowed' : 'pointer', width: '140px', display: 'block', boxShadow: isLoading ? 'none' : '0 2px 8px rgba(245,197,24,0.4)' }}
+                    style={{ padding: '14px 0', background: isLoading ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '700', cursor: isLoading ? 'not-allowed' : 'pointer', width: '140px', display: 'block', boxShadow: isLoading ? 'none' : '0 2px 8px rgba(249,115,22,0.4)' }}
                   >
                     {isLoading ? '処理中...' : `¥${discountedPrice.toLocaleString()} 円`}
                   </button>

@@ -164,7 +164,7 @@ export default function Home() {
   })()
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', color: '#333', paddingBottom: '70px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', color: '#1a1a1a', paddingBottom: '70px' }}>
 
       {/* ヘッダー */}
       <Header />
@@ -236,7 +236,7 @@ export default function Home() {
                 <button
                   key={index}
                   onClick={() => setCurrentBanner(index)}
-                  style={{ width: index === currentBanner ? '16px' : '6px', height: '6px', borderRadius: '999px', background: index === currentBanner ? '#e67e00' : '#ddd', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }}
+                  style={{ width: index === currentBanner ? '16px' : '6px', height: '6px', borderRadius: '999px', background: index === currentBanner ? '#f97316' : '#ddd', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }}
                 />
               ))}
             </div>
@@ -251,7 +251,7 @@ export default function Home() {
             <button
               key={cat.value}
               onClick={() => setActiveCategory(cat.value)}
-              style={{ padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', color: activeCategory === cat.value ? '#e67e00' : '#666', borderBottom: activeCategory === cat.value ? '3px solid #e67e00' : '3px solid transparent', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+              style={{ padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', color: activeCategory === cat.value ? '#f97316' : '#666', borderBottom: activeCategory === cat.value ? '3px solid #f97316' : '3px solid transparent', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
             >
               {cat.label}
             </button>
@@ -310,7 +310,7 @@ export default function Home() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0 }} />
-                        <span style={{ fontSize: '16px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
+                        <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
                       </div>
                       <div style={{ fontSize: '12px', color: '#666' }}>
@@ -334,7 +334,7 @@ export default function Home() {
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#e67e00', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
+                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#f97316', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
                       </div>
                     )}
                   </div>
@@ -357,12 +357,12 @@ export default function Home() {
             </div>
             <div style={{ padding: '20px' }}>
               <p style={{ fontSize: '16px', color: '#374151', textAlign: 'center', marginBottom: '16px' }}>
-                コインを消費して、<span style={{ fontWeight: 'bold', color: '#e67e00' }}>{confirmOption.count}回</span>ガチャを引きますか？
+                コインを消費して、<span style={{ fontWeight: 'bold', color: '#f97316' }}>{confirmOption.count}回</span>ガチャを引きますか？
               </p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', background: '#f9fafb', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
+                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fbbf24' }}>{userPoints.toLocaleString()}</span>
                 </div>
                 <span style={{ fontSize: '18px', color: '#9ca3af' }}>›</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -370,7 +370,7 @@ export default function Home() {
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>{(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}</span>
                 </div>
               </div>
-              <button onClick={handleGacha} disabled={pulling} style={{ width: '100%', padding: '14px', background: '#f59e0b', color: '#1a1a1a', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px' }}>
+              <button onClick={handleGacha} disabled={pulling} style={{ width: '100%', padding: '14px', background: pulling ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '700', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px' }}>
                 {pulling ? '処理中...' : 'ガチャを引く'}
               </button>
               <button onClick={() => setShowConfirm(false)} style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '16px', cursor: 'pointer' }}>

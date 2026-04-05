@@ -99,12 +99,12 @@ function ShipmentPageInner() {
   }
 
   if (submitted) return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: 'white', borderRadius: '16px', padding: '40px', textAlign: 'center', maxWidth: '400px', width: '100%', border: '1px solid #e5e7eb' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
         <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>発送申請完了！</h2>
         <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px', lineHeight: 1.6 }}>発送申請を受け付けました。追跡番号が発行され次第、マイページでご確認いただけます。</p>
-        <a href="/prizes" style={{ display: 'block', padding: '12px', background: '#e67e00', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none', marginBottom: '10px' }}>獲得商品を見る</a>
+        <a href="/prizes" style={{ display: 'block', padding: '12px', background: '#f97316', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '700', textDecoration: 'none', marginBottom: '10px' }}>獲得商品を見る</a>
         <a href="/" style={{ display: 'block', padding: '12px', background: '#f3f4f6', color: '#374151', borderRadius: '8px', fontSize: '14px', textDecoration: 'none' }}>トップに戻る</a>
       </div>
       <BottomNav />
@@ -112,7 +112,7 @@ function ShipmentPageInner() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '40px' }}>
       <Header />
 
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px 16px' }}>
@@ -132,9 +132,9 @@ function ShipmentPageInner() {
                 <div
                   key={draw.id}
                   onClick={() => setSelectedDraw(selectedDraw?.id === draw.id ? null : draw)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', border: '2px solid', borderColor: selectedDraw?.id === draw.id ? '#e67e00' : '#e5e7eb', background: selectedDraw?.id === draw.id ? '#fff7ed' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', border: '2px solid', borderColor: selectedDraw?.id === draw.id ? '#f97316' : '#e5e7eb', background: selectedDraw?.id === draw.id ? '#fff7ed' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}
                 >
-                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid', borderColor: selectedDraw?.id === draw.id ? '#e67e00' : '#d1d5db', background: selectedDraw?.id === draw.id ? '#e67e00' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid', borderColor: selectedDraw?.id === draw.id ? '#f97316' : '#d1d5db', background: selectedDraw?.id === draw.id ? '#f97316' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {selectedDraw?.id === draw.id && <div style={{ width: '8px', height: '8px', background: 'white', borderRadius: '50%' }} />}
                   </div>
                   {draw.products?.image_url ? (
@@ -257,7 +257,7 @@ function ShipmentPageInner() {
         <button
           onClick={handleSubmit}
           disabled={submitting || !selectedDraw}
-          style={{ width: '100%', padding: '16px', background: (!selectedDraw || submitting) ? '#9ca3af' : '#e67e00', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: (!selectedDraw || submitting) ? 'not-allowed' : 'pointer', boxShadow: (!selectedDraw || submitting) ? 'none' : '0 4px 12px rgba(230,126,0,0.3)' }}
+          style={{ width: '100%', padding: '16px', background: (!selectedDraw || submitting) ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: (!selectedDraw || submitting) ? 'not-allowed' : 'pointer', boxShadow: (!selectedDraw || submitting) ? 'none' : '0 4px 12px rgba(230,126,0,0.3)' }}
         >
           {submitting ? '申請中...' : '発送申請する'}
         </button>
@@ -268,7 +268,7 @@ function ShipmentPageInner() {
 
 export default function ShipmentPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>読み込み中...</div></div>}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}><div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /><p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p></div>}>
       <ShipmentPageInner />
     </Suspense>
   )

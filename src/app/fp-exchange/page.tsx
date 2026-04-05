@@ -72,7 +72,7 @@ export default function FpExchangePage() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '70px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
       {/* ヘッダー */}
       <Header />
 
@@ -90,7 +90,7 @@ export default function FpExchangePage() {
               onClick={() => setActiveCategory('all')}
               style={{
                 padding: '8px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap',
-                background: activeCategory === 'all' ? '#ea580c' : 'white',
+                background: activeCategory === 'all' ? '#f97316' : 'white',
                 color: activeCategory === 'all' ? 'white' : '#374151',
                 boxShadow: activeCategory === 'all' ? '0 2px 8px rgba(234,88,12,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
               }}>
@@ -104,7 +104,7 @@ export default function FpExchangePage() {
                   onClick={() => setActiveCategory(cat.id)}
                   style={{
                     padding: '8px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap',
-                    background: activeCategory === cat.id ? '#ea580c' : 'white',
+                    background: activeCategory === cat.id ? '#f97316' : 'white',
                     color: activeCategory === cat.id ? 'white' : '#374151',
                     boxShadow: activeCategory === cat.id ? '0 2px 8px rgba(234,88,12,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
                   }}>
@@ -117,7 +117,10 @@ export default function FpExchangePage() {
 
         {/* 商品グリッド */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#999' }}>読み込み中...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
+          </div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#999' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px' }}>🪙</div>
@@ -151,7 +154,7 @@ export default function FpExchangePage() {
                   <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '8px' }}>残り {item.remaining_stock} 枚</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff7ed', borderRadius: '6px', padding: '6px 10px' }}>
                     <span style={{ fontSize: '14px' }}>🪙</span>
-                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#ea580c' }}>{item.fp_price.toLocaleString()}</span>
+                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#f97316' }}>{item.fp_price.toLocaleString()}</span>
                     <span style={{ fontSize: '11px', color: '#9a3412' }}>FP</span>
                   </div>
                 </div>

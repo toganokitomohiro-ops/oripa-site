@@ -50,12 +50,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5' }}>
       {/* ヘッダー */}
       <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ fontSize: '20px', fontWeight: '900', color: '#e67e00', textDecoration: 'none' }}>ORIPA 🎴</a>
+        <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', textDecoration: 'none' }}>fitオリパ</a>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <a href="/auth/register" style={{ fontSize: '13px', color: 'white', background: '#e67e00', padding: '6px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: '700' }}>新規登録</a>
+          <a href="/auth/register" style={{ fontSize: '13px', color: 'white', background: '#f97316', padding: '6px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: '700' }}>新規登録</a>
           <a href="/auth/login" style={{ fontSize: '13px', color: '#374151', border: '1px solid #d1d5db', padding: '6px 16px', borderRadius: '4px', textDecoration: 'none' }}>ログイン</a>
         </div>
       </header>
@@ -137,10 +137,10 @@ export default function RegisterPage() {
 
           {/* 利用規約 */}
           <div style={{ marginBottom: '20px', fontSize: '13px', color: '#6b7280' }}>
-            会員登録により<a href="/legal/terms" style={{ color: '#e67e00' }}>利用規約</a>及び<a href="/legal/privacy" style={{ color: '#e67e00' }}>プライバシーポリシー</a>に同意したものとみなされます
+            会員登録により<a href="/legal/terms" style={{ color: '#f97316' }}>利用規約</a>及び<a href="/legal/privacy" style={{ color: '#f97316' }}>プライバシーポリシー</a>に同意したものとみなされます
           </div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', cursor: 'pointer' }}>
-            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: '#e67e00' }} />
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: '#f97316' }} />
             <span style={{ fontSize: '14px', color: '#374151' }}>上記に同意する</span>
           </label>
 
@@ -148,7 +148,7 @@ export default function RegisterPage() {
           <button
             onClick={handleRegister}
             disabled={loading}
-            style={{ width: '100%', padding: '14px', background: loading ? '#9ca3af' : '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '900', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '16px' }}
+            style={{ width: '100%', padding: '14px', background: loading ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '16px' }}
           >
             {loading ? '登録中...' : '無料で新規登録する'}
           </button>
@@ -172,7 +172,7 @@ export default function RegisterPage() {
           </button>
 
           <div style={{ textAlign: 'center', marginTop: '16px' }}>
-            <a href="/auth/login" style={{ fontSize: '14px', color: '#e67e00', fontWeight: '700', textDecoration: 'none' }}>ログインはこちら</a>
+            <a href="/auth/login" style={{ fontSize: '14px', color: '#f97316', fontWeight: '700', textDecoration: 'none' }}>ログインはこちら</a>
           </div>
         </div>
 

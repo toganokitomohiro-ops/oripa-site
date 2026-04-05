@@ -24,7 +24,7 @@ function BuyPointsSuccessPageInner() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: 'white', borderRadius: '16px', padding: '40px', textAlign: 'center', maxWidth: '400px', width: '100%', border: '1px solid #e5e7eb', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         {loading ? (
           <>
@@ -39,9 +39,9 @@ function BuyPointsSuccessPageInner() {
             <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px', lineHeight: 1.6 }}>ポイントが付与されました！</p>
             <div style={{ background: 'linear-gradient(135deg, #1e293b, #0f172a)', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
               <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>現在の保有ポイント</div>
-              <div style={{ fontSize: '32px', fontWeight: '900', color: '#f5c518' }}>{points.toLocaleString()} PT</div>
+              <div style={{ fontSize: '32px', fontWeight: '900', color: '#fbbf24' }}>{points.toLocaleString()} PT</div>
             </div>
-            <a href="/" style={{ display: 'block', padding: '14px', background: '#e67e00', color: 'white', borderRadius: '10px', fontSize: '16px', fontWeight: '900', textDecoration: 'none', marginBottom: '10px', boxShadow: '0 4px 12px rgba(230,126,0,0.3)' }}>
+            <a href="/" style={{ display: 'block', padding: '14px', background: '#f97316', color: 'white', borderRadius: '12px', fontSize: '16px', fontWeight: '700', textDecoration: 'none', marginBottom: '10px', boxShadow: '0 4px 12px rgba(249,115,22,0.3)' }}>
               ガチャを引く！
             </a>
             <a href="/buy-points" style={{ display: 'block', padding: '14px', background: '#f3f4f6', color: '#374151', borderRadius: '10px', fontSize: '14px', textDecoration: 'none' }}>
@@ -56,7 +56,7 @@ function BuyPointsSuccessPageInner() {
 
 export default function BuyPointsSuccessPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>読み込み中...</div></div>}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}><div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /><p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p></div>}>
       <BuyPointsSuccessPageInner />
     </Suspense>
   )

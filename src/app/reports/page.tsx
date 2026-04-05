@@ -35,8 +35,10 @@ export default function ReportsPage() {
   }
 
   const gradeColors: Record<string, { bg: string; text: string }> = {
-    'S賞': { bg: 'linear-gradient(135deg, #ffd700, #ff8c00)', text: 'white' },
-    'A賞': { bg: 'linear-gradient(135deg, #c084fc, #7c3aed)', text: 'white' },
+    'S賞': { bg: 'linear-gradient(135deg, #7c3aed, #db2777)', text: 'white' },
+    'A賞': { bg: '#f97316', text: 'white' },
+    'B賞': { bg: '#3b82f6', text: 'white' },
+    'C賞': { bg: '#6b7280', text: 'white' },
     'ラストワン賞': { bg: 'linear-gradient(135deg, #f472b6, #be185d)', text: 'white' },
   }
 
@@ -48,7 +50,7 @@ export default function ReportsPage() {
   const maskUserId = (id: string) => id.slice(0, 4) + '****'
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '70px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
 
       <Header />
 
@@ -57,7 +59,10 @@ export default function ReportsPage() {
         <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '20px' }}>S賞・A賞・ラストワン賞の当選情報です</p>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#999' }}>読み込み中...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
+          </div>
         ) : reports.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#999' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px' }}>📢</div>
@@ -84,7 +89,7 @@ export default function ReportsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} />
-                        <span style={{ fontSize: '13px', fontWeight: '700', color: '#e67e00' }}>{report.products?.market_value?.toLocaleString()}</span>
+                        <span style={{ fontSize: '13px', fontWeight: '700', color: '#f97316' }}>{report.products?.market_value?.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>コイン</span>
                       </div>
                       <span style={{ fontSize: '11px', color: '#9ca3af' }}>ユーザー:{maskUserId(report.user_id)}</span>

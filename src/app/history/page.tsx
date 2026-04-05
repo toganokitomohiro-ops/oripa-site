@@ -73,7 +73,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '70px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
       <Header />
 
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 16px' }}>
@@ -109,7 +109,7 @@ export default function HistoryPage() {
               <div style={{ position: 'absolute', top: '100%', right: 0, background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 100, minWidth: '160px', overflow: 'hidden' }}>
                 {(Object.keys(sortLabels) as SortKey[]).map(key => (
                   <button key={key} onClick={() => { setSortKey(key); setShowSortMenu(false) }}
-                    style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', background: sortKey === key ? '#fff7ed' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: sortKey === key ? '700' : '400', color: sortKey === key ? '#e67e00' : '#374151' }}>
+                    style={{ display: 'block', width: '100%', padding: '12px 16px', textAlign: 'left', background: sortKey === key ? '#fff7ed' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: sortKey === key ? '700' : '400', color: sortKey === key ? '#f97316' : '#374151' }}>
                     {sortLabels[key]}
                   </button>
                 ))}
@@ -122,14 +122,17 @@ export default function HistoryPage() {
         <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
           {['all', 'S賞', 'A賞'].map(g => (
             <button key={g} onClick={() => setFilterGrade(g)}
-              style={{ padding: '6px 16px', borderRadius: '999px', border: '1px solid', borderColor: filterGrade === g ? '#e67e00' : '#e5e7eb', background: filterGrade === g ? '#fff7ed' : 'white', color: filterGrade === g ? '#e67e00' : '#6b7280', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}>
+              style={{ padding: '6px 16px', borderRadius: '999px', border: '1px solid', borderColor: filterGrade === g ? '#f97316' : '#e5e7eb', background: filterGrade === g ? '#fff7ed' : 'white', color: filterGrade === g ? '#f97316' : '#6b7280', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}>
               {g === 'all' ? 'すべて' : g}（{g === 'all' ? draws.length : draws.filter(d => d.grade === g).length}）
             </button>
           ))}
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#999' }}>読み込み中...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
+          </div>
         ) : sorted.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '12px', color: '#999' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px' }}>🕐</div>

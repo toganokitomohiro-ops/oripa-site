@@ -14,7 +14,7 @@ export default function Header() {
         supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
           if (data) {
             setPoints(data.points)
-            setFpPoints(0) // TODO: fp_pointsカラム追加後に data.fp_points に変更
+            setFpPoints(0) // fp_pointsカラムがprofilesに追加されたら data.fp_points に変更する
           }
         })
       }
@@ -25,7 +25,7 @@ export default function Header() {
         supabase.from('profiles').select('points').eq('id', session.user.id).single().then(({ data }) => {
           if (data) {
             setPoints(data.points)
-            setFpPoints(0) // TODO: fp_pointsカラム追加後に data.fp_points に変更
+            setFpPoints(0) // fp_pointsカラムがprofilesに追加されたら data.fp_points に変更する
           }
         })
       } else {
@@ -59,7 +59,7 @@ export default function Header() {
                   <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                   <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
                 </div>
-                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '34px', background: '#e67e00', borderRadius: '0 20px 20px 0', textDecoration: 'none', color: 'white', fontSize: '18px', fontWeight: '900' }}>+</a>
+                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '34px', background: '#f97316', borderRadius: '0 20px 20px 0', textDecoration: 'none', color: 'white', fontSize: '18px', fontWeight: '900' }}>+</a>
               </div>
               <a href="/notices" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>🔔</a>
               <a href="/mypage" style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6', borderRadius: '50%', textDecoration: 'none', fontSize: '18px' }}>👤</a>
@@ -67,7 +67,7 @@ export default function Header() {
           ) : (
             <>
               <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 14px', border: '1px solid #ddd', borderRadius: '4px' }}>ログイン</a>
-              <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: '#e67e00', borderRadius: '4px' }}>新規登録</a>
+              <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 14px', background: '#f97316', borderRadius: '4px' }}>新規登録</a>
             </>
           )}
         </div>

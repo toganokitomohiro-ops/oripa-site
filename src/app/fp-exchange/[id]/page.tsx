@@ -97,14 +97,15 @@ export default function FpExchangeDetailPage() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
-      <div style={{ textAlign: 'center', color: '#999' }}>読み込み中...</div>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+      <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
       <BottomNav />
     </div>
   )
 
   if (!item) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8f7f5' }}>
       <div style={{ textAlign: 'center', color: '#999' }}>商品が見つかりません</div>
     </div>
   )
@@ -112,7 +113,7 @@ export default function FpExchangeDetailPage() {
   const canExchange = userId && userFp >= item.fp_price && item.remaining_stock > 0
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '40px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '40px' }}>
       {/* ヘッダー */}
       <Header />
 
@@ -136,7 +137,7 @@ export default function FpExchangeDetailPage() {
           {/* FP価格 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff7ed', border: '2px solid #fed7aa', borderRadius: '12px', padding: '14px 20px', marginBottom: '16px' }}>
             <span style={{ fontSize: '24px' }}>🪙</span>
-            <span style={{ fontSize: '28px', fontWeight: '900', color: '#ea580c' }}>{item.fp_price.toLocaleString()}</span>
+            <span style={{ fontSize: '28px', fontWeight: '900', color: '#f97316' }}>{item.fp_price.toLocaleString()}</span>
             <span style={{ fontSize: '16px', color: '#9a3412', fontWeight: '700' }}>FP</span>
           </div>
 
@@ -146,14 +147,14 @@ export default function FpExchangeDetailPage() {
               SOLD OUT
             </div>
           ) : !userId ? (
-            <button onClick={() => router.push('/auth/login')} style={{ width: '100%', padding: '16px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer' }}>
+            <button onClick={() => router.push('/auth/login')} style={{ width: '100%', padding: '16px', background: '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer' }}>
               ログインして交換する
             </button>
           ) : (
             <button
               onClick={() => setShowConfirm(true)}
               disabled={!canExchange}
-              style={{ width: '100%', padding: '16px', background: canExchange ? '#ea580c' : '#9ca3af', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: canExchange ? 'pointer' : 'not-allowed' }}>
+              style={{ width: '100%', padding: '16px', background: canExchange ? '#f97316' : '#9ca3af', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: canExchange ? 'pointer' : 'not-allowed' }}>
               {userFp < item.fp_price ? `FP不足（あと${(item.fp_price - userFp).toLocaleString()}FP必要）` : '交換する'}
             </button>
           )}
@@ -204,14 +205,14 @@ export default function FpExchangeDetailPage() {
             <p style={{ fontSize: '13px', color: '#6b7280', textAlign: 'center', marginBottom: '20px' }}>{item.name}</p>
             <div style={{ background: '#fff7ed', borderRadius: '10px', padding: '14px', textAlign: 'center', marginBottom: '20px' }}>
               <span style={{ fontSize: '22px' }}>🪙</span>
-              <span style={{ fontSize: '24px', fontWeight: '900', color: '#ea580c', marginLeft: '6px' }}>{item.fp_price.toLocaleString()} FP</span>
+              <span style={{ fontSize: '24px', fontWeight: '900', color: '#f97316', marginLeft: '6px' }}>{item.fp_price.toLocaleString()} FP</span>
               <p style={{ fontSize: '12px', color: '#9a3412', marginTop: '4px' }}>残り {(userFp - item.fp_price).toLocaleString()} FP</p>
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setShowConfirm(false)} style={{ flex: 1, padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '10px', fontSize: '15px', cursor: 'pointer', fontWeight: '700' }}>
                 キャンセル
               </button>
-              <button onClick={handleExchange} disabled={exchanging} style={{ flex: 1, padding: '14px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', cursor: 'pointer', fontWeight: '800' }}>
+              <button onClick={handleExchange} disabled={exchanging} style={{ flex: 1, padding: '14px', background: '#f97316', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', cursor: 'pointer', fontWeight: '800' }}>
                 {exchanging ? '処理中...' : '交換する'}
               </button>
             </div>
@@ -226,7 +227,7 @@ export default function FpExchangeDetailPage() {
             <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎉</div>
             <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>交換完了！</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '24px' }}>商品の発送をお待ちください</p>
-            <button onClick={() => router.push('/fp-exchange')} style={{ width: '100%', padding: '14px', background: '#ea580c', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}>
+            <button onClick={() => router.push('/fp-exchange')} style={{ width: '100%', padding: '14px', background: '#f97316', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}>
               交換所トップへ
             </button>
           </div>

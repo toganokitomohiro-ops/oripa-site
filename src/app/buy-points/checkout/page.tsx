@@ -124,8 +124,9 @@ function CheckoutPageInner() {
   }
 
   if (!plan) return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ color: '#999' }}>読み込み中...</div>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+      <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
     </div>
   )
 
@@ -136,7 +137,7 @@ function CheckoutPageInner() {
   const method = getSelectedMethod()
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f0f0', paddingBottom: '40px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '40px' }}>
 
       {/* ヘッダー */}
       <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0' }}>
@@ -149,11 +150,11 @@ function CheckoutPageInner() {
         <h1 style={{ fontSize: '18px', fontWeight: '800', color: '#1f2937', marginBottom: '20px', textAlign: 'center' }}>お支払い</h1>
 
         {/* バナー（支払い方法ボーナス案内） */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a2e, #2d1b00)', borderRadius: '12px', padding: '16px 20px', marginBottom: '20px', textAlign: 'center', border: '2px solid #f5c518' }}>
-          <div style={{ fontSize: '13px', fontWeight: '800', color: '#f5c518', marginBottom: '6px' }}>💰 支払い方法でボーナスコインGET！</div>
+        <div style={{ background: 'linear-gradient(135deg, #1a1a2e, #2d1b00)', borderRadius: '12px', padding: '16px 20px', marginBottom: '20px', textAlign: 'center', border: '2px solid #fbbf24' }}>
+          <div style={{ fontSize: '13px', fontWeight: '800', color: '#fbbf24', marginBottom: '6px' }}>💰 支払い方法でボーナスコインGET！</div>
           <div style={{ fontSize: '13px', color: 'white', fontWeight: '700' }}>
             銀行振込 / コンビニ
-            <span style={{ color: '#f5c518', fontSize: '16px', marginLeft: '6px' }}>+7%</span>
+            <span style={{ color: '#fbbf24', fontSize: '16px', marginLeft: '6px' }}>+7%</span>
           </div>
           <div style={{ fontSize: '13px', color: 'white', fontWeight: '700', marginTop: '2px' }}>
             クレジットカード
@@ -195,8 +196,8 @@ function CheckoutPageInner() {
               </div>
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px dashed #e5e7eb', marginTop: '4px' }}>
-              <span style={{ fontSize: '15px', fontWeight: '700', color: '#e67e00' }}>獲得コイン</span>
-              <span style={{ fontSize: '20px', fontWeight: '900', color: '#e67e00' }}>
+              <span style={{ fontSize: '15px', fontWeight: '700', color: '#f97316' }}>獲得コイン</span>
+              <span style={{ fontSize: '20px', fontWeight: '900', color: '#f97316' }}>
                 {totalPoints.toLocaleString()}
                 <span style={{ fontSize: '13px', marginLeft: '2px' }}>コイン</span>
               </span>
@@ -212,11 +213,11 @@ function CheckoutPageInner() {
               <div
                 key={m.id}
                 onClick={() => setPaymentMethod(m.id)}
-                style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', borderRadius: '10px', border: '2px solid', borderColor: paymentMethod === m.id ? '#f5c518' : '#e5e7eb', background: paymentMethod === m.id ? '#fffbeb' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', borderRadius: '10px', border: '2px solid', borderColor: paymentMethod === m.id ? '#fbbf24' : '#e5e7eb', background: paymentMethod === m.id ? '#fffbeb' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}
               >
                 {/* ラジオボタン */}
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid', borderColor: paymentMethod === m.id ? '#f5c518' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {paymentMethod === m.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f5c518' }} />}
+                <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid', borderColor: paymentMethod === m.id ? '#fbbf24' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {paymentMethod === m.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24' }} />}
                 </div>
                 <span style={{ fontSize: '22px' }}>{m.icon}</span>
                 <div style={{ flex: 1 }}>
@@ -224,7 +225,7 @@ function CheckoutPageInner() {
                   <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '1px' }}>{m.desc}</div>
                 </div>
                 <div style={{ flexShrink: 0, textAlign: 'right' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: m.id === 'card' ? '#ef4444' : '#e67e00', background: m.id === 'card' ? '#fef2f2' : '#fef3c7', padding: '3px 10px', borderRadius: '999px', border: `1px solid ${m.id === 'card' ? '#fca5a5' : '#fde68a'}` }}>
+                  <span style={{ fontSize: '13px', fontWeight: '800', color: m.id === 'card' ? '#ef4444' : '#f97316', background: m.id === 'card' ? '#fef2f2' : '#fef3c7', padding: '3px 10px', borderRadius: '999px', border: `1px solid ${m.id === 'card' ? '#fca5a5' : '#fde68a'}` }}>
                     +{m.bonus_extra}%
                   </span>
                 </div>
@@ -237,7 +238,7 @@ function CheckoutPageInner() {
         <button
           onClick={handlePurchase}
           disabled={loading}
-          style={{ width: '100%', padding: '18px', background: loading ? '#9ca3af' : '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '10px', fontSize: '18px', fontWeight: '900', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: loading ? 'none' : '0 4px 16px rgba(245,197,24,0.4)' }}
+          style={{ width: '100%', padding: '18px', background: loading ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: loading ? 'none' : '0 4px 16px rgba(249,115,22,0.4)' }}
         >
           {loading ? '処理中...' : '購入する'}
         </button>
@@ -252,7 +253,7 @@ function CheckoutPageInner() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>読み込み中...</div></div>}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}><div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /><p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p></div>}>
       <CheckoutPageInner />
     </Suspense>
   )

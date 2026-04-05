@@ -33,12 +33,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column' }}>
 
       {/* ヘッダー */}
       <header style={{ background: 'white', borderBottom: '1px solid #e0e0e0' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <a href="/" style={{ fontSize: '24px', fontWeight: '900', color: '#e67e00', textDecoration: 'none' }}>ORIPA🃏</a>
+          <a href="/" style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', textDecoration: 'none' }}>fitオリパ</a>
         </div>
       </header>
 
@@ -82,7 +82,7 @@ export default function LoginPage() {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151' }}>パスワード</label>
-                <a href="#" style={{ fontSize: '12px', color: '#e67e00', textDecoration: 'none' }}>パスワードを忘れた方</a>
+                <a href="#" style={{ fontSize: '12px', color: '#f97316', textDecoration: 'none' }}>パスワードを忘れた方</a>
               </div>
               <input
                 type="password"
@@ -97,14 +97,14 @@ export default function LoginPage() {
             <button
               onClick={handleLogin}
               disabled={loading}
-              style={{ width: '100%', padding: '14px', background: loading ? '#9ca3af' : '#e67e00', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: loading ? 'none' : '0 4px 12px rgba(230,126,0,0.3)', transition: 'all 0.2s' }}
+              style={{ width: '100%', padding: '14px', background: loading ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: loading ? 'none' : '0 4px 12px rgba(230,126,0,0.3)', transition: 'all 0.2s' }}
             >
               {loading ? 'ログイン中...' : 'ログイン'}
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #f3f4f6' }}>
               <span style={{ fontSize: '13px', color: '#6b7280' }}>アカウントをお持ちでない方は</span>
-              <a href="/auth/register" style={{ fontSize: '13px', color: '#e67e00', fontWeight: '700', textDecoration: 'none', marginLeft: '4px' }}>新規登録</a>
+              <a href="/auth/register" style={{ fontSize: '13px', color: '#f97316', fontWeight: '700', textDecoration: 'none', marginLeft: '4px' }}>新規登録</a>
             </div>
           </div>
 

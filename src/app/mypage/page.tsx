@@ -58,8 +58,9 @@ export default function MyPage() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ color: '#999' }}>読み込み中...</div>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+      <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
     </div>
   )
 
@@ -70,7 +71,7 @@ export default function MyPage() {
   const totalValue = draws.reduce((sum, d) => sum + (d.products?.market_value || 0), 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', paddingBottom: '70px' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
 
       <Header />
 
@@ -79,18 +80,18 @@ export default function MyPage() {
 
         {/* プロフィール */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid #e5e7eb' }}>
-          <div style={{ width: '52px', height: '52px', background: '#e67e00', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', color: 'white', fontWeight: '900', flexShrink: 0 }}>
+          <div style={{ width: '52px', height: '52px', background: '#f97316', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', color: 'white', fontWeight: '900', flexShrink: 0 }}>
             {profile.email?.[0]?.toUpperCase() || '?'}
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>{profile.email}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0 }} />
-              <span style={{ fontSize: '18px', fontWeight: '900', color: '#e67e00' }}>{profile.points?.toLocaleString()}</span>
+              <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316' }}>{profile.points?.toLocaleString()}</span>
               <span style={{ fontSize: '12px', color: '#999' }}>PT保有</span>
             </div>
           </div>
-          <a href="/buy-points" style={{ padding: '8px 16px', background: '#f5c518', color: '#1a1a1a', borderRadius: '6px', fontSize: '13px', fontWeight: '900', textDecoration: 'none', flexShrink: 0 }}>PT購入</a>
+          <a href="/buy-points" style={{ padding: '8px 16px', background: '#f97316', color: 'white', borderRadius: '12px', fontSize: '13px', fontWeight: '700', textDecoration: 'none', flexShrink: 0 }}>PT購入</a>
         </div>
 
         {/* ランク */}
@@ -111,7 +112,7 @@ export default function MyPage() {
           {[
             { label: '総開封数', value: totalCards + '回', color: '#1f2937' },
             { label: '獲得カード', value: totalCards + '枚', color: '#3b82f6' },
-            { label: '獲得総額', value: '¥' + totalValue.toLocaleString(), color: '#e67e00' },
+            { label: '獲得総額', value: '¥' + totalValue.toLocaleString(), color: '#f97316' },
           ].map((stat) => (
             <div key={stat.label} style={{ background: 'white', borderRadius: '10px', padding: '14px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
               <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '6px' }}>{stat.label}</div>
@@ -125,10 +126,10 @@ export default function MyPage() {
           <div style={{ padding: '14px 16px', borderBottom: '1px solid #f3f4f6', fontSize: '13px', fontWeight: '700', color: '#6b7280' }}>アカウント</div>
           {[
             { label: 'クーポンの利用', href: '#' },
-            { label: '購入履歴', href: '#' },
-            { label: 'お届け先の登録', href: '#' },
-            { label: 'メールアドレス変更', href: '#' },
-            { label: 'パスワード変更', href: '#' },
+            { label: '購入履歴', href: '/history' },
+            { label: '発送申請', href: '/shipment' },
+            { label: 'ポイント購入', href: '/buy-points' },
+            { label: '獲得賞品', href: '/prizes' },
           ].map((item, i) => (
             <a key={i} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: i > 0 ? '1px solid #f3f4f6' : 'none', textDecoration: 'none', color: '#1f2937', fontSize: '14px' }}>
               <span>{item.label}</span>
@@ -155,14 +156,14 @@ export default function MyPage() {
         <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: '12px' }}>
           <div style={{ padding: '14px 16px', borderBottom: '1px solid #f3f4f6', fontSize: '13px', fontWeight: '700', color: '#6b7280' }}>その他</div>
           {[
-            { label: '利用規約', href: '#' },
-            { label: 'プライバシーポリシー', href: '#' },
-            { label: '特定商取引法に基づく表記', href: '#' },
-          ].map((item, i) => (
-            <a key={i} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: i > 0 ? '1px solid #f3f4f6' : 'none', textDecoration: 'none', color: '#1f2937', fontSize: '14px' }}>
-              <span>{item.label}</span>
-              <span style={{ color: '#9ca3af', fontSize: '16px' }}>›</span>
-            </a>
+            '利用規約',
+            'プライバシーポリシー',
+            '特定商取引法に基づく表記',
+          ].map((label, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: i > 0 ? '1px solid #f3f4f6' : 'none', color: '#9ca3af', fontSize: '14px' }}>
+              <span>{label}</span>
+              <span style={{ fontSize: '12px' }}>準備中</span>
+            </div>
           ))}
           <div style={{ padding: '14px 16px', borderTop: '1px solid #f3f4f6', fontSize: '12px', color: '#9ca3af' }}>
             メールアドレス: {profile.email}

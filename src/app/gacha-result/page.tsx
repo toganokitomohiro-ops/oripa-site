@@ -121,24 +121,25 @@ function GachaResultInner() {
     setSelling(false)
   }
 
-  const gradeColors: Record<string, string> = {
-    'S賞': '#d97706',
-    'A賞': '#7c3aed',
-    'B賞': '#1d4ed8',
-    'C賞': '#6b7280',
-    'ラストワン賞': '#be185d',
+  const gradeColors: Record<string, { bg: string; text: string }> = {
+    'S賞': { bg: 'linear-gradient(135deg, #7c3aed, #db2777)', text: 'white' },
+    'A賞': { bg: '#f97316', text: 'white' },
+    'B賞': { bg: '#3b82f6', text: 'white' },
+    'C賞': { bg: '#6b7280', text: 'white' },
+    'ラストワン賞': { bg: 'linear-gradient(135deg, #f472b6, #be185d)', text: 'white' },
   }
 
   const sorted = getSorted()
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ color: '#999' }}>読み込み中...</div>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+      <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p>
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f0f0' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f5' }}>
       {/* ヘッダー */}
       <Header />
 
@@ -161,7 +162,7 @@ function GachaResultInner() {
           </div>
           <button
             onClick={() => setSortMode(sortMode === 'high' ? 'low' : 'high')}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 14px', borderRadius: '999px', border: '1px solid #e5e7eb', background: 'white', color: '#f59e0b', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 14px', borderRadius: '999px', border: '1px solid #e5e7eb', background: 'white', color: '#fbbf24', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}
           >
             {sortMode === 'high' ? '↑ コインが高い順' : '↓ コインが低い順'}
           </button>
@@ -176,10 +177,10 @@ function GachaResultInner() {
                 <div
                   key={result.id}
                   onClick={() => handleSelect(result.id)}
-                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#f59e0b' : 'transparent', position: 'relative' }}
+                  style={{ background: 'white', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#fbbf24' : 'transparent', position: 'relative' }}
                 >
                   {/* 選択チェック */}
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#f59e0b' : '#d1d5db', background: isSelected ? '#f59e0b' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#fbbf24' : '#d1d5db', background: isSelected ? '#fbbf24' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {isSelected && <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
                   </div>
 
@@ -192,11 +193,11 @@ function GachaResultInner() {
                   </div>
 
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 'bold', color: gradeColors[result.grade] || '#6b7280', background: `${gradeColors[result.grade] || '#6b7280'}20`, padding: '2px 8px', borderRadius: '999px', marginBottom: '4px' }}>{result.grade}</div>
+                    <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 'bold', background: (gradeColors[result.grade] || gradeColors['C賞']).bg, color: (gradeColors[result.grade] || gradeColors['C賞']).text, padding: '2px 8px', borderRadius: '999px', marginBottom: '4px' }}>{result.grade}</div>
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>{result.product.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span style={{ fontSize: '16px' }}>🪙</span>
-                      <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#f59e0b' }}>{result.pt_exchange.toLocaleString()}</span>
+                      <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#fbbf24' }}>{result.pt_exchange.toLocaleString()}</span>
                       <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
                     </div>
                   </div>
@@ -213,10 +214,10 @@ function GachaResultInner() {
                 <div
                   key={result.id}
                   onClick={() => handleSelect(result.id)}
-                  style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#f59e0b' : 'transparent', position: 'relative' }}
+                  style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', border: '2px solid', borderColor: isSelected ? '#fbbf24' : 'transparent', position: 'relative' }}
                 >
                   {/* 選択チェック */}
-                  <div style={{ position: 'absolute', top: '8px', right: '8px', width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#f59e0b' : '#d1d5db', background: isSelected ? '#f59e0b' : 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', width: '22px', height: '22px', borderRadius: '50%', border: '2px solid', borderColor: isSelected ? '#fbbf24' : '#d1d5db', background: isSelected ? '#fbbf24' : 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
                     {isSelected && <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
                   </div>
 
@@ -229,11 +230,11 @@ function GachaResultInner() {
                   </div>
 
                   <div style={{ padding: '10px' }}>
-                    <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 'bold', color: gradeColors[result.grade] || '#6b7280', background: `${gradeColors[result.grade] || '#6b7280'}20`, padding: '2px 8px', borderRadius: '999px', marginBottom: '4px' }}>{result.grade}</div>
+                    <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 'bold', background: (gradeColors[result.grade] || gradeColors['C賞']).bg, color: (gradeColors[result.grade] || gradeColors['C賞']).text, padding: '2px 8px', borderRadius: '999px', marginBottom: '4px' }}>{result.grade}</div>
                     <div style={{ fontSize: '12px', fontWeight: '600', color: '#1f2937', marginBottom: '4px', lineHeight: 1.3 }}>{result.product.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                       <span style={{ fontSize: '14px' }}>🪙</span>
-                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#f59e0b' }}>{result.pt_exchange.toLocaleString()}</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#fbbf24' }}>{result.pt_exchange.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -249,7 +250,7 @@ function GachaResultInner() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '20px' }}>🪙</span>
-              <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{getTotalPt().toLocaleString()}</span>
+              <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#fbbf24' }}>{getTotalPt().toLocaleString()}</span>
               <span style={{ fontSize: '13px', color: '#9ca3af' }}>コイン</span>
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
@@ -272,7 +273,7 @@ function GachaResultInner() {
             <button
               onClick={() => router.push('/shipment')}
               disabled={selected.length === 0}
-              style={{ flex: 1, padding: '14px', background: selected.length === 0 ? '#d1d5db' : '#f59e0b', color: selected.length === 0 ? '#9ca3af' : '#1f2937', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 'bold', cursor: selected.length === 0 ? 'not-allowed' : 'pointer' }}
+              style={{ flex: 1, padding: '14px', background: selected.length === 0 ? '#d1d5db' : '#fbbf24', color: selected.length === 0 ? '#9ca3af' : '#1f2937', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: 'bold', cursor: selected.length === 0 ? 'not-allowed' : 'pointer' }}
             >
               発送依頼
             </button>
@@ -300,7 +301,7 @@ function GachaResultInner() {
                 <span style={{ fontSize: '24px', fontWeight: '900', color: '#16a34a' }}>{(userPoints + selected.reduce((sum, id) => { const d = results.find(r => r.id === id); return sum + (d?.pt_exchange || 0); }, 0)).toLocaleString()}</span>
               </div>
             </div>
-            <button onClick={handleSellConfirm} style={{ width: '100%', padding: '16px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer', marginBottom: '12px' }}>
+            <button onClick={handleSellConfirm} style={{ width: '100%', padding: '16px', background: '#f97316', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '800', cursor: 'pointer', marginBottom: '12px' }}>
               コインに交換する
             </button>
             <button onClick={() => setShowSellModal(false)} style={{ width: '100%', padding: '16px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '16px', cursor: 'pointer' }}>
@@ -315,7 +316,7 @@ function GachaResultInner() {
 
 export default function GachaResultPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#999' }}>読み込み中...</div></div>}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#f8f7f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}><div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /><p style={{ color: '#6b7280', fontSize: '14px' }}>読み込み中...</p></div>}>
       <GachaResultInner />
     </Suspense>
   )
