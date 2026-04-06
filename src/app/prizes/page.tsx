@@ -149,7 +149,7 @@ export default function PrizesPage() {
           </div>
         ) : filteredDraws.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-            <img src="/alpoo-happy.png" alt="あるぷー" style={{ width: '180px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
+            <img src="/characters/alpoo-happy.png" alt="あるぷー" style={{ width: '180px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
             <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>
               {tab === 'pending' ? 'まだ獲得商品がありません' : tab === 'sold' ? '交換済みの商品はありません' : '発送申請した商品はありません'}
             </div>
