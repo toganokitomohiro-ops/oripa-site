@@ -171,28 +171,6 @@ export default function EventDetailPage() {
 
   return (
     <div className="has-bottom-nav" style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
-      <style>{`
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        .gacha-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
-        .gacha-btn:hover:not(:disabled) { transform: scale(1.04) !important; box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important; }
-        .gacha-btn:active { transform: scale(0.97) !important; }
-        .event-ceiling-mobile { display: block; }
-        /* モバイル: 通常レイアウト */
-        .event-body { display: block; max-width: 800px; margin: 0 auto; }
-        .event-col-side { display: none; }
-        .event-image-mobile { display: block; }
-        .event-mobile-footer { display: block; }
-        /* PC(1024px+): 2カラム */
-        @media (min-width: 1024px) {
-          .event-body { display: flex; max-width: 1280px; gap: 32px; padding: 24px 24px; align-items: flex-start; }
-          .event-col-main { flex: 1; min-width: 0; }
-          .event-col-side { display: block; width: 380px; flex-shrink: 0; position: sticky; top: 72px; background: white; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
-          .event-image-mobile { display: none; }
-          .event-mobile-footer { display: none !important; }
-          .event-ceiling-mobile { display: none; }
-        }
-      `}</style>
 
       {/* ヘッダー */}
       <Header />

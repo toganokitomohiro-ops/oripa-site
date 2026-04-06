@@ -132,7 +132,6 @@ export default function HistoryPage() {
             <div style={{ fontSize: '13px', color: '#9ca3af' }}>S賞・A賞を当てると記録されます！</div>
           </div>
         ) : (
-          <style>{`@media (min-width: 768px) { .history-grid { grid-template-columns: repeat(2, 1fr) !important; } } @media (min-width: 1024px) { .history-grid { grid-template-columns: repeat(3, 1fr) !important; } }`}</style>
           <div className="history-grid" style={{ display: 'grid', gap: '10px' }}>
             {sorted.map((draw) => (
               <div key={draw.id} style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', display: 'flex', gap: '16px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
