@@ -48,7 +48,6 @@ export default function Home() {
   useEffect(() => {
     fetchEvents()
     fetchBanners()
-    // 初回ロード時にセッションを取得
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user)
@@ -129,7 +128,6 @@ export default function Home() {
       if (!res.ok) { showToast(data.error || 'エラー', 'error'); setPulling(false); return }
       setUserPoints(data.remaining_points)
       setPendingDrawIds(data.draw_ids || [])
-      // APIから返ってきたvideo_urlを使う
       const bestVideo = data.video_url || ''
       if (bestVideo) {
         setVideoUrl(bestVideo)
@@ -166,53 +164,139 @@ export default function Home() {
   })()
 
   return (
-    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#f8f7f5', color: '#1a1a1a', paddingBottom: '70px' }}>
-
-      {/* ヘッダー */}
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#0f1117', color: '#f0f4f8', paddingBottom: '70px' }}>
       <Header />
 
-      <style>{`
-        .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .banner-outer { overflow: hidden; }
-        .banner-slider { display: flex; transition: transform 0.4s ease; }
-        .banner-item { flex-shrink: 0; width: 100%; }
-        .oripa-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .oripa-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
-        .gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
-        .gacha-card-btn:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        @media (min-width: 768px) {
-          .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0 20px; overflow: hidden; position: relative; }
-          .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
-          .banner-slider::-webkit-scrollbar { display: none; }
-          .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important; min-width: 200px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
-          .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
-          .oripa-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
-        }
-        @media (min-width: 1024px) {
-          .oripa-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
-          .oripa-list-wrap { padding-bottom: 32px; }
-        }
-      `}</style>
-      {/* バナースライダー */}
+      {/* ============================================================
+          HERO SECTION
+      ============================================================ */}
+      <div className="hero-section" style={{ padding: '28px 16px 32px', position: 'relative' }}>
+        {/* Decorative blurred circles */}
+        <div style={{ position: 'absolute', top: '-40px', left: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(6,182,212,0.08)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-60px', right: '-40px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(249,115,22,0.07)', filter: 'blur(80px)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', position: 'relative', zIndex: 1 }}>
+          {/* Text Side */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.35)', borderRadius: '999px', padding: '4px 12px', marginBottom: '14px' }}>
+              <span style={{ fontSize: '10px', color: '#06b6d4', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase' }}>🔥 限定オリパ開催中</span>
+            </div>
+
+            {/* Main headline */}
+            <h1 className="hero-title" style={{ fontSize: 'clamp(26px, 5vw, 48px)', fontWeight: '900', lineHeight: 1.15, marginBottom: '12px', letterSpacing: '-0.02em' }}>
+              <span className="text-gradient-cyan">今すぐ開封！</span>
+              <br />
+              <span style={{ color: '#f0f4f8', fontSize: '75%' }}>限定カード獲得チャンス</span>
+            </h1>
+
+            {/* Sub copy */}
+            <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', color: '#94a3b8', marginBottom: '20px', lineHeight: 1.6 }}>
+              フィットネス × カード開封の新体験。<br />
+              <span style={{ color: '#f97316', fontWeight: '700' }}>S賞・A賞</span>を狙って引き放題！
+            </p>
+
+            {/* CTA Buttons */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <a
+                href="#oripa-list"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  padding: '12px 24px', borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                  color: 'white', fontWeight: '800', fontSize: '15px',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 18px rgba(249,115,22,0.45)',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.05)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 24px rgba(249,115,22,0.6)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 18px rgba(249,115,22,0.45)' }}
+              >
+                🎰 オリパを引く
+              </a>
+              {!user && (
+                <a
+                  href="/auth/register"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '12px 20px', borderRadius: '10px',
+                    background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.4)',
+                    color: '#06b6d4', fontWeight: '700', fontSize: '14px',
+                    textDecoration: 'none', transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(6,182,212,0.2)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(6,182,212,0.12)'}
+                >
+                  ✨ 無料登録
+                </a>
+              )}
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display: 'flex', gap: '20px', marginTop: '20px', flexWrap: 'wrap' }}>
+              {[
+                { label: '開催中', value: `${events.length}種`, icon: '🎴' },
+                { label: '会員数', value: '3,200+', icon: '👥' },
+                { label: '排出実績', value: '15,000+', icon: '🏆' },
+              ].map((stat) => (
+                <div key={stat.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '16px' }}>{stat.icon}</span>
+                  <div>
+                    <div style={{ fontSize: '16px', fontWeight: '800', color: '#f0f4f8', lineHeight: 1 }}>{stat.value}</div>
+                    <div style={{ fontSize: '10px', color: '#64748b', fontWeight: '600', marginTop: '1px' }}>{stat.label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Character — Alpoo */}
+          <div className="alpoo-float" style={{ flexShrink: 0, width: 'clamp(100px, 22vw, 200px)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
+              {/* Glow ring behind character */}
+              <div style={{ position: 'absolute', inset: '-12px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 70%)', filter: 'blur(8px)' }} />
+              <img
+                src="/characters/alpoo-happy.png"
+                alt="あるぷー"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  position: 'relative',
+                  zIndex: 1,
+                  mixBlendMode: 'normal',
+                  filter: 'drop-shadow(0 4px 20px rgba(6,182,212,0.4))',
+                }}
+              />
+            </div>
+            <div style={{
+              marginTop: '8px', fontSize: '11px', fontWeight: '700', color: '#06b6d4',
+              background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.3)',
+              borderRadius: '999px', padding: '3px 10px', whiteSpace: 'nowrap',
+            }}>
+              あるぷー
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ============================================================
+          BANNER SLIDER
+      ============================================================ */}
       {banners.length > 0 && (
-        <div className='banner-outer' style={{ position: 'relative' }}>
-          {/* 左矢印 */}
+        <div className="banner-outer" style={{ position: 'relative', marginTop: '8px' }}>
           {currentBanner > 0 && (
             <button
               onClick={() => setCurrentBanner(prev => Math.max(0, prev - 1))}
-              style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.55)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >‹</button>
           )}
-          {/* 右矢印 */}
           {currentBanner < banners.length - 1 && (
             <button
               onClick={() => setCurrentBanner(prev => Math.min(banners.length - 1, prev + 1))}
-              style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-70%)', zIndex: 10, background: 'rgba(0,0,0,0.55)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >›</button>
           )}
-          {/* バナー本体 */}
-          <div className='banner-slider' style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)` }}>
-            {/* 最後のバナーを先頭に */}
+          <div className="banner-slider" style={{ transform: `translateX(-${currentBanner * 100}%)` }}>
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
                 <img src={banners[banners.length - 1].image_url} alt="" style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
@@ -222,26 +306,25 @@ export default function Home() {
               <div
                 key={banner.id}
                 onClick={() => banner.link_url && (window.location.href = banner.link_url)}
-                className='banner-item' style={{ flexShrink: 0, width: '100%', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
+                className="banner-item"
+                style={{ flexShrink: 0, width: '100%', overflow: 'hidden', cursor: banner.link_url ? 'pointer' : 'default' }}
               >
                 <img src={banner.image_url} alt={banner.title} style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
             ))}
-            {/* 最初のバナーを末尾に */}
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
                 <img src={banners[0].image_url} alt="" style={{ width: '100%', aspectRatio: '16/5', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
           </div>
-          {/* ドット */}
           {banners.length > 1 && (
             <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', padding: '8px 0 4px' }}>
               {banners.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentBanner(index)}
-                  style={{ width: index === currentBanner ? '16px' : '6px', height: '6px', borderRadius: '999px', background: index === currentBanner ? '#f97316' : '#ddd', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }}
+                  style={{ width: index === currentBanner ? '16px' : '6px', height: '6px', borderRadius: '999px', background: index === currentBanner ? '#06b6d4' : '#2a3040', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }}
                 />
               ))}
             </div>
@@ -249,26 +332,34 @@ export default function Home() {
         </div>
       )}
 
-      {/* カテゴリータブ */}
-      <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: '60px', zIndex: 40 }}>
+      {/* ============================================================
+          CATEGORY TABS + SORT
+      ============================================================ */}
+      <div id="oripa-list" style={{ background: '#151921', borderBottom: '1px solid #1e2736', position: 'sticky', top: '60px', zIndex: 40 }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {categories.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setActiveCategory(cat.value)}
-              style={{ padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', color: activeCategory === cat.value ? '#f97316' : '#666', borderBottom: activeCategory === cat.value ? '3px solid #f97316' : '3px solid transparent', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+              style={{
+                padding: '14px 20px', fontSize: '14px', fontWeight: '700',
+                border: 'none', background: 'none', cursor: 'pointer',
+                color: activeCategory === cat.value ? '#06b6d4' : '#64748b',
+                borderBottom: activeCategory === cat.value ? '3px solid #06b6d4' : '3px solid transparent',
+                whiteSpace: 'nowrap', transition: 'all 0.2s',
+              }}
             >
               {cat.label}
             </button>
           ))}
         </div>
-        {/* 絞り込みドロップダウン */}
+        {/* Filter row */}
         <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '8px 16px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '13px', color: '#666', fontWeight: '600' }}>🔥 {filteredEvents.length}件開催中！</span>
+          <span style={{ fontSize: '13px', color: '#f97316', fontWeight: '700' }}>🔥 {filteredEvents.length}件開催中！</span>
           <select
             value={sortFilter}
             onChange={(e) => setSortFilter(e.target.value)}
-            style={{ padding: '6px 32px 6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+            style={{ padding: '6px 32px 6px 10px', borderRadius: '6px', border: '1px solid #2a3040', background: '#1a1f2e', color: '#f0f4f8', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
           >
             <option value="">おすすめ順</option>
             <option value="high_point">コインが高い順</option>
@@ -281,71 +372,123 @@ export default function Home() {
         </div>
       </div>
 
-      {/* オリパ一覧 */}
-      <div className="oripa-list-wrap" style={{ padding: '10px 8px 80px' }}>
+      {/* ============================================================
+          ORIPA GRID
+      ============================================================ */}
+      <div className="oripa-list-wrap" style={{ padding: '12px 8px 80px' }}>
         {filteredEvents.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-            <img src="/characters/arukun-greeting.png" alt="あーるくん" style={{ width: '180px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
-            <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>現在開催中のオリパはありません</div>
-            <div style={{ fontSize: '13px', color: '#9ca3af' }}>近日公開予定！お楽しみに！</div>
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: '#1a1f2e', borderRadius: '16px', border: '1px solid #2a3040' }}>
+            <img src="/characters/arukun-greeting.png" alt="あーるくん" style={{ width: '180px', height: 'auto', marginBottom: '12px', filter: 'drop-shadow(0 4px 16px rgba(6,182,212,0.25))' }} />
+            <div style={{ fontSize: '15px', fontWeight: '700', color: '#f0f4f8', marginBottom: '4px' }}>現在開催中のオリパはありません</div>
+            <div style={{ fontSize: '13px', color: '#64748b' }}>近日公開予定！お楽しみに！</div>
           </div>
         ) : (
-          <div className='oripa-grid'>
+          <div className="oripa-grid">
             {filteredEvents.map((event) => {
               const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
               return (
-                <div key={event.id} className="oripa-card" style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-                  {/* バナー画像 */}
-                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
+                <div
+                  key={event.id}
+                  className="oripa-card"
+                  style={{
+                    background: '#1a1f2e',
+                    borderRadius: '14px',
+                    overflow: 'hidden',
+                    border: '1px solid #2a3040',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                    position: 'relative',
+                  }}
+                >
+                  {/* ✨ Sparkle badge (appears on hover) */}
+                  <div
+                    className="sparkle-badge"
+                    style={{
+                      position: 'absolute', top: '8px', right: '8px', zIndex: 10,
+                      background: 'linear-gradient(135deg, #f5c518, #f97316)',
+                      borderRadius: '999px', padding: '2px 8px',
+                      fontSize: '11px', fontWeight: '800', color: 'white',
+                      boxShadow: '0 2px 8px rgba(245,197,24,0.5)',
+                    }}
+                  >
+                    ✨ HOT
+                  </div>
+
+                  {/* Thumbnail */}
+                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#0d1520', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
-                      <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img
+                        src={event.image_url}
+                        alt={event.name}
+                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
+                      />
                     ) : (
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', opacity: 0.15 }}>🎴</div>
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', opacity: 0.2 }}>🎴</div>
                     )}
                     {isSoldOut && (
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ color: 'white', fontWeight: '800', fontSize: '18px', border: '2px solid white', padding: '4px 16px' }}>SOLD OUT</span>
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ color: 'white', fontWeight: '800', fontSize: '18px', border: '2px solid rgba(255,255,255,0.7)', padding: '4px 16px', borderRadius: '4px', letterSpacing: '0.1em' }}>SOLD OUT</span>
                       </div>
                     )}
+                    {/* Light sheen overlay */}
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%)', pointerEvents: 'none' }} />
                   </a>
 
-                  {/* 情報エリア */}
-                  <div style={{ padding: '8px 10px 10px' }}>
-                    {/* オリパ名 */}
-                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '6px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                  {/* Info */}
+                  <div style={{ padding: '10px 10px 12px' }}>
+                    {/* Name */}
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#e2e8f0', marginBottom: '8px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                       {event.name}
                     </div>
-                    {/* コイン・残り口数 */}
+
+                    {/* Price + Remaining */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
+                        <img
+                          src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png"
+                          style={{ width: '20px', height: '20px', objectFit: 'contain', flexShrink: 0, background: '#1f2937', borderRadius: '50%', padding: '2px' }}
+                          alt="coin"
+                        />
                         <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
-                        <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
+                        <span style={{ fontSize: '11px', color: '#475569' }}>/1回</span>
                       </div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
-                        残り<span style={{ fontWeight: '700', color: '#333' }}>{event.remaining_count.toLocaleString()}</span>/{event.total_count.toLocaleString()}
+                      <div style={{ fontSize: '11px', color: '#475569' }}>
+                        残り<span style={{ fontWeight: '700', color: '#94a3b8' }}>{event.remaining_count.toLocaleString()}</span>/{event.total_count.toLocaleString()}
                       </div>
                     </div>
 
-                    {/* 残り口数バー */}
-                    <div style={{ background: '#eee', borderRadius: '999px', height: '5px', marginBottom: '8px' }}>
-                      <div style={{ background: remainingPercent > 50 ? '#4caf50' : remainingPercent > 20 ? '#ff9800' : '#f44336', borderRadius: '999px', height: '6px', width: remainingPercent + '%' }} />
+                    {/* Progress bar */}
+                    <div style={{ background: '#0d1520', borderRadius: '999px', height: '5px', marginBottom: '10px' }}>
+                      <div style={{
+                        background: remainingPercent > 50 ? '#22c55e' : remainingPercent > 20 ? '#f97316' : '#ef4444',
+                        borderRadius: '999px', height: '5px', width: remainingPercent + '%',
+                        boxShadow: remainingPercent > 50 ? '0 0 6px rgba(34,197,94,0.6)' : remainingPercent > 20 ? '0 0 6px rgba(249,115,22,0.6)' : '0 0 6px rgba(239,68,68,0.6)',
+                        transition: 'width 0.5s ease',
+                      }} />
                     </div>
 
-                    {/* ガチャボタン */}
+                    {/* Gacha Buttons */}
                     {isSoldOut ? (
-                      <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0', borderRadius: '6px', color: '#999', fontSize: '13px', fontWeight: '700' }}>売り切れ</div>
+                      <div style={{ textAlign: 'center', padding: '10px', background: '#0d1520', borderRadius: '8px', color: '#475569', fontSize: '13px', fontWeight: '700' }}>売り切れ</div>
                     ) : sortedOptions.length > 0 ? (
                       <div style={{ display: 'flex', gap: '6px' }}>
                         {sortedOptions.map((opt) => (
-                          <button key={opt.id} className="gacha-card-btn" onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 {opt.label}</button>
+                          <button
+                            key={opt.id}
+                            className="gacha-card-btn"
+                            onClick={() => openConfirm(event, opt)}
+                            style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '13px', fontWeight: '900', border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
+                          >🎰 {opt.label}</button>
                         ))}
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button className="gacha-card-btn" onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: '#f97316', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 1回ガチャ</button>
+                        <button
+                          className="gacha-card-btn"
+                          onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })}
+                          style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: 'linear-gradient(135deg,#f97316,#ea580c)', color: 'white', borderRadius: '8px', fontSize: '13px', fontWeight: '900', border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px rgba(249,115,22,0.4)' }}
+                        >🎰 1回ガチャ</button>
                       </div>
                     )}
                   </div>
@@ -355,38 +498,55 @@ export default function Home() {
           </div>
         )}
       </div>
+
       <BottomNav />
-    {/* 確認ポップアップ（ボトムシート） */}
+
+      {/* ============================================================
+          CONFIRM BOTTOM SHEET
+      ============================================================ */}
       {showConfirm && confirmOption && confirmEvent && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'white', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: '480px', overflow: 'hidden' }}>
-            {/* バナー画像 */}
-            <div style={{ position: 'relative', width: '100%', paddingBottom: '40%', overflow: 'hidden', background: '#1f2937' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: '#1a1f2e', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: '480px', overflow: 'hidden', border: '1px solid #2a3040' }}>
+            {/* Banner */}
+            <div style={{ position: 'relative', width: '100%', paddingBottom: '40%', overflow: 'hidden', background: '#0d1520' }}>
               {confirmEvent.image_url
                 ? <img src={confirmEvent.image_url} alt={confirmEvent.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                 : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>🎴</div>
               }
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #1a1f2e 0%, transparent 60%)', pointerEvents: 'none' }} />
             </div>
+
             <div style={{ padding: '20px 20px 32px' }}>
-              <p style={{ fontSize: '15px', color: '#374151', textAlign: 'center', marginBottom: '16px' }}>
+              <p style={{ fontSize: '15px', color: '#94a3b8', textAlign: 'center', marginBottom: '16px' }}>
                 コインを消費して、<span style={{ fontWeight: '900', color: '#f97316' }}>{confirmOption.count}回</span>ガチャを引きますか？
               </p>
-              {/* コイン表示 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', background: '#f9fafb', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
+
+              {/* Coin display */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', background: '#0f1117', borderRadius: '12px', padding: '14px', marginBottom: '16px', border: '1px solid #2a3040' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '22px', height: '22px', objectFit: 'contain', background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '22px', height: '22px', objectFit: 'contain', borderRadius: '50%', padding: '2px' }} alt="coin" />
                   <span style={{ fontSize: '20px', fontWeight: '700', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
                 </div>
-                <span style={{ color: '#9ca3af', fontSize: '20px' }}>→</span>
+                <span style={{ color: '#475569', fontSize: '20px' }}>→</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '22px', height: '22px', objectFit: 'contain', background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
-                  <span style={{ fontSize: '20px', fontWeight: '700', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>{(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}</span>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '22px', height: '22px', objectFit: 'contain', borderRadius: '50%', padding: '2px' }} alt="coin" />
+                  <span style={{ fontSize: '20px', fontWeight: '700', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#f0f4f8' }}>
+                    {(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}
+                  </span>
                 </div>
               </div>
-              <button onClick={handleGacha} disabled={pulling} style={{ width: '100%', padding: '18px', background: pulling ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: pulling ? 'none' : '0 4px 14px rgba(249,115,22,0.4)', transition: 'transform 0.1s', transform: pulling ? 'none' : undefined }}>
+
+              <button
+                onClick={handleGacha}
+                disabled={pulling}
+                style={{ width: '100%', padding: '18px', background: pulling ? '#374151' : 'linear-gradient(135deg,#f97316,#ea580c)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: pulling ? 'none' : '0 4px 18px rgba(249,115,22,0.5)', transition: 'transform 0.1s' }}
+              >
                 {pulling ? '処理中...' : '🎰 ガチャを引く！'}
               </button>
-              <button onClick={() => setShowConfirm(false)} style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', cursor: 'pointer' }}>
+              <button
+                onClick={() => setShowConfirm(false)}
+                style={{ width: '100%', padding: '14px', background: 'transparent', color: '#64748b', border: '1px solid #2a3040', borderRadius: '12px', fontSize: '15px', cursor: 'pointer' }}
+              >
                 キャンセル
               </button>
             </div>
@@ -394,11 +554,22 @@ export default function Home() {
         </div>
       )}
 
-      {/* 動画再生 */}
+      {/* ============================================================
+          VIDEO PLAYER
+      ============================================================ */}
       {showVideo && videoUrl && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
-          <video src={videoUrl} autoPlay playsInline onEnded={() => { setShowVideo(false); window.location.href = '/gacha-result?draw_ids=' + pendingDrawIds.join(',') + '&event_id=' + (confirmEvent?.id || '') }} style={{ maxWidth: '100%', maxHeight: '100%' }} />
-          <button onClick={() => { setShowVideo(false); window.location.href = '/gacha-result?draw_ids=' + pendingDrawIds.join(',') }} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '999px', padding: '8px 16px', fontSize: '14px', cursor: 'pointer' }}>スキップ</button>
+          <video
+            src={videoUrl}
+            autoPlay
+            playsInline
+            onEnded={() => { setShowVideo(false); window.location.href = '/gacha-result?draw_ids=' + pendingDrawIds.join(',') + '&event_id=' + (confirmEvent?.id || '') }}
+            style={{ maxWidth: '100%', maxHeight: '100%' }}
+          />
+          <button
+            onClick={() => { setShowVideo(false); window.location.href = '/gacha-result?draw_ids=' + pendingDrawIds.join(',') }}
+            style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.15)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '999px', padding: '8px 16px', fontSize: '14px', cursor: 'pointer' }}
+          >スキップ</button>
         </div>
       )}
     </div>
