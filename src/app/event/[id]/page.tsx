@@ -499,5 +499,6 @@ export default function EventDetailPage() {
         </div>
       )}
     </div>
+    </div>
   )
 }
