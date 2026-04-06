@@ -10,6 +10,7 @@ type Profile = {
   id: string
   email: string
   points: number
+  fp_points: number
   total_spent: number
   is_admin: boolean
 }
@@ -51,10 +52,10 @@ export default function MyPage() {
   }
 
   const getRank = (totalSpent: number) => {
-    if (totalSpent >= 1000000) return { name: 'PLATINUM', color: '#e2e8f0', textColor: '#475569', next: null }
-    if (totalSpent >= 300000) return { name: 'GOLD', color: '#fef3c7', textColor: '#d97706', next: 1000000 }
-    if (totalSpent >= 100000) return { name: 'SILVER', color: '#f1f5f9', textColor: '#64748b', next: 300000 }
-    return { name: 'BRONZE', color: '#fef3c7', textColor: '#b45309', next: 100000 }
+    if (totalSpent >= 1000000) return { name: 'PLATINUM', color: '#e2e8f0', gradientFrom: '#e2e8f0', gradientTo: '#cbd5e1', textColor: '#475569', next: null, min: 1000000 }
+    if (totalSpent >= 300000) return { name: 'GOLD', color: '#fef3c7', gradientFrom: '#fbbf24', gradientTo: '#f59e0b', textColor: '#7c5000', next: 1000000, min: 300000 }
+    if (totalSpent >= 100000) return { name: 'SILVER', color: '#f1f5f9', gradientFrom: '#e2e8f0', gradientTo: '#94a3b8', textColor: '#334155', next: 300000, min: 100000 }
+    return { name: 'BRONZE', color: '#fef3c7', gradientFrom: '#fdba74', gradientTo: '#ea580c', textColor: '#7c2d00', next: 100000, min: 0 }
   }
 
   if (loading) return (
@@ -80,43 +81,76 @@ export default function MyPage() {
 
         {/* プロフィール */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid #e5e7eb' }}>
-          <div style={{ width: '52px', height: '52px', background: '#f97316', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', color: 'white', fontWeight: '900', flexShrink: 0 }}>
-            {profile.email?.[0]?.toUpperCase() || '?'}
+          {/* SVG人物アイコン */}
+          <div style={{ width: '52px', height: '52px', background: '#e0f2fe', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>{profile.email}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: '#1f2937', marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profile.email}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
               <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0, background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
-              <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316' }}>{profile.points?.toLocaleString()}</span>
-              <span style={{ fontSize: '12px', color: '#999' }}>コイン保有</span>
+              <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{profile.points?.toLocaleString()}</span>
+              <span style={{ fontSize: '11px', color: '#999' }}>コイン</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '14px', lineHeight: 1 }}>👟</span>
+              <span style={{ fontSize: '16px', fontWeight: '900', color: '#22c55e' }}>{(profile.fp_points || 0).toLocaleString()}</span>
+              <span style={{ fontSize: '11px', color: '#999' }}>FPコイン</span>
             </div>
           </div>
-          <a href="/buy-points" style={{ padding: '8px 16px', background: '#f97316', color: 'white', borderRadius: '12px', fontSize: '13px', fontWeight: '700', textDecoration: 'none', flexShrink: 0 }}>コイン購入</a>
+          <a href="/buy-points" style={{ padding: '8px 14px', background: '#f97316', color: 'white', borderRadius: '12px', fontSize: '12px', fontWeight: '700', textDecoration: 'none', flexShrink: 0 }}>コイン購入</a>
         </div>
 
         {/* ランク */}
-        <div style={{ background: `linear-gradient(135deg, ${rank.color}, ${rank.color})`, borderRadius: '12px', padding: '16px', marginBottom: '12px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '48px', height: '48px', background: rank.textColor, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🏅</div>
-            <div>
-              <div style={{ fontSize: '12px', color: rank.textColor, fontWeight: '600', marginBottom: '2px' }}>現在のランク</div>
-              <div style={{ fontSize: '22px', fontWeight: '900', color: rank.textColor }}>{rank.name}</div>
-              {rank.next && <div style={{ fontSize: '11px', color: rank.textColor, opacity: 0.8 }}>次のランクまで ¥{(rank.next - (profile.total_spent || 0)).toLocaleString()}</div>}
+        <div style={{ background: `linear-gradient(135deg, ${rank.gradientFrom}, ${rank.gradientTo})`, borderRadius: '12px', padding: '16px', marginBottom: '12px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '48px', height: '48px', background: 'rgba(255,255,255,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🏅</div>
+              <div>
+                <div style={{ fontSize: '11px', color: rank.textColor, fontWeight: '600', marginBottom: '2px', opacity: 0.8 }}>現在のランク</div>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: rank.textColor, letterSpacing: '1px' }}>{rank.name}</div>
+              </div>
             </div>
+            {rank.next && (
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '10px', color: rank.textColor, opacity: 0.75, marginBottom: '2px' }}>次のランクまで</div>
+                <div style={{ fontSize: '13px', fontWeight: '800', color: rank.textColor }}>¥{(rank.next - (profile.total_spent || 0)).toLocaleString()}</div>
+              </div>
+            )}
           </div>
-          <span style={{ color: rank.textColor, fontSize: '18px' }}>›</span>
+          {rank.next && (
+            <div>
+              <div style={{ background: 'rgba(255,255,255,0.35)', borderRadius: '999px', height: '6px', overflow: 'hidden' }}>
+                <div style={{
+                  background: 'white',
+                  borderRadius: '999px',
+                  height: '6px',
+                  width: Math.min(100, Math.round(((profile.total_spent || 0) - rank.min) / (rank.next - rank.min) * 100)) + '%',
+                  transition: 'width 0.5s'
+                }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px', color: rank.textColor, opacity: 0.7 }}>
+                <span>¥{(profile.total_spent || 0).toLocaleString()}</span>
+                <span>¥{rank.next.toLocaleString()}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 統計 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '20px' }}>
           {[
-            { label: '総開封数', value: totalCards + '回', color: '#1f2937' },
-            { label: '獲得カード', value: totalCards + '枚', color: '#3b82f6' },
-            { label: '獲得総額', value: '¥' + totalValue.toLocaleString(), color: '#f97316' },
+            { label: '総開封数', value: totalCards + '回', color: '#1f2937', icon: '🎰' },
+            { label: '獲得カード', value: totalCards + '枚', color: '#3b82f6', icon: '🎴' },
+            { label: '獲得総額', value: '¥' + totalValue.toLocaleString(), color: '#f97316', icon: '💰' },
           ].map((stat) => (
-            <div key={stat.label} style={{ background: 'white', borderRadius: '10px', padding: '14px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
-              <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '6px' }}>{stat.label}</div>
-              <div style={{ fontSize: '16px', fontWeight: '800', color: stat.color }}>{stat.value}</div>
+            <div key={stat.label} style={{ background: 'white', borderRadius: '10px', padding: '12px 8px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '18px', marginBottom: '4px' }}>{stat.icon}</div>
+              <div style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>{stat.label}</div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: stat.color }}>{stat.value}</div>
             </div>
           ))}
         </div>

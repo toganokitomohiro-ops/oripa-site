@@ -51,17 +51,34 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f4' }}>
       {/* ヘッダー */}
       <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb' }}>
-        <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-            <img src="/logo.png" alt="fitオリパ" style={{ height: '32px', width: 'auto' }} />
+            <img src="/logo.png" alt="fitオリパ" style={{ height: '40px', width: 'auto' }} />
           </a>
         </div>
       </header>
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 16px' }}>
+        {/* キャラクター + キャッチコピー */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <Image
+            src="/characters/alpoo-happy.png"
+            alt="あるぷー"
+            width={180}
+            height={180}
+            style={{ width: '180px', height: 'auto', mixBlendMode: 'multiply', display: 'inline-block' }}
+          />
+          <p style={{ fontSize: '17px', fontWeight: '800', color: '#1f2937', marginTop: '4px', letterSpacing: '-0.3px' }}>
+            いっしょにガチャしようよ！🐩
+          </p>
+          <p style={{ fontSize: '13px', color: '#6b7280', marginTop: '4px' }}>
+            無料登録して、歩いてポイントをためよう！
+          </p>
+        </div>
+
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '16px' }}>新規登録</h1>
 
         {/* バナー */}
@@ -176,9 +193,6 @@ export default function RegisterPage() {
             <a href="/auth/login" style={{ fontSize: '14px', color: '#f97316', fontWeight: '700', textDecoration: 'none' }}>ログインはこちら</a>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-            <Image src="/characters/alpoo-standby.png" alt="あるぷー" width={100} height={100} style={{ width: '100px', height: 'auto', mixBlendMode: 'multiply' }} />
-          </div>
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', marginTop: '16px' }}>

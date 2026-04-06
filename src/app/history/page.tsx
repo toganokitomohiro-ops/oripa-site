@@ -127,7 +127,7 @@ export default function HistoryPage() {
           </div>
         ) : sorted.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-            <img src="/characters/alpoo-standby.png" alt="あるぷー" style={{ width: '96px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
+            <img src="/characters/alpoo-standby.png" alt="あるぷー" style={{ width: '180px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
             <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>まだ高額当選がありません</div>
             <div style={{ fontSize: '13px', color: '#9ca3af' }}>S賞・A賞を当てると記録されます！</div>
           </div>

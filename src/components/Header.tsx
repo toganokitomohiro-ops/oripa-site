@@ -51,7 +51,7 @@ export default function Header() {
               {/* FPコイン：グリーン */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                 <span style={{ fontSize: '20px', lineHeight: 1 }}>👟</span>
-                <span style={{ fontSize: '13px', fontWeight: '800', color: '#22c55e' }}>{fpPoints.toLocaleString()}</span>
+                <span style={{ fontSize: '14px', fontWeight: '900', color: '#22c55e', letterSpacing: '-0.5px' }}>{fpPoints.toLocaleString()}</span>
               </div>
               {/* 肉球コイン＋購入ボタン：背景なし・画像大きく・白透過 */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -60,7 +60,7 @@ export default function Header() {
                   style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }}
                   alt="コイン"
                 />
-                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{points.toLocaleString()}</span>
+                <span style={{ fontSize: '14px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>{points.toLocaleString()}</span>
                 <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', background: '#f97316', borderRadius: '50%', textDecoration: 'none', color: 'white', fontSize: '14px', fontWeight: '900', marginLeft: '2px' }}>+</a>
               </div>
               {/* ベル：背景なし */}
