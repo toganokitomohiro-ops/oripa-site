@@ -166,13 +166,13 @@ export default function Home() {
   })()
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5', color: '#1a1a1a', paddingBottom: '70px' }}>
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#f8f7f5', color: '#1a1a1a', paddingBottom: '70px' }}>
 
       {/* ヘッダー */}
       <Header />
 
       <style>{`
-        .oripa-grid { display: flex; flex-direction: column; gap: 12px; }
+        .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .banner-outer { overflow: hidden; }
         .banner-slider { display: flex; transition: transform 0.4s ease; }
         .banner-item { flex-shrink: 0; width: 100%; }
@@ -181,17 +181,16 @@ export default function Home() {
         .gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
         .gacha-card-btn:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         @media (min-width: 768px) {
-          .banner-outer { max-width: 1100px; margin: 12px auto; padding: 0 16px; overflow: hidden; position: relative; }
+          .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0 20px; overflow: hidden; position: relative; }
           .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
           .banner-slider::-webkit-scrollbar { display: none; }
-          .banner-item { flex-shrink: 0 !important; width: 260px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
-          .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 320px !important; min-width: 200px !important; } .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
-          .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
-          .oripa-card-pc { border-radius: 12px; overflow: hidden; background: white; border: 1px solid #e8e8e8; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-          .oripa-card-pc-img { padding-bottom: 60% !important; }
-          .oripa-card-pc-info { padding: 14px 16px 16px !important; }
-          .oripa-card-pc-price { font-size: 22px !important; }
-          .oripa-card-pc-btn { padding: 14px 4px !important; font-size: 15px !important; border-radius: 8px !important; }
+          .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important; min-width: 200px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
+          .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
+          .oripa-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+        }
+        @media (min-width: 1024px) {
+          .oripa-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+          .oripa-list-wrap { padding-bottom: 32px; }
         }
       `}</style>
       {/* バナースライダー */}
@@ -283,7 +282,7 @@ export default function Home() {
       </div>
 
       {/* オリパ一覧 */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 8px 80px' }}>
+      <div className="oripa-list-wrap" style={{ padding: '10px 8px 80px' }}>
         {filteredEvents.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
             <img src="/characters/arukun-greeting.png" alt="あーるくん" style={{ width: '180px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />

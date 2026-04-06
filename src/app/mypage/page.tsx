@@ -72,11 +72,11 @@ export default function MyPage() {
   const totalValue = draws.reduce((sum, d) => sum + (d.products?.market_value || 0), 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
 
       <Header />
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px 16px' }}>
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '20px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '20px' }}>マイページ</h1>
 
         {/* プロフィール */}

@@ -16,12 +16,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+/* ダークモード無効化 */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   background: var(--background);
@@ -31,4 +32,15 @@ body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* PC: BottomNav が非表示になるためパディング不要 */
+@media (min-width: 768px) {
+  .has-bottom-nav {
+    padding-bottom: 0 !important;
+  }
+  /* prizes ページのアクションフッターを BottomNav 分上げない */
+  .prizes-action-footer {
+    bottom: 0 !important;
+  }
 }

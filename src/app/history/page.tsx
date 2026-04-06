@@ -73,10 +73,10 @@ export default function HistoryPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
       <Header />
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px 16px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 16px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>当選履歴</h1>
         <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '16px' }}>
           高額当選（S賞・A賞）の記録です
@@ -132,7 +132,8 @@ export default function HistoryPage() {
             <div style={{ fontSize: '13px', color: '#9ca3af' }}>S賞・A賞を当てると記録されます！</div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '10px' }}>
+          <style>{`@media (min-width: 768px) { .history-grid { grid-template-columns: repeat(2, 1fr) !important; } } @media (min-width: 1024px) { .history-grid { grid-template-columns: repeat(3, 1fr) !important; } }`}</style>
+          <div className="history-grid" style={{ display: 'grid', gap: '10px' }}>
             {sorted.map((draw) => (
               <div key={draw.id} style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', display: 'flex', gap: '16px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                 {/* 商品画像 */}

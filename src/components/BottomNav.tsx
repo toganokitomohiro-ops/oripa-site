@@ -44,7 +44,7 @@ export default function BottomNav() {
   }
 
   return (
-    <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', zIndex: 50, boxShadow: '0 -2px 8px rgba(0,0,0,0.06)' }}>
+    <nav className="md:hidden" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', zIndex: 50, boxShadow: '0 -2px 8px rgba(0,0,0,0.06)' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '72px' }}>
         {navItems.map((item) => {
           const isActive = pathname === item.href

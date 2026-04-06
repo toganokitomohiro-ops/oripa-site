@@ -170,29 +170,44 @@ export default function EventDetailPage() {
   const remainingPercent = Math.min(100, Math.round((event.remaining_count / event.total_count) * 100))
 
   return (
-    <div style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         .gacha-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
         .gacha-btn:hover:not(:disabled) { transform: scale(1.04) !important; box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important; }
         .gacha-btn:active { transform: scale(0.97) !important; }
+        .event-ceiling-mobile { display: block; }
+        /* モバイル: 通常レイアウト */
+        .event-body { display: block; max-width: 800px; margin: 0 auto; }
+        .event-col-side { display: none; }
+        .event-image-mobile { display: block; }
+        .event-mobile-footer { display: block; }
+        /* PC(1024px+): 2カラム */
+        @media (min-width: 1024px) {
+          .event-body { display: flex; max-width: 1280px; gap: 32px; padding: 24px 24px; align-items: flex-start; }
+          .event-col-main { flex: 1; min-width: 0; }
+          .event-col-side { display: block; width: 380px; flex-shrink: 0; position: sticky; top: 72px; background: white; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
+          .event-image-mobile { display: none; }
+          .event-mobile-footer { display: none !important; }
+          .event-ceiling-mobile { display: none; }
+        }
       `}</style>
 
-      {/* ヘッダー - TOPと同じ */}
+      {/* ヘッダー */}
       <Header />
 
       {/* パンくずリスト */}
       <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#9ca3af' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#9ca3af' }}>
           <a href="/" style={{ color: '#9ca3af', textDecoration: 'none' }}>ガチャ一覧</a>
           <span>›</span>
           <span style={{ color: '#374151', fontWeight: '600' }}>{event.name}</span>
         </div>
       </div>
 
-      {/* メイン画像 - オリパワン800×525 */}
-      <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+      {/* モバイル: メイン画像（PC では非表示） */}
+      <div className="event-image-mobile" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
         <div style={{ position: 'relative', width: '100%', paddingBottom: '65.6%', background: '#f3f4f6', overflow: 'hidden' }}>
           {event.image_url
             ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -201,16 +216,20 @@ export default function EventDetailPage() {
         </div>
       </div>
 
+      {/* 2カラム本体 */}
+      <div className="event-body">
+        {/* 左カラム: 賞品一覧 */}
+        <div className="event-col-main">
       {/* 賞品一覧 - オリパワン完全再現 */}
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '16px' }}>
+      <div style={{ padding: '16px' }}>
 
         {error && (
           <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '10px 14px', marginBottom: '12px', color: '#dc2626', fontSize: '14px', textAlign: 'center' }}>{error}</div>
         )}
 
-        {/* 天井カウンター */}
+        {/* 天井カウンター（モバイルのみ。PCは右サイドバーに表示） */}
         {event.ceiling_count > 0 && userId && (
-          <div style={{ background: '#eff6ff', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', border: '1px solid #bfdbfe' }}>
+          <div className="event-ceiling-mobile" style={{ background: '#eff6ff', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', border: '1px solid #bfdbfe' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <span style={{ fontSize: '13px', color: '#3b82f6', fontWeight: '700' }}>🔢 天井カウンター</span>
               <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e40af' }}>{userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定</span>
@@ -311,10 +330,83 @@ export default function EventDetailPage() {
           ))}
           <p style={{ fontSize: '11px', color: '#6b7280' }}>以上、ご了承の上お買い求めください。</p>
         </div>
-      </div>
+        </div>{/* end event-col-main */}
 
-      {/* 固定フッター - オリパワン完全再現 */}
-      <div style={{ position: 'sticky', bottom: 0, background: 'white', borderRadius: '16px 16px 0 0', boxShadow: '0 -4px 16px rgba(0,0,0,0.12)', padding: '10px 12px 16px', zIndex: 50 }}>
+        {/* 右カラム: PC専用 - 画像 + ガチャパネル */}
+        <div className="event-col-side">
+          {/* PC: 画像 */}
+          <div style={{ position: 'relative', width: '100%', paddingBottom: '65.6%', background: '#f3f4f6', overflow: 'hidden' }}>
+            {event.image_url
+              ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
+            }
+          </div>
+          {/* PC: ガチャパネル */}
+          <div style={{ padding: '16px 20px 24px' }}>
+            {/* 天井カウンター（PCサイドバー） */}
+            {event.ceiling_count > 0 && userId && (
+              <div style={{ background: '#eff6ff', borderRadius: '10px', padding: '10px 14px', marginBottom: '14px', border: '1px solid #bfdbfe' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: '700' }}>🔢 天井</span>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#1e40af' }}>{userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定</span>
+                </div>
+                <div style={{ background: '#dbeafe', borderRadius: '999px', height: '4px' }}>
+                  <div style={{ background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', borderRadius: '999px', height: '4px', width: `${Math.min((userCeilingCount / event.ceiling_count) * 100, 100)}%` }} />
+                </div>
+              </div>
+            )}
+            {/* 価格・残り */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5c518, #e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>C</span>
+                </div>
+                <span style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>/1回</span>
+              </div>
+              <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600' }}>残り{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
+            </div>
+            {/* プログレスバー */}
+            <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '5px', marginBottom: '14px' }}>
+              <div style={{ background: remainingPercent > 20 ? '#22c55e' : '#ef4444', borderRadius: '999px', height: '5px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
+            </div>
+            {/* ガチャボタン */}
+            {isSoldOut ? (
+              <div style={{ textAlign: 'center', padding: '14px', background: '#f3f4f6', borderRadius: '10px', color: '#9ca3af', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
+            ) : gachaOptions.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {gachaOptions.map(opt => (
+                  <button key={opt.id} className="gacha-btn" onClick={() => openConfirm(opt)} disabled={pulling}
+                    style={{ width: '100%', padding: '16px', background: pulling ? '#9ca3af' : opt.color, color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer' }}>
+                    {pulling ? '処理中...' : `🎰 ${opt.label}`}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f5a623', is_active: true })} style={{ width: '100%', padding: '16px', background: '#f5a623', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>🎰 1回ガチャ</button>
+                <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ width: '100%', padding: '16px', background: '#e63946', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
+              </div>
+            )}
+            {!userId && (
+              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', marginTop: '10px' }}>
+                ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#e67e00', fontWeight: '700' }}>ログイン</a>が必要です
+              </p>
+            )}
+            {/* コイン残高 */}
+            {userId && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', padding: '10px', background: '#f9fafb', borderRadius: '10px' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '24px', height: '24px', objectFit: 'contain', background: '#fef3c7', borderRadius: '50%', padding: '2px' }} alt="コイン" />
+                <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316' }}>{userPoints.toLocaleString()}</span>
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
+              </div>
+            )}
+          </div>
+        </div>{/* end event-col-side */}
+      </div>{/* end event-body */}
+
+      {/* モバイル専用: 固定フッター（PCでは非表示） */}
+      <div className="event-mobile-footer" style={{ position: 'sticky', bottom: 0, background: 'white', borderRadius: '16px 16px 0 0', boxShadow: '0 -4px 16px rgba(0,0,0,0.12)', padding: '10px 12px 16px', zIndex: 50 }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           {/* 価格・残り */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px', padding: '0 4px' }}>

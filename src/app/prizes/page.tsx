@@ -121,13 +121,13 @@ export default function PrizesPage() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '160px' }}>
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '160px' }}>
       {/* ヘッダー */}
       <Header />
 
       {/* タブナビゲーション */}
     <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ maxWidth: '480px', width: '100%', display: 'flex' }}>
+      <div style={{ maxWidth: '900px', width: '100%', display: 'flex' }}>
         {tabs.map(t => (
           <button
             key={t.key}
@@ -141,7 +141,7 @@ export default function PrizesPage() {
       </div>
     </div>
 
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '12px 16px' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '12px 16px' }}>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
             <div style={{ width: '40px', height: '40px', border: '4px solid #f3f4f6', borderTop: '4px solid #f97316', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -158,7 +158,8 @@ export default function PrizesPage() {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <style>{`@media (min-width: 768px) { .prizes-list { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 12px; } } @media (min-width: 1024px) { .prizes-list { grid-template-columns: repeat(3, 1fr); } }`}</style>
+          <div className="prizes-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {filteredDraws.map((draw) => {
               const isSelected = selected.includes(draw.id)
               return (
@@ -211,7 +212,7 @@ export default function PrizesPage() {
 
       {/* 固定フッター */}
       {tab === 'pending' && (
-        <div style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
+        <div className="prizes-action-footer" style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', padding: '12px 16px', zIndex: 20 }}>
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

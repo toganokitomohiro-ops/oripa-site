@@ -35,7 +35,10 @@ export default function FpExchangePage() {
   const [loginBonusAmount, setLoginBonusAmount] = useState(0)
 
   useEffect(() => {
-    const update = () => setCols(window.innerWidth >= 768 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)')
+    const update = () => {
+      const w = window.innerWidth
+      setCols(w >= 1280 ? 'repeat(5, 1fr)' : w >= 1024 ? 'repeat(4, 1fr)' : w >= 768 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)')
+    }
     update()
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
@@ -100,7 +103,7 @@ export default function FpExchangePage() {
     : items.filter(i => i.category_id === activeCategory)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
+    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: '#f8f7f5', paddingBottom: '70px' }}>
       {showLoginBonus && (
         <div style={{
           position: 'fixed', top: '70px', left: '50%', transform: 'translateX(-50%)',
