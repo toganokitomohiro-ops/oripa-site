@@ -46,46 +46,31 @@ export default function Header() {
   ]
 
   return (
-    <header style={{
-      background: 'rgba(15,17,23,0.92)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
-      borderBottom: '1px solid rgba(42,48,64,0.8)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
-      width: '100%',
-    }}>
+    <header style={{ background: 'white', borderBottom: '1px solid #e8e8e8', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
       <style>{`
         .header-inner { max-width: 480px; margin: 0 auto; padding: 0 12px; }
         .header-pc-nav { display: none; }
         @media (min-width: 768px) {
           .header-inner { max-width: 1280px; padding: 0 24px; }
-          .header-pc-nav {
-            display: flex; align-items: center; gap: 2px; margin-left: 28px;
-          }
+          .header-pc-nav { display: flex; align-items: center; gap: 2px; margin-left: 28px; }
           .header-pc-nav a {
             display: inline-flex; align-items: center;
             padding: 6px 14px; border-radius: 6px;
             font-size: 14px; font-weight: 600;
             text-decoration: none; transition: all 0.15s;
-            white-space: nowrap; color: #94a3b8;
+            white-space: nowrap;
           }
-          .header-pc-nav a:hover {
-            background: rgba(6,182,212,0.1);
-            color: #06b6d4;
-          }
+          .header-pc-nav a:hover { background: #fff7ed; }
         }
       `}</style>
-
       <div className="header-inner" style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* Left: Logo + PC Nav */}
+        {/* 左: ロゴ + PCナビ */}
         <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
             <img
               src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-4941278f-6db2-42b2-aeb8-0a3928705de1.png"
               alt="fitオリパ"
-              style={{ height: '52px', width: 'auto', objectFit: 'contain', filter: 'brightness(1.05)' }}
+              style={{ height: '52px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }}
             />
           </a>
           <nav className="header-pc-nav">
@@ -96,9 +81,9 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   style={{
-                    color: isActive ? '#06b6d4' : '#94a3b8',
+                    color: isActive ? '#f97316' : '#374151',
                     fontWeight: isActive ? '700' : '600',
-                    borderBottom: isActive ? '2px solid #06b6d4' : '2px solid transparent',
+                    borderBottom: isActive ? '2px solid #f97316' : '2px solid transparent',
                     borderRadius: 0,
                     padding: '6px 14px',
                   }}
@@ -110,43 +95,32 @@ export default function Header() {
           </nav>
         </div>
 
-        {/* Right: Coins + Auth */}
+        {/* 右: コイン・ログイン */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {user ? (
             <>
-              {/* FP coins */}
+              {/* FPコイン：グリーン */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                 <span style={{ fontSize: '20px', lineHeight: 1 }}>👟</span>
                 <span style={{ fontSize: '14px', fontWeight: '900', color: '#22c55e', letterSpacing: '-0.5px' }}>{fpPoints.toLocaleString()}</span>
               </div>
-              {/* Coin + buy */}
+              {/* 肉球コイン＋購入ボタン */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                 <img
                   src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png"
-                  style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+                  style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }}
                   alt="コイン"
                 />
-                <span style={{ fontSize: '14px', fontWeight: '900', color: '#f0f4f8', letterSpacing: '-0.5px' }}>{points.toLocaleString()}</span>
-                <a
-                  href="/buy-points"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', background: '#f97316', borderRadius: '50%', textDecoration: 'none', color: 'white', fontSize: '14px', fontWeight: '900', marginLeft: '2px', boxShadow: '0 2px 6px rgba(249,115,22,0.4)' }}
-                >+</a>
+                <span style={{ fontSize: '14px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>{points.toLocaleString()}</span>
+                <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', background: '#f97316', borderRadius: '50%', textDecoration: 'none', color: 'white', fontSize: '14px', fontWeight: '900', marginLeft: '2px' }}>+</a>
               </div>
-              {/* Bell */}
+              {/* ベル */}
               <a href="/notices" style={{ textDecoration: 'none', fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '44px', minHeight: '44px' }}>🔔</a>
             </>
           ) : (
             <>
-              <a
-                href="/auth/login"
-                style={{ fontSize: '13px', color: '#94a3b8', textDecoration: 'none', padding: '6px 12px', border: '1px solid #2a3040', borderRadius: '6px', background: 'transparent', transition: 'border-color 0.15s, color 0.15s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#06b6d4'; (e.currentTarget as HTMLAnchorElement).style.color = '#06b6d4' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = '#2a3040'; (e.currentTarget as HTMLAnchorElement).style.color = '#94a3b8' }}
-              >ログイン</a>
-              <a
-                href="/auth/register"
-                style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 12px', background: 'linear-gradient(135deg,#f97316,#ea580c)', borderRadius: '6px', boxShadow: '0 2px 8px rgba(249,115,22,0.4)' }}
-              >新規登録</a>
+              <a href="/auth/login" style={{ fontSize: '13px', color: '#666', textDecoration: 'none', padding: '6px 12px', border: '1px solid #ddd', borderRadius: '6px' }}>ログイン</a>
+              <a href="/auth/register" style={{ fontSize: '13px', color: 'white', textDecoration: 'none', fontWeight: '700', padding: '6px 12px', background: '#f97316', borderRadius: '6px' }}>新規登録</a>
             </>
           )}
         </div>

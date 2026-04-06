@@ -1,16 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0f1117;
-  --foreground: #f0f4f8;
-  --primary: #06b6d4;
-  --primary-dark: #0891b2;
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
   --accent: #f97316;
   --accent-dark: #ea580c;
-  --gold: #f5c518;
-  --card-bg: #1a1f2e;
-  --card-border: #2a3040;
-  --surface: #151921;
 }
 
 @theme inline {
@@ -20,126 +16,36 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* ダークモード無効化 */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
 }
 
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
-
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
-
-@keyframes glow-gold {
-  0%, 100% { box-shadow: 0 0 8px 2px rgba(245,197,24,0.5), 0 0 20px 4px rgba(245,197,24,0.2); }
-  50%       { box-shadow: 0 0 16px 4px rgba(245,197,24,0.8), 0 0 40px 8px rgba(245,197,24,0.35); }
-}
-
-@keyframes glow-rainbow {
-  0%   { box-shadow: 0 0 12px 3px rgba(239,68,68,0.7); }
-  25%  { box-shadow: 0 0 12px 3px rgba(168,85,247,0.7); }
-  50%  { box-shadow: 0 0 12px 3px rgba(6,182,212,0.7); }
-  75%  { box-shadow: 0 0 12px 3px rgba(34,197,94,0.7); }
-  100% { box-shadow: 0 0 12px 3px rgba(239,68,68,0.7); }
-}
-
-@keyframes hero-text-glow {
-  0%, 100% { text-shadow: 0 0 20px rgba(6,182,212,0.4), 0 0 40px rgba(6,182,212,0.15); }
-  50%       { text-shadow: 0 0 30px rgba(6,182,212,0.7), 0 0 60px rgba(6,182,212,0.3); }
-}
-
-/* ============================================================
-   LAYOUT HELPERS
-   ============================================================ */
 
 /* PC: BottomNav が非表示になるためパディング不要 */
 @media (min-width: 768px) {
   .has-bottom-nav {
     padding-bottom: 0 !important;
   }
+  /* prizes ページのアクションフッターを BottomNav 分上げない */
   .prizes-action-footer {
     bottom: 0 !important;
   }
 }
 
-/* ============================================================
-   ORIPA CARD — 3D HOVER
-   ============================================================ */
-
-.oripa-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  transform-style: preserve-3d;
-  perspective: 800px;
-  cursor: pointer;
-}
-
-.oripa-card:hover {
-  transform: perspective(800px) rotateY(8deg) rotateX(4deg) scale(1.03) !important;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(6,182,212,0.15) !important;
-}
-
-/* ✨ badge shown on hover */
-.oripa-card .sparkle-badge {
-  opacity: 0;
-  transform: scale(0.7);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-.oripa-card:hover .sparkle-badge {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* S賞 gold glow */
-.oripa-card.rank-s {
-  animation: glow-gold 2.5s ease-in-out infinite;
-  border-color: #f5c518 !important;
-}
-
-/* A賞 rainbow glow */
-.oripa-card.rank-a {
-  animation: glow-rainbow 2.5s linear infinite;
-}
-
-/* ============================================================
-   GACHA BUTTON
-   ============================================================ */
-
-.gacha-card-btn {
-  transition: transform 0.1s ease, box-shadow 0.1s ease !important;
-}
-.gacha-card-btn:hover {
-  transform: scale(1.04) !important;
-  box-shadow: 0 4px 16px rgba(249,115,22,0.45) !important;
-}
-
-/* ============================================================
-   HISTORY PAGE
-   ============================================================ */
-
+/* === history page === */
 @media (min-width: 768px) {
   .history-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
@@ -147,10 +53,7 @@ body {
   .history-grid { grid-template-columns: repeat(3, 1fr) !important; }
 }
 
-/* ============================================================
-   PRIZES PAGE
-   ============================================================ */
-
+/* === prizes page === */
 @media (min-width: 768px) {
   .prizes-list { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
@@ -158,142 +61,22 @@ body {
   .prizes-list { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ============================================================
-   EVENT DETAIL PAGE
-   ============================================================ */
-
+/* === event/[id] page === */
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 .gacha-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
-.gacha-btn:hover:not(:disabled) { transform: scale(1.04) !important; box-shadow: 0 6px 16px rgba(0,0,0,0.35) !important; }
+.gacha-btn:hover:not(:disabled) { transform: scale(1.04) !important; box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important; }
 .gacha-btn:active { transform: scale(0.97) !important; }
-
 .event-ceiling-mobile { display: block; }
 .event-body { display: block; max-width: 800px; margin: 0 auto; }
 .event-col-side { display: none; }
 .event-image-mobile { display: block; }
 .event-mobile-footer { display: block; }
-
 @media (min-width: 1024px) {
   .event-body { display: flex; max-width: 1280px; gap: 32px; padding: 24px 24px; align-items: flex-start; }
   .event-col-main { flex: 1; min-width: 0; }
-  .event-col-side {
-    display: block; width: 380px; flex-shrink: 0;
-    position: sticky; top: 72px;
-    background: #1a1f2e;
-    border-radius: 16px;
-    border: 1px solid #2a3040;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    overflow: hidden;
-  }
+  .event-col-side { display: block; width: 380px; flex-shrink: 0; position: sticky; top: 72px; background: white; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
   .event-image-mobile { display: none; }
   .event-mobile-footer { display: none !important; }
   .event-ceiling-mobile { display: none; }
-}
-
-/* ============================================================
-   HERO SECTION
-   ============================================================ */
-
-.hero-section {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #0f1117 0%, #0d1520 50%, #111827 100%);
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(6,182,212,0.12) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 60% at 80% 40%, rgba(249,115,22,0.1) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.hero-title {
-  animation: hero-text-glow 3s ease-in-out infinite;
-}
-
-.alpoo-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* ============================================================
-   GRADIENT TEXT UTILITY
-   ============================================================ */
-
-.text-gradient-cyan {
-  background: linear-gradient(90deg, #06b6d4, #38bdf8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-gold {
-  background: linear-gradient(90deg, #f5c518, #fbbf24, #f97316);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s linear infinite;
-  background-size: 200% auto;
-}
-
-/* ============================================================
-   BANNER SLIDER
-   ============================================================ */
-
-.banner-outer { overflow: hidden; }
-.banner-slider { display: flex; transition: transform 0.4s ease; }
-.banner-item { flex-shrink: 0; width: 100%; }
-
-@media (min-width: 768px) {
-  .banner-outer {
-    max-width: 1280px; margin: 12px auto; padding: 0 20px;
-    overflow: hidden; position: relative;
-  }
-  .banner-slider {
-    display: flex !important; gap: 10px; transform: none !important;
-    overflow-x: auto; scroll-snap-type: x mandatory;
-    scrollbar-width: none; flex-wrap: nowrap;
-  }
-  .banner-slider::-webkit-scrollbar { display: none; }
-  .banner-item {
-    flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important;
-    min-width: 200px !important; display: block !important; scroll-snap-align: start;
-    border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    cursor: pointer;
-  }
-  .banner-item img {
-    width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important;
-    object-fit: cover !important; display: block !important;
-  }
-}
-
-/* ============================================================
-   ORIPA GRID
-   ============================================================ */
-
-.oripa-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-@media (min-width: 768px) {
-  .oripa-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .oripa-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  }
-  .oripa-list-wrap {
-    padding-bottom: 32px;
-  }
 }
