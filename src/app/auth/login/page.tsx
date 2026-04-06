@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -50,11 +49,9 @@ export default function LoginPage() {
 
           {/* キャラクター + キャッチコピー */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <Image
+            <img
               src="/characters/arukun-greeting.png"
               alt="あーるくん"
-              width={180}
-              height={180}
               style={{ width: '180px', height: 'auto', mixBlendMode: 'multiply', display: 'inline-block' }}
             />
             <p style={{ fontSize: '17px', fontWeight: '800', color: '#1f2937', marginTop: '4px', letterSpacing: '-0.3px' }}>
