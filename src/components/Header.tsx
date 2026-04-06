@@ -63,8 +63,8 @@ export default function Header() {
                 <span style={{ fontSize: '14px', fontWeight: '900', color: '#1a1a1a', letterSpacing: '-0.5px' }}>{points.toLocaleString()}</span>
                 <a href="/buy-points" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', background: '#f97316', borderRadius: '50%', textDecoration: 'none', color: 'white', fontSize: '14px', fontWeight: '900', marginLeft: '2px' }}>+</a>
               </div>
-              {/* ベル：背景なし */}
-              <a href="/notices" style={{ textDecoration: 'none', fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center' }}>🔔</a>
+              {/* ベル：タップ領域44px確保 */}
+              <a href="/notices" style={{ textDecoration: 'none', fontSize: '22px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '44px', minHeight: '44px' }}>🔔</a>
             </>
           ) : (
             <>

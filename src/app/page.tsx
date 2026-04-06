@@ -176,6 +176,10 @@ export default function Home() {
         .banner-outer { overflow: hidden; }
         .banner-slider { display: flex; transition: transform 0.4s ease; }
         .banner-item { flex-shrink: 0; width: 100%; }
+        .oripa-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .oripa-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
+        .gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
+        .gacha-card-btn:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         @media (min-width: 768px) {
           .banner-outer { max-width: 1100px; margin: 12px auto; padding: 0 16px; overflow: hidden; position: relative; }
           .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
@@ -293,7 +297,7 @@ export default function Home() {
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
               return (
-                <div key={event.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'transform 0.15s, box-shadow 0.15s' }}>
+                <div key={event.id} className="oripa-card" style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                   {/* バナー画像 */}
                   <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
@@ -337,12 +341,12 @@ export default function Home() {
                     ) : sortedOptions.length > 0 ? (
                       <div style={{ display: 'flex', gap: '6px' }}>
                         {sortedOptions.map((opt) => (
-                          <button key={opt.id} onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: opt.color, color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>{opt.label}</button>
+                          <button key={opt.id} className="gacha-card-btn" onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 {opt.label}</button>
                         ))}
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '11px 0', background: '#f97316', color: 'white', borderRadius: '6px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>1回ガチャ</button>
+                        <button className="gacha-card-btn" onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: '#f97316', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 1回ガチャ</button>
                       </div>
                     )}
                   </div>
@@ -380,8 +384,8 @@ export default function Home() {
                   <span style={{ fontSize: '20px', fontWeight: '700', color: (userPoints - confirmEvent.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>{(userPoints - confirmEvent.price * confirmOption.count).toLocaleString()}</span>
                 </div>
               </div>
-              <button onClick={handleGacha} disabled={pulling} style={{ width: '100%', padding: '16px', background: pulling ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: pulling ? 'none' : '0 4px 14px rgba(249,115,22,0.4)' }}>
-                {pulling ? '処理中...' : 'ガチャを引く'}
+              <button onClick={handleGacha} disabled={pulling} style={{ width: '100%', padding: '18px', background: pulling ? '#9ca3af' : '#f97316', color: 'white', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: pulling ? 'none' : '0 4px 14px rgba(249,115,22,0.4)', transition: 'transform 0.1s', transform: pulling ? 'none' : undefined }}>
+                {pulling ? '処理中...' : '🎰 ガチャを引く！'}
               </button>
               <button onClick={() => setShowConfirm(false)} style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', cursor: 'pointer' }}>
                 キャンセル

@@ -45,15 +45,18 @@ export default function BottomNav() {
 
   return (
     <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', borderTop: '1px solid #e5e7eb', zIndex: 50, boxShadow: '0 -2px 8px rgba(0,0,0,0.06)' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '56px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '72px' }}>
         {navItems.map((item) => {
           const isActive = pathname === item.href
           const isFp = item.href === '/fp-exchange'
           const activeColor = isFp ? '#22c55e' : '#f97316'
+          const activeBg = isFp ? 'rgba(34,197,94,0.1)' : 'rgba(249,115,22,0.1)'
           return (
-            <a key={item.href} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: '2px', borderTop: isActive ? `2px solid ${activeColor}` : '2px solid transparent' }}>
-              {icons[item.href](isActive)}
-              <span style={{ fontSize: '10px', fontWeight: isActive ? '700' : '500', color: isActive ? activeColor : '#9ca3af' }}>{item.label}</span>
+            <a key={item.href} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', background: isActive ? activeBg : 'transparent', borderRadius: '12px', padding: '4px 12px', transition: 'background 0.2s' }}>
+                {icons[item.href](isActive)}
+                <span style={{ fontSize: '12px', fontWeight: isActive ? '700' : '500', color: isActive ? activeColor : '#9ca3af' }}>{item.label}</span>
+              </div>
             </a>
           )
         })}
