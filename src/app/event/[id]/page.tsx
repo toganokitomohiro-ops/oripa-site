@@ -174,7 +174,9 @@ export default function EventDetailPage() {
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        .gacha-btn:active { transform: scale(0.97); }
+        .gacha-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
+        .gacha-btn:hover:not(:disabled) { transform: scale(1.04) !important; box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important; }
+        .gacha-btn:active { transform: scale(0.97) !important; }
       `}</style>
 
       {/* ヘッダー - TOPと同じ */}
@@ -342,16 +344,16 @@ export default function EventDetailPage() {
                   className="gacha-btn"
                   onClick={() => openConfirm(opt)}
                   disabled={pulling}
-                  style={{ flex: 1, padding: '14px 4px', background: pulling ? '#9ca3af' : opt.color, color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', transition: 'transform 0.1s', letterSpacing: '0.3px' }}
+                  style={{ flex: 1, padding: '16px 4px', background: pulling ? '#9ca3af' : opt.color, color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', letterSpacing: '0.3px' }}
                 >
-                  {pulling ? '処理中...' : opt.label}
+                  {pulling ? '処理中...' : `🎰 ${opt.label}`}
                 </button>
               ))}
             </div>
           ) : (
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f5a623', is_active: true })} style={{ flex: 1, padding: '14px', background: '#f5a623', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>1回ガチャ</button>
-              <button onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ flex: 1, padding: '14px', background: '#e63946', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>10連ガチャ</button>
+              <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f5a623', is_active: true })} style={{ flex: 1, padding: '16px', background: '#f5a623', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>🎰 1回ガチャ</button>
+              <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ flex: 1, padding: '16px', background: '#e63946', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
             </div>
           )}
 
@@ -399,11 +401,12 @@ export default function EventDetailPage() {
                 </div>
               </div>
               <button
+                className="gacha-btn"
                 onClick={handleGacha}
                 disabled={pulling}
-                style={{ width: '100%', padding: '16px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: '0 4px 14px rgba(245,197,24,0.5)' }}
+                style={{ width: '100%', padding: '18px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: '0 4px 14px rgba(245,197,24,0.5)' }}
               >
-                {pulling ? '処理中...' : 'ガチャを引く'}
+                {pulling ? '処理中...' : '🎰 ガチャを引く！'}
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
