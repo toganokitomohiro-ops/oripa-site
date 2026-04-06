@@ -48,14 +48,10 @@ export default function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {user ? (
             <>
-              {/* FPコイン：背景なし・画像大きく・白透過 */}
+              {/* FPコイン：グリーン */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                <img
-                  src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-1bac3859-a4d0-4504-8497-3ef4cef6a13f.png"
-                  style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }}
-                  alt="FPコイン"
-                />
-                <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{fpPoints.toLocaleString()}</span>
+                <span style={{ fontSize: '20px', lineHeight: 1 }}>👟</span>
+                <span style={{ fontSize: '13px', fontWeight: '800', color: '#22c55e' }}>{fpPoints.toLocaleString()}</span>
               </div>
               {/* 肉球コイン＋購入ボタン：背景なし・画像大きく・白透過 */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>

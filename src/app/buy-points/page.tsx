@@ -108,7 +108,7 @@ export default function BuyPointsPage() {
               placeholder="クーポンコードを入力"
               onKeyDown={(e) => e.key === 'Enter' && handleCouponApply()}
             />
-            <button onClick={handleCouponApply} disabled={couponLoading} style={{ padding: '10px 16px', background: '#1e293b', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            <button onClick={handleCouponApply} disabled={couponLoading} style={{ padding: '10px 16px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
               {couponLoading ? '確認中' : '適用'}
             </button>
           </div>

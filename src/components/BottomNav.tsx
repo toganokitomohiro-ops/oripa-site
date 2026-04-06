@@ -33,7 +33,7 @@ export default function BottomNav() {
     ),
     '/fp-exchange': (active) => (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z" fill={active ? '#f97316' : '#9ca3af'}/>
+        <path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z" fill={active ? '#22c55e' : '#9ca3af'}/>
       </svg>
     ),
     '/mypage': (active) => (
@@ -48,10 +48,12 @@ export default function BottomNav() {
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', height: '56px' }}>
         {navItems.map((item) => {
           const isActive = pathname === item.href
+          const isFp = item.href === '/fp-exchange'
+          const activeColor = isFp ? '#22c55e' : '#f97316'
           return (
-            <a key={item.href} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: '2px', borderTop: isActive ? '2px solid #f97316' : '2px solid transparent' }}>
+            <a key={item.href} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: '2px', borderTop: isActive ? `2px solid ${activeColor}` : '2px solid transparent' }}>
               {icons[item.href](isActive)}
-              <span style={{ fontSize: '10px', fontWeight: isActive ? '700' : '500', color: isActive ? '#f97316' : '#9ca3af' }}>{item.label}</span>
+              <span style={{ fontSize: '10px', fontWeight: isActive ? '700' : '500', color: isActive ? activeColor : '#9ca3af' }}>{item.label}</span>
             </a>
           )
         })}

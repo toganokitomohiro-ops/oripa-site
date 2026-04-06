@@ -104,9 +104,9 @@ export default function FpExchangePage() {
       {showLoginBonus && (
         <div style={{
           position: 'fixed', top: '70px', left: '50%', transform: 'translateX(-50%)',
-          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          background: 'linear-gradient(135deg, #22c55e, #16a34a)',
           color: 'white', borderRadius: '12px', padding: '12px 24px',
-          boxShadow: '0 4px 20px rgba(249,115,22,0.4)', zIndex: 9999,
+          boxShadow: '0 4px 20px rgba(34,197,94,0.4)', zIndex: 9999,
           fontSize: '15px', fontWeight: '800', whiteSpace: 'nowrap',
         }}>
           🎉 ログインボーナス +{loginBonusAmount}FPコイン 獲得！
@@ -119,19 +119,19 @@ export default function FpExchangePage() {
         {/* FP残高バナー */}
         {isLoggedIn === true && (
           <div style={{
-            background: 'linear-gradient(135deg, #f97316, #ea580c)',
+            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
             borderRadius: '16px',
             padding: '20px 24px',
             marginBottom: '20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            boxShadow: '0 4px 16px rgba(249,115,22,0.35)'
+            boxShadow: '0 4px 16px rgba(34,197,94,0.35)'
           }}>
             <div>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', marginBottom: '4px', fontWeight: '600' }}>あなたのFPコイン残高</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '28px' }}>🪙</span>
+                <span style={{ fontSize: '28px' }}>👟</span>
                 <span style={{ fontSize: '32px', fontWeight: '900', color: 'white' }}>{userFp.toLocaleString()}</span>
                 <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.85)', fontWeight: '700' }}>FPコイン</span>
               </div>
@@ -154,17 +154,17 @@ export default function FpExchangePage() {
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <p style={{ fontSize: '14px', color: '#374151' }}>🪙 ログインするとFPコイン残高を確認できます</p>
+            <p style={{ fontSize: '14px', color: '#374151' }}>👟 ログインするとFPコイン残高を確認できます</p>
             <a href="/auth/login" style={{
               fontSize: '13px', fontWeight: '700', color: 'white',
-              background: '#f97316', padding: '8px 16px', borderRadius: '8px', textDecoration: 'none'
+              background: '#22c55e', padding: '8px 16px', borderRadius: '8px', textDecoration: 'none'
             }}>ログイン</a>
           </div>
         )}
 
         {/* タイトル */}
         <div style={{ marginBottom: '16px' }}>
-          <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>🪙 FPコイン交換所</h1>
+          <h1 style={{ fontSize: '20px', fontWeight: '800', color: '#1f2937', marginBottom: '4px' }}>👟 FPコイン交換所</h1>
           <p style={{ fontSize: '13px', color: '#6b7280' }}>ガチャを回すともらえるFPコインを商品と交換できます</p>
         </div>
 
@@ -175,8 +175,8 @@ export default function FpExchangePage() {
               onClick={() => setActiveCategory('all')}
               style={{
                 padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s',
-                color: activeCategory === 'all' ? '#f97316' : '#666',
-                borderBottom: activeCategory === 'all' ? '3px solid #f97316' : '3px solid transparent',
+                color: activeCategory === 'all' ? '#22c55e' : '#666',
+                borderBottom: activeCategory === 'all' ? '3px solid #22c55e' : '3px solid transparent',
               }}>
               すべて（{items.length}）
             </button>
@@ -188,8 +188,8 @@ export default function FpExchangePage() {
                   onClick={() => setActiveCategory(cat.id)}
                   style={{
                     padding: '14px 20px', fontSize: '14px', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s',
-                    color: activeCategory === cat.id ? '#f97316' : '#666',
-                    borderBottom: activeCategory === cat.id ? '3px solid #f97316' : '3px solid transparent',
+                    color: activeCategory === cat.id ? '#22c55e' : '#666',
+                    borderBottom: activeCategory === cat.id ? '3px solid #22c55e' : '3px solid transparent',
                   }}>
                   {cat.name}（{count}）
                 </button>
@@ -240,10 +240,10 @@ export default function FpExchangePage() {
                   ) : item.remaining_stock > 0 ? (
                     <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '8px' }}>残り {item.remaining_stock} 枚</p>
                   ) : null}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff7ed', borderRadius: '6px', padding: '6px 10px' }}>
-                    <span style={{ fontSize: '14px' }}>🪙</span>
-                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#f97316' }}>{item.fp_price.toLocaleString()}</span>
-                    <span style={{ fontSize: '11px', color: '#9a3412' }}>FPコイン</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f0fdf4', borderRadius: '6px', padding: '6px 10px' }}>
+                    <span style={{ fontSize: '14px' }}>👟</span>
+                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#22c55e' }}>{item.fp_price.toLocaleString()}</span>
+                    <span style={{ fontSize: '11px', color: '#15803d' }}>FPコイン</span>
                   </div>
                 </div>
               </div>

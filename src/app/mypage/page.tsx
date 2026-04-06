@@ -131,7 +131,7 @@ export default function MyPage() {
           {[
             { label: '購入履歴', href: '/history' },
             { label: '発送申請', href: '/shipment' },
-            { label: 'ポイント購入', href: '/buy-points' },
+            { label: 'コイン購入', href: '/buy-points' },
             { label: '獲得賞品', href: '/prizes' },
           ].map((item, i) => (
             <a key={i} href={item.href} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderTop: '1px solid #f3f4f6', textDecoration: 'none', color: '#1f2937', fontSize: '14px' }}>
