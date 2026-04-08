@@ -47,29 +47,14 @@ export default function Header() {
 
   return (
     <header style={{ background: 'white', borderBottom: '1px solid #e8e8e8', position: 'sticky', top: 0, zIndex: 50, width: '100%' }}>
-      <style>{`
-        .header-inner { max-width: 480px; margin: 0 auto; padding: 0 12px; }
-        .header-pc-nav { display: none; }
-        @media (min-width: 768px) {
-          .header-inner { max-width: 1280px; padding: 0 24px; }
-          .header-pc-nav { display: flex; align-items: center; gap: 2px; margin-left: 28px; }
-          .header-pc-nav a {
-            display: inline-flex; align-items: center;
-            padding: 6px 14px; border-radius: 6px;
-            font-size: 14px; font-weight: 600;
-            text-decoration: none; transition: all 0.15s;
-            white-space: nowrap;
-          }
-          .header-pc-nav a:hover { background: #fff7ed; }
-        }
-      `}</style>
-      <div className="header-inner" style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="header-inner header-inner-wrap" style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* 左: ロゴ + PCナビ */}
         <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
             <img
               src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-4941278f-6db2-42b2-aeb8-0a3928705de1.png"
               alt="fitオリパ"
+              className="header-logo"
               style={{ height: '52px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }}
             />
           </a>
