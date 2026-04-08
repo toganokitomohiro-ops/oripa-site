@@ -61,6 +61,58 @@ body {
   .prizes-list { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* === home page: oripa banner + card grid === */
+.banner-outer { overflow: hidden; }
+.banner-slider { display: flex; transition: transform 0.4s ease; }
+.banner-item { flex-shrink: 0; width: 100%; }
+.oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.oripa-card { transition: transform 0.2s, box-shadow 0.2s; }
+.oripa-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
+.gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
+.gacha-card-btn:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+@media (min-width: 768px) {
+  .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0 20px; overflow: hidden; position: relative; }
+  .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
+  .banner-slider::-webkit-scrollbar { display: none; }
+  .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important; min-width: 200px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
+  .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
+  .oripa-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+}
+
+/* PC (≥1024px): larger, more impactful oripa cards */
+@media (min-width: 1024px) {
+  .oripa-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .oripa-list-wrap { padding: 20px 32px 48px !important; }
+  /* Taller card image area */
+  .oripa-card-image { padding-bottom: 78% !important; }
+  /* Bigger info area padding */
+  .oripa-card-info { padding: 16px 18px 18px !important; }
+  /* Larger, 2-line title */
+  .oripa-card-title {
+    font-size: 17px !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    text-overflow: unset !important;
+    min-height: 44px;
+    margin-bottom: 10px !important;
+  }
+  /* Bigger coin price */
+  .oripa-card-price-val { font-size: 22px !important; }
+  .oripa-card-price-icon { width: 26px !important; height: 26px !important; }
+  /* More prominent gacha button */
+  .gacha-card-btn {
+    padding: 16px 0 !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+    letter-spacing: 0.03em;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18) !important;
+  }
+}
+
 /* === event/[id] page === */
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }

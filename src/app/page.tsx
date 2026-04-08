@@ -171,28 +171,6 @@ export default function Home() {
       {/* ヘッダー */}
       <Header />
 
-      <style>{`
-        .oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .banner-outer { overflow: hidden; }
-        .banner-slider { display: flex; transition: transform 0.4s ease; }
-        .banner-item { flex-shrink: 0; width: 100%; }
-        .oripa-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .oripa-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
-        .gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
-        .gacha-card-btn:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        @media (min-width: 768px) {
-          .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0 20px; overflow: hidden; position: relative; }
-          .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
-          .banner-slider::-webkit-scrollbar { display: none; }
-          .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important; min-width: 200px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
-          .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
-          .oripa-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
-        }
-        @media (min-width: 1024px) {
-          .oripa-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
-          .oripa-list-wrap { padding-bottom: 32px; }
-        }
-      `}</style>
       {/* バナースライダー */}
       {banners.length > 0 && (
         <div className='banner-outer' style={{ position: 'relative' }}>
@@ -298,7 +276,7 @@ export default function Home() {
               return (
                 <div key={event.id} className="oripa-card" style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                   {/* バナー画像 */}
-                  <a href={'/event/' + event.id} style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
+                  <a href={'/event/' + event.id} className="oripa-card-image" style={{ display: 'block', position: 'relative', paddingBottom: '65.6%', background: '#f0f0f0', overflow: 'hidden', textDecoration: 'none' }}>
                     {event.image_url ? (
                       <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
@@ -312,16 +290,16 @@ export default function Home() {
                   </a>
 
                   {/* 情報エリア */}
-                  <div style={{ padding: '8px 10px 10px' }}>
+                  <div className="oripa-card-info" style={{ padding: '8px 10px 10px' }}>
                     {/* オリパ名 */}
-                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '6px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                    <div className="oripa-card-title" style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '6px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                       {event.name}
                     </div>
                     {/* コイン・残り口数 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
-                        <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
+                        <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" className="oripa-card-price-icon" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, background: '#fef3c7', borderRadius: '50%', padding: '2px' }} />
+                        <span className="oripa-card-price-val" style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
                         <span style={{ fontSize: '11px', color: '#999' }}>/1回</span>
                       </div>
                       <div style={{ fontSize: '12px', color: '#666' }}>
