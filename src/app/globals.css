@@ -74,9 +74,26 @@ body {
 .event-mobile-footer { display: block; }
 @media (min-width: 1024px) {
   .event-body { display: flex; max-width: 1280px; gap: 32px; padding: 24px 24px; align-items: flex-start; }
-  .event-col-main { flex: 1; min-width: 0; }
-  .event-col-side { display: block; width: 380px; flex-shrink: 0; position: sticky; top: 72px; background: white; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
+  .event-col-main { flex: 1; min-width: 0; max-width: 780px; margin: 0 auto; }
+  .event-col-side { display: block; width: 380px; flex-shrink: 0; position: sticky; top: 72px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.18); }
   .event-image-mobile { display: none; }
   .event-mobile-footer { display: none !important; }
   .event-ceiling-mobile { display: none; }
+  /* ラインナップセクション区切り */
+  .lineup-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 20px;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+  .lineup-divider::before, .lineup-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
 }

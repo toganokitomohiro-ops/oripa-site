@@ -219,6 +219,7 @@ export default function EventDetailPage() {
         )}
 
         {/* グレード別賞品 - オリパワンそのまま */}
+        <div className="lineup-divider">ラインナップ</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           {gradeOrder.filter(g => gradeGroups[g]).map(grade => {
             const prizeList = gradeGroups[grade]
@@ -310,73 +311,89 @@ export default function EventDetailPage() {
         </div>
         </div>{/* end event-col-main */}
 
-        {/* 右カラム: PC専用 - 画像 + ガチャパネル */}
+        {/* 右カラム: PC専用 - ICHICAスタイル */}
         <div className="event-col-side">
-          {/* PC: 画像 */}
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '65.6%', background: '#f3f4f6', overflow: 'hidden' }}>
+          {/* イベント画像 */}
+          <div style={{ position: 'relative', width: '100%', paddingBottom: '56%', overflow: 'hidden', background: '#f3f4f6' }}>
             {event.image_url
               ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
+              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>🎴</div>
             }
           </div>
-          {/* PC: ガチャパネル */}
-          <div style={{ padding: '16px 20px 24px' }}>
-            {/* 天井カウンター（PCサイドバー） */}
+
+          {/* ガチャ操作パネル - ICHICA風ダーク */}
+          <div style={{ background: '#1c1f2e', padding: '16px 20px 20px', borderRadius: '0 0 16px 16px' }}>
+
+            {/* 天井カウンター */}
             {event.ceiling_count > 0 && userId && (
-              <div style={{ background: '#eff6ff', borderRadius: '10px', padding: '10px 14px', marginBottom: '14px', border: '1px solid #bfdbfe' }}>
+              <div style={{ background: 'rgba(59,130,246,0.15)', borderRadius: '8px', padding: '10px 14px', marginBottom: '14px', border: '1px solid rgba(59,130,246,0.3)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: '700' }}>🔢 天井</span>
-                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#1e40af' }}>{userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定</span>
+                  <span style={{ fontSize: '12px', color: '#60a5fa', fontWeight: '700' }}>🔢 天井</span>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#93c5fd' }}>{userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定</span>
                 </div>
-                <div style={{ background: '#dbeafe', borderRadius: '999px', height: '4px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '4px' }}>
                   <div style={{ background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', borderRadius: '999px', height: '4px', width: `${Math.min((userCeilingCount / event.ceiling_count) * 100, 100)}%` }} />
                 </div>
               </div>
             )}
-            {/* 価格・残り */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5c518, #e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>C</span>
+
+            {/* 価格 + 残り */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5c518, #f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
                 </div>
-                <span style={{ fontSize: '22px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-                <span style={{ fontSize: '12px', color: '#9ca3af' }}>/1回</span>
+                <span style={{ fontSize: '28px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.5px' }}>{event.price.toLocaleString()}</span>
+                <span style={{ fontSize: '13px', color: '#9ca3af' }}>pt</span>
               </div>
-              <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600' }}>残り{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
+              <span style={{ fontSize: '13px', color: '#9ca3af', fontWeight: '600' }}>残り{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
             </div>
-            {/* プログレスバー */}
-            <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '5px', marginBottom: '14px' }}>
-              <div style={{ background: remainingPercent > 20 ? '#22c55e' : '#ef4444', borderRadius: '999px', height: '5px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
+
+            {/* プログレスバー - ICHICAスタイル */}
+            <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '8px', marginBottom: '16px' }}>
+              <div style={{
+                background: remainingPercent > 20
+                  ? 'linear-gradient(90deg, #f97316, #ec4899)'
+                  : 'linear-gradient(90deg, #ef4444, #dc2626)',
+                borderRadius: '999px', height: '8px',
+                width: `${remainingPercent}%`, transition: 'width 0.5s'
+              }} />
             </div>
+
             {/* ガチャボタン */}
             {isSoldOut ? (
-              <div style={{ textAlign: 'center', padding: '14px', background: '#f3f4f6', borderRadius: '10px', color: '#9ca3af', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
+              <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', color: '#6b7280', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
             ) : gachaOptions.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {gachaOptions.map(opt => (
                   <button key={opt.id} className="gacha-btn" onClick={() => openConfirm(opt)} disabled={pulling}
-                    style={{ width: '100%', padding: '16px', background: pulling ? '#9ca3af' : opt.color, color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer' }}>
+                    style={{ width: '100%', padding: '16px', background: pulling ? '#4b5563' : opt.color, color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', letterSpacing: '0.3px' }}>
                     {pulling ? '処理中...' : `🎰 ${opt.label}`}
                   </button>
                 ))}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f5a623', is_active: true })} style={{ width: '100%', padding: '16px', background: '#f5a623', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>🎰 1回ガチャ</button>
-                <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ width: '100%', padding: '16px', background: '#e63946', color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
+                <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: 'linear-gradient(135deg,#f97316,#e63946)', is_active: true })}
+                  style={{ width: '100%', padding: '16px', background: 'linear-gradient(135deg, #f97316, #e63946)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: 'pointer', letterSpacing: '0.3px' }}>🎰 1回ガチャ</button>
+                <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#374151', is_active: true })}
+                  style={{ width: '100%', padding: '16px', background: '#374151', color: 'white', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
               </div>
             )}
+
+            {/* 未ログイン */}
             {!userId && (
-              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', marginTop: '10px' }}>
-                ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#e67e00', fontWeight: '700' }}>ログイン</a>が必要です
+              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', marginTop: '12px' }}>
+                ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
               </p>
             )}
+
             {/* コイン残高 */}
             {userId && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', padding: '10px', background: '#f9fafb', borderRadius: '10px' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '24px', height: '24px', objectFit: 'contain', background: '#fef3c7', borderRadius: '50%', padding: '2px' }} alt="コイン" />
-                <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316' }}>{userPoints.toLocaleString()}</span>
-                <span style={{ fontSize: '12px', color: '#9ca3af' }}>コイン</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '50%' }} alt="コイン" />
+                <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{userPoints.toLocaleString()}</span>
+                <span style={{ fontSize: '12px', color: '#6b7280' }}>コイン保有</span>
               </div>
             )}
           </div>
