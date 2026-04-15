@@ -47,29 +47,6 @@ type DrawHistory = {
 
 const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
 
-const gradeBadgeImage: Record<string, string> = {
-  'ラストワン賞': '/pack/last.png',
-  'S賞': '/pack/1st.png',
-  'A賞': '/pack/2nd.png',
-  'B賞': '/pack/3rd.png',
-  'C賞': '/pack/lose.png',
-}
-
-const gradeLabel: Record<string, string> = {
-  'ラストワン賞': 'ラストワン賞',
-  'S賞': 'S賞',
-  'A賞': 'A賞',
-  'B賞': 'B賞',
-  'C賞': 'C賞',
-}
-
-const gradeImages: Record<string, string> = {
-  'ラストワン賞': '/pack/last.png',
-  'S賞': '/pack/1st.png',
-  'A賞': '/pack/2nd.png',
-  'B賞': '/pack/3rd.png',
-  'C賞': '/pack/lose.png',
-}
 
 const gradeColor: Record<string, string> = {
   'ラストワン賞': '#7c3aed',
@@ -408,7 +385,7 @@ export default function EventDetailPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
                     <span style={{ color: 'white', fontWeight: '900', lineHeight: 1, WebkitTextStroke: '2px black', paintOrder: 'stroke fill' }}>
-                      <span style={{ fontSize: '32px' }}>{gradeLabel[grade] || grade}</span>
+                      <span style={{ fontSize: '32px' }}>{grade}</span>
                     </span>
                   </div>
                 </div>
