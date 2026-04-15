@@ -37,6 +37,14 @@ type GachaOption = {
   is_active: boolean
 }
 
+type DrawHistory = {
+  id: string
+  user_id: string
+  grade: string
+  created_at: string
+  products: { name: string; image_url: string } | null
+}
+
 const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
 
 const gradeBadgeImage: Record<string, string> = {
@@ -63,6 +71,27 @@ const gradeImages: Record<string, string> = {
   'C賞': '/pack/lose.png',
 }
 
+const gradeColor: Record<string, string> = {
+  'ラストワン賞': '#7c3aed',
+  'S賞': '#2563eb',
+  'A賞': '#d97706',
+  'B賞': '#dc2626',
+  'C賞': '#6b7280',
+}
+
+const formatTimeAgo = (dateStr: string) => {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const sec = Math.floor(diff / 1000)
+  if (sec < 60) return `${sec}秒前`
+  const min = Math.floor(sec / 60)
+  if (min < 60) return `${min}分前`
+  const hr = Math.floor(min / 60)
+  if (hr < 24) return `${hr}時間前`
+  return `${Math.floor(hr / 24)}日前`
+}
+
+const anonymizeUser = (userId: string) => `ユーザー****${userId.slice(-4)}`
+
 export default function EventDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -81,8 +110,72 @@ export default function EventDetailPage() {
   const [pulling, setPulling] = useState(false)
   const [error, setError] = useState('')
   const [pendingDrawIds, setPendingDrawIds] = useState<string[]>([])
+  const [drawHistory, setDrawHistory] = useState<DrawHistory[]>([])
 
   useEffect(() => { fetchData() }, [])
+
+  useEffect(() => {
+    if (!params.id) return
+    const eventId = params.id as string
+
+    const fetchDrawHistory = async () => {
+      const { data } = await supabase
+        .from('draws')
+        .select('id, user_id, grade, created_at, products(name, image_url)')
+        .eq('event_id', eventId)
+        .order('created_at', { ascending: false })
+        .limit(20)
+      if (data) setDrawHistory(data as unknown as DrawHistory[])
+    }
+    fetchDrawHistory()
+
+    const prizeChannel = supabase.channel(`prizes-rt-${eventId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'prizes',
+        filter: `event_id=eq.${eventId}`,
+      }, (payload) => {
+        const updated = payload.new as { id: string; remaining_count: number }
+        setPrizes(prev => prev.map(p => p.id === updated.id ? { ...p, remaining_count: updated.remaining_count } : p))
+      })
+      .subscribe()
+
+    const eventChannel = supabase.channel(`event-rt-${eventId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'events',
+        filter: `id=eq.${eventId}`,
+      }, (payload) => {
+        const updated = payload.new as { remaining_count: number; status: string }
+        setEvent(prev => prev ? { ...prev, remaining_count: updated.remaining_count, status: updated.status } : prev)
+      })
+      .subscribe()
+
+    const drawChannel = supabase.channel(`draws-rt-${eventId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'draws',
+        filter: `event_id=eq.${eventId}`,
+      }, async () => {
+        const { data } = await supabase
+          .from('draws')
+          .select('id, user_id, grade, created_at, products(name, image_url)')
+          .eq('event_id', eventId)
+          .order('created_at', { ascending: false })
+          .limit(20)
+        if (data) setDrawHistory(data as unknown as DrawHistory[])
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(prizeChannel)
+      supabase.removeChannel(eventChannel)
+      supabase.removeChannel(drawChannel)
+    }
+  }, [params.id])
 
   const fetchData = async () => {
     setLoading(true)
@@ -108,6 +201,17 @@ export default function EventDetailPage() {
     if (!gradeGroups[p.grade]) gradeGroups[p.grade] = []
     gradeGroups[p.grade].push(p)
   })
+
+  const totalPrizeCount = prizes.reduce((sum, p) => sum + p.count, 0)
+  const gradeStats = gradeOrder
+    .filter(g => gradeGroups[g])
+    .map(grade => {
+      const list = gradeGroups[grade]
+      const total = list.reduce((sum, p) => sum + p.count, 0)
+      const remaining = list.reduce((sum, p) => sum + p.remaining_count, 0)
+      const probability = totalPrizeCount > 0 ? (total / totalPrizeCount * 100) : 0
+      return { grade, total, remaining, probability }
+    })
 
   const getBestVideoUrl = (results: any[]) => {
     for (const grade of gradeOrder) {
@@ -220,6 +324,45 @@ export default function EventDetailPage() {
 
         {/* グレード別賞品 - オリパワンそのまま */}
         <div className="lineup-divider">ラインナップ</div>
+
+        {/* 賞別残数・当選確率 */}
+        {gradeStats.length > 0 && (
+          <div style={{ marginBottom: '20px', background: '#f8f9ff', borderRadius: '12px', border: '1px solid #e0e7ff', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #e0e7ff', background: '#eef2ff' }}>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: '#3730a3' }}>賞別残数・当選確率</span>
+              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
+                LIVE
+              </span>
+            </div>
+            <div style={{ padding: '8px 0' }}>
+              {gradeStats.map(({ grade, total, remaining, probability }) => (
+                <div key={grade} style={{ display: 'flex', alignItems: 'center', padding: '7px 14px', gap: '8px' }}>
+                  <span style={{
+                    fontSize: '12px', fontWeight: '800', color: 'white',
+                    background: gradeColor[grade] || '#6b7280',
+                    padding: '2px 8px', borderRadius: '4px', minWidth: '64px', textAlign: 'center', flexShrink: 0
+                  }}>{grade}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span style={{ fontSize: '12px', color: '#374151', fontWeight: '600' }}>残 {remaining.toLocaleString()} / {total.toLocaleString()}</span>
+                      <span style={{ fontSize: '12px', color: '#6b7280' }}>{probability.toFixed(2)}%</span>
+                    </div>
+                    <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '4px' }}>
+                      <div style={{
+                        background: gradeColor[grade] || '#6b7280',
+                        borderRadius: '999px', height: '4px',
+                        width: `${total > 0 ? Math.round(remaining / total * 100) : 0}%`,
+                        transition: 'width 0.5s'
+                      }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           {gradeOrder.filter(g => gradeGroups[g]).map(grade => {
             const prizeList = gradeGroups[grade]
@@ -285,6 +428,49 @@ export default function EventDetailPage() {
             )
           })}
         </div>
+
+        {/* 当選履歴タイムライン */}
+        {drawHistory.length > 0 && (
+          <div style={{ marginTop: '32px', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#1c1f2e', color: 'white' }}>
+              <span style={{ fontSize: '13px', fontWeight: '700' }}>みんなの当選履歴</span>
+              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
+                LIVE
+              </span>
+            </div>
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {drawHistory.map((draw, i) => (
+                <div key={draw.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 14px',
+                  borderBottom: i < drawHistory.length - 1 ? '1px solid #f3f4f6' : 'none',
+                  background: i === 0 ? '#f0fdf4' : 'white'
+                }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '6px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
+                    {draw.products?.image_url
+                      ? <img src={draw.products.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>🃏</div>
+                    }
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '11px', color: '#6b7280' }}>{anonymizeUser(draw.user_id)}</span>
+                      <span style={{
+                        fontSize: '10px', fontWeight: '800', color: 'white',
+                        background: gradeColor[draw.grade] || '#6b7280',
+                        padding: '1px 6px', borderRadius: '3px', flexShrink: 0
+                      }}>{draw.grade}</span>
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#374151', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
+                      {draw.products?.name || '商品'}
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '11px', color: '#9ca3af', flexShrink: 0 }}>{formatTimeAgo(draw.created_at)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 説明文 */}
         {event.description && (
@@ -378,6 +564,19 @@ export default function EventDetailPage() {
                   style={{ width: '100%', padding: '16px', background: 'linear-gradient(135deg, #f97316, #e63946)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: 'pointer', letterSpacing: '0.3px' }}>🎰 1回ガチャ</button>
                 <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#374151', is_active: true })}
                   style={{ width: '100%', padding: '16px', background: '#374151', color: 'white', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
+              </div>
+            )}
+
+            {/* 当選確率 */}
+            {gradeStats.length > 0 && (
+              <div style={{ marginTop: '14px', padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '700', marginBottom: '8px', letterSpacing: '0.05em' }}>当選確率</div>
+                {gradeStats.map(({ grade, probability }) => (
+                  <div key={grade} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ fontSize: '12px', color: gradeColor[grade] || '#9ca3af', fontWeight: '700' }}>{grade}</span>
+                    <span style={{ fontSize: '12px', color: '#e5e7eb', fontWeight: '600' }}>{probability.toFixed(2)}%</span>
+                  </div>
+                ))}
               </div>
             )}
 
