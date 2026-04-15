@@ -327,39 +327,46 @@ export default function EventDetailPage() {
 
         {/* 賞別残数・当選確率 */}
         {gradeStats.length > 0 && (
-          <div style={{ marginBottom: '20px', background: '#f8f9ff', borderRadius: '12px', border: '1px solid #e0e7ff', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #e0e7ff', background: '#eef2ff' }}>
-              <span style={{ fontSize: '13px', fontWeight: '700', color: '#3730a3' }}>賞別残数・当選確率</span>
+          <div style={{ marginBottom: '20px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: '#374151' }}>賞別残数・当選確率</span>
               <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
                 LIVE
               </span>
             </div>
-            <div style={{ padding: '8px 0' }}>
-              {gradeStats.map(({ grade, total, remaining, probability }) => (
-                <div key={grade} style={{ display: 'flex', alignItems: 'center', padding: '7px 14px', gap: '8px' }}>
-                  <span style={{
-                    fontSize: '12px', fontWeight: '800', color: 'white',
-                    background: gradeColor[grade] || '#6b7280',
-                    padding: '2px 8px', borderRadius: '4px', minWidth: '64px', textAlign: 'center', flexShrink: 0
-                  }}>{grade}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                      <span style={{ fontSize: '12px', color: '#374151', fontWeight: '600' }}>残 {remaining.toLocaleString()} / {total.toLocaleString()}</span>
-                      <span style={{ fontSize: '12px', color: '#6b7280' }}>{probability.toFixed(2)}%</span>
-                    </div>
-                    <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '4px' }}>
-                      <div style={{
-                        background: gradeColor[grade] || '#6b7280',
-                        borderRadius: '999px', height: '4px',
-                        width: `${total > 0 ? Math.round(remaining / total * 100) : 0}%`,
-                        transition: 'width 0.5s'
-                      }} />
-                    </div>
+            {/* テーブルヘッダー */}
+            <div style={{ display: 'flex', alignItems: 'center', padding: '5px 14px', borderBottom: '1px solid #f3f4f6', background: '#f3f4f6' }}>
+              <span style={{ width: '68px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>賞</span>
+              <span style={{ width: '110px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>残り / 合計</span>
+              <span style={{ width: '50px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', textAlign: 'right', flexShrink: 0 }}>確率</span>
+              <span style={{ flex: 1 }} />
+            </div>
+            {gradeStats.map(({ grade, total, remaining, probability }, i) => (
+              <div key={grade} style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', borderBottom: i < gradeStats.length - 1 ? '1px solid #f3f4f6' : 'none', background: 'white' }}>
+                <span style={{
+                  width: '68px', fontSize: '12px', fontWeight: '800', color: 'white',
+                  background: gradeColor[grade] || '#6b7280',
+                  padding: '2px 0', borderRadius: '4px', textAlign: 'center', flexShrink: 0
+                }}>{grade}</span>
+                <span style={{ width: '110px', fontSize: '12px', color: '#374151', fontWeight: '600', flexShrink: 0, paddingLeft: '10px' }}>
+                  {remaining.toLocaleString()} / {total.toLocaleString()}
+                </span>
+                <span style={{ width: '50px', fontSize: '12px', color: '#6b7280', fontWeight: '600', textAlign: 'right', flexShrink: 0 }}>
+                  {probability.toFixed(2)}%
+                </span>
+                <div style={{ flex: 1, paddingLeft: '10px' }}>
+                  <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '5px' }}>
+                    <div style={{
+                      background: gradeColor[grade] || '#6b7280',
+                      borderRadius: '999px', height: '5px',
+                      width: `${total > 0 ? Math.round(remaining / total * 100) : 0}%`,
+                      transition: 'width 0.5s'
+                    }} />
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -432,8 +439,8 @@ export default function EventDetailPage() {
         {/* 当選履歴タイムライン */}
         {drawHistory.length > 0 && (
           <div style={{ marginTop: '32px', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#1c1f2e', color: 'white' }}>
-              <span style={{ fontSize: '13px', fontWeight: '700' }}>みんなの当選履歴</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+              <span style={{ fontSize: '13px', fontWeight: '700', color: '#374151' }}>みんなの当選履歴</span>
               <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
                 LIVE
