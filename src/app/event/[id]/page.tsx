@@ -266,12 +266,37 @@ export default function EventDetailPage() {
       </div>
 
       {/* モバイル: メイン画像（PC では非表示） */}
-      <div className="event-image-mobile" style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ position: 'relative', width: '100%', paddingBottom: '65.6%', background: '#f3f4f6', overflow: 'hidden' }}>
+      <div className="event-image-mobile" style={{ width: '100%' }}>
+        <div style={{ position: 'relative', width: '100%', paddingBottom: '68%', background: '#0E0F1A', overflow: 'hidden' }}>
           {event.image_url
             ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
             : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
           }
+          {/* 下部グラデーションオーバーレイ */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%', background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)', pointerEvents: 'none' }} />
+          {/* バナー下部: 価格・残り枚数 */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px 14px 12px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>{event.name}</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                <span style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', lineHeight: 1 }}>{event.price.toLocaleString()}</span>
+                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>コイン / 1回</span>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>残り枚数</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
+                <span style={{ fontSize: '20px', fontWeight: '900', color: remainingPercent > 20 ? '#22c55e' : '#ef4444', lineHeight: 1 }}>{event.remaining_count.toLocaleString()}</span>
+                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>/ {event.total_count.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* 残枚数プログレスバー */}
+        <div style={{ background: '#1a1a2e', padding: '6px 0' }}>
+          <div style={{ background: '#2a2a3e', height: '5px', margin: '0 14px', borderRadius: '999px', overflow: 'hidden' }}>
+            <div style={{ background: remainingPercent > 20 ? 'linear-gradient(90deg, #22c55e, #4ade80)' : 'linear-gradient(90deg, #ef4444, #f87171)', height: '5px', borderRadius: '999px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
+          </div>
         </div>
       </div>
 
@@ -584,28 +609,25 @@ export default function EventDetailPage() {
       </div>{/* end event-body */}
 
       {/* モバイル専用: 固定フッター（PCでは非表示） */}
-      <div className="event-mobile-footer" style={{ position: 'fixed', bottom: '72px', left: 0, right: 0, background: 'white', borderRadius: '16px 16px 0 0', boxShadow: '0 -4px 16px rgba(0,0,0,0.12)', padding: '10px 12px 16px', zIndex: 60 }}>
+      <div className="event-mobile-footer" style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: '#0E0F1A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '10px 12px 12px', zIndex: 60 }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* 価格・残り */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px', padding: '0 4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5c518, #e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: 'white', fontSize: '10px', fontWeight: '900' }}>C</span>
-              </div>
-              <span style={{ fontSize: '20px', fontWeight: '900', color: '#e67e00' }}>{event.price.toLocaleString()}</span>
-              <span style={{ fontSize: '12px', color: '#9ca3af' }}>/1回</span>
+          {/* 価格・残り（コンパクト1行） */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', padding: '0 2px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>1回</span>
+              <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316', lineHeight: 1 }}>{event.price.toLocaleString()}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>コイン</span>
             </div>
-            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600' }}>残り{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
-          </div>
-
-          {/* プログレスバー */}
-          <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '4px', marginBottom: '10px' }}>
-            <div style={{ background: remainingPercent > 20 ? '#22c55e' : '#ef4444', borderRadius: '999px', height: '4px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>残</span>
+              <span style={{ fontSize: '14px', fontWeight: '800', color: remainingPercent > 20 ? '#22c55e' : '#ef4444' }}>{event.remaining_count.toLocaleString()}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>/ {event.total_count.toLocaleString()}</span>
+            </div>
           </div>
 
           {/* ガチャボタン */}
           {isSoldOut ? (
-            <div style={{ textAlign: 'center', padding: '14px', background: '#f3f4f6', borderRadius: '10px', color: '#9ca3af', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
+            <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold', fontSize: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>SOLD OUT</div>
           ) : gachaOptions.length > 0 ? (
             <div style={{ display: 'flex', gap: '8px' }}>
               {gachaOptions.map(opt => (
@@ -614,7 +636,7 @@ export default function EventDetailPage() {
                   className="gacha-btn"
                   onClick={() => openConfirm(opt)}
                   disabled={pulling}
-                  style={{ flex: 1, padding: '16px 4px', background: pulling ? '#9ca3af' : opt.color, color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', letterSpacing: '0.3px' }}
+                  style={{ flex: 1, padding: '15px 4px', background: pulling ? '#374151' : `linear-gradient(135deg, ${opt.color}, ${opt.color}cc)`, color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', letterSpacing: '0.3px', boxShadow: pulling ? 'none' : `0 4px 15px ${opt.color}55` }}
                 >
                   {pulling ? '処理中...' : `🎰 ${opt.label}`}
                 </button>
@@ -622,14 +644,14 @@ export default function EventDetailPage() {
             </div>
           ) : (
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f5a623', is_active: true })} style={{ flex: 1, padding: '16px', background: '#f5a623', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>🎰 1回ガチャ</button>
-              <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ flex: 1, padding: '16px', background: '#e63946', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
+              <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f97316', is_active: true })} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #f97316, #ea580c)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(249,115,22,0.4)' }}>🎰 1回</button>
+              <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #e63946, #c0392b)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(230,57,70,0.4)' }}>✨ 10連</button>
             </div>
           )}
 
           {!userId && (
-            <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', marginTop: '8px' }}>
-              ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#e67e00', fontWeight: '700' }}>ログイン</a>が必要です
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '8px' }}>
+              ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
             </p>
           )}
         </div>
