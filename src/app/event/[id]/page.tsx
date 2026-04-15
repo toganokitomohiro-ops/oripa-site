@@ -251,49 +251,47 @@ export default function EventDetailPage() {
   const remainingPercent = Math.min(100, Math.round((event.remaining_count / event.total_count) * 100))
 
   return (
-    <div className="has-bottom-nav" style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
+    <div className="has-bottom-nav event-nova-page" style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
 
       {/* ヘッダー */}
       <Header />
 
       {/* パンくずリスト */}
-      <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6' }}>
+      <div className="event-nova-breadcrumb" style={{ background: 'white', borderBottom: '1px solid #f3f4f6' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#9ca3af' }}>
           <a href="/" style={{ color: '#9ca3af', textDecoration: 'none' }}>ガチャ一覧</a>
-          <span>›</span>
-          <span style={{ color: '#374151', fontWeight: '600' }}>{event.name}</span>
+          <span className="nova-bc-sep">›</span>
+          <span className="nova-bc-current" style={{ color: '#374151', fontWeight: '600' }}>{event.name}</span>
         </div>
       </div>
 
       {/* モバイル: メイン画像（PC では非表示） */}
       <div className="event-image-mobile" style={{ width: '100%' }}>
-        <div style={{ position: 'relative', width: '100%', paddingBottom: '68%', background: '#f3f4f6', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', paddingBottom: '62.4%', background: '#0E0F1A', overflow: 'hidden' }}>
           {event.image_url
             ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
             : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
           }
-          {/* 下部グラデーションオーバーレイ */}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%', background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)', pointerEvents: 'none' }} />
-          {/* バナー下部: 価格・残り枚数 */}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px 14px 12px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>{event.name}</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-                <span style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', lineHeight: 1 }}>{event.price.toLocaleString()}</span>
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>コイン / 1回</span>
-              </div>
+        </div>
+        {/* 価格・残り枚数バー（画像下に独立表示） */}
+        <div className="event-nova-info-bar">
+          <div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>{event.name}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+              <span style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', lineHeight: 1 }}>{event.price.toLocaleString()}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>コイン / 1回</span>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>残り枚数</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
-                <span style={{ fontSize: '20px', fontWeight: '900', color: remainingPercent > 20 ? '#22c55e' : '#ef4444', lineHeight: 1 }}>{event.remaining_count.toLocaleString()}</span>
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>/ {event.total_count.toLocaleString()}</span>
-              </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>残り枚数</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
+              <span style={{ fontSize: '20px', fontWeight: '900', color: remainingPercent > 20 ? '#22c55e' : '#ef4444', lineHeight: 1 }}>{event.remaining_count.toLocaleString()}</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>/ {event.total_count.toLocaleString()}</span>
             </div>
           </div>
         </div>
         {/* 残枚数プログレスバー */}
-        <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '6px 0' }}>
+        <div className="event-nova-progress-wrap" style={{ borderBottom: '1px solid #e5e7eb', padding: '6px 0' }}>
           <div style={{ background: '#e5e7eb', height: '5px', margin: '0 14px', borderRadius: '999px', overflow: 'hidden' }}>
             <div style={{ background: remainingPercent > 20 ? 'linear-gradient(90deg, #22c55e, #4ade80)' : 'linear-gradient(90deg, #ef4444, #f87171)', height: '5px', borderRadius: '999px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
           </div>
@@ -308,7 +306,7 @@ export default function EventDetailPage() {
       <div style={{ padding: '16px' }}>
 
         {error && (
-          <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '10px 14px', marginBottom: '12px', color: '#dc2626', fontSize: '14px', textAlign: 'center' }}>{error}</div>
+          <div className="event-nova-error" style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '10px 14px', marginBottom: '12px', color: '#dc2626', fontSize: '14px', textAlign: 'center' }}>{error}</div>
         )}
 
         {/* 天井カウンター（モバイルのみ。PCは右サイドバーに表示） */}
@@ -329,36 +327,36 @@ export default function EventDetailPage() {
 
         {/* 賞別残数・当選確率 */}
         {gradeStats.length > 0 && (
-          <div style={{ marginBottom: '20px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
-              <span style={{ fontSize: '13px', fontWeight: '700', color: '#374151' }}>賞別残数・当選確率</span>
+          <div className="event-nova-stats" style={{ marginBottom: '20px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <div className="event-nova-stats-hdr" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+              <span className="event-nova-stats-title" style={{ fontSize: '13px', fontWeight: '700', color: '#374151' }}>賞別残数・当選確率</span>
               <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
                 LIVE
               </span>
             </div>
             {/* テーブルヘッダー */}
-            <div style={{ display: 'flex', alignItems: 'center', padding: '5px 14px', borderBottom: '1px solid #f3f4f6', background: '#f3f4f6' }}>
-              <span style={{ width: '68px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>賞</span>
-              <span style={{ width: '110px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>残り / 合計</span>
-              <span style={{ width: '50px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', textAlign: 'right', flexShrink: 0 }}>確率</span>
+            <div className="event-nova-stats-hdr" style={{ display: 'flex', alignItems: 'center', padding: '5px 14px', borderBottom: '1px solid #f3f4f6', background: '#f3f4f6' }}>
+              <span className="event-nova-stats-col" style={{ width: '68px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>賞</span>
+              <span className="event-nova-stats-col" style={{ width: '110px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>残り / 合計</span>
+              <span className="event-nova-stats-col" style={{ width: '50px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', textAlign: 'right', flexShrink: 0 }}>確率</span>
               <span style={{ flex: 1 }} />
             </div>
             {gradeStats.map(({ grade, total, remaining, probability }, i) => (
-              <div key={grade} style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', borderBottom: i < gradeStats.length - 1 ? '1px solid #f3f4f6' : 'none', background: 'white' }}>
+              <div key={grade} className="event-nova-stats-row" style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', borderBottom: i < gradeStats.length - 1 ? '1px solid #f3f4f6' : 'none', background: 'white' }}>
                 <span style={{
                   width: '68px', fontSize: '12px', fontWeight: '800', color: 'white',
                   background: gradeColor[grade] || '#6b7280',
                   padding: '2px 0', borderRadius: '4px', textAlign: 'center', flexShrink: 0
                 }}>{grade}</span>
-                <span style={{ width: '110px', fontSize: '12px', color: '#374151', fontWeight: '600', flexShrink: 0, paddingLeft: '10px' }}>
+                <span className="event-nova-stats-val" style={{ width: '110px', fontSize: '12px', color: '#374151', fontWeight: '600', flexShrink: 0, paddingLeft: '10px' }}>
                   {remaining.toLocaleString()} / {total.toLocaleString()}
                 </span>
-                <span style={{ width: '50px', fontSize: '12px', color: '#6b7280', fontWeight: '600', textAlign: 'right', flexShrink: 0 }}>
+                <span className="event-nova-stats-sub" style={{ width: '50px', fontSize: '12px', color: '#6b7280', fontWeight: '600', textAlign: 'right', flexShrink: 0 }}>
                   {probability.toFixed(2)}%
                 </span>
                 <div style={{ flex: 1, paddingLeft: '10px' }}>
-                  <div style={{ background: '#e5e7eb', borderRadius: '999px', height: '5px' }}>
+                  <div className="event-nova-stats-bar-track" style={{ background: '#e5e7eb', borderRadius: '999px', height: '5px' }}>
                     <div style={{
                       background: gradeColor[grade] || '#6b7280',
                       borderRadius: '999px', height: '5px',
@@ -429,7 +427,7 @@ export default function EventDetailPage() {
                           ×{prize.remaining_count}
                         </div>
                       </div>
-                      <p style={{ fontSize: '11px', color: '#374151', fontWeight: '600', textAlign: 'center', marginTop: '4px', lineHeight: 1.3 }}>{prize.products?.name}</p>
+                      <p className="event-nova-card-name" style={{ fontSize: '11px', color: '#374151', fontWeight: '600', textAlign: 'center', marginTop: '4px', lineHeight: 1.3 }}>{prize.products?.name}</p>
                     </div>
                   ))}
                 </div>
@@ -441,14 +439,14 @@ export default function EventDetailPage() {
         {/* 排出履歴 */}
         <div style={{ marginTop: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '14px', fontWeight: '800', color: '#111827' }}>排出履歴</span>
+            <span className="event-nova-history-title" style={{ fontSize: '14px', fontWeight: '800', color: '#111827' }}>排出履歴</span>
             <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
               LIVE
             </span>
           </div>
           {drawHistory.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '32px 16px', background: '#f9fafb', borderRadius: '12px', border: '1px dashed #e5e7eb' }}>
+            <div className="event-nova-history-empty" style={{ textAlign: 'center', padding: '32px 16px', background: '#f9fafb', borderRadius: '12px', border: '1px dashed #e5e7eb' }}>
               <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>まだ排出履歴はありません</p>
             </div>
           ) : (
@@ -479,13 +477,13 @@ export default function EventDetailPage() {
                   </div>
                   {/* 商品名・ユーザー・時刻 */}
                   <div style={{ marginTop: '4px' }}>
-                    <p style={{ fontSize: '10px', color: '#111827', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: '0 0 2px' }}>
+                    <p className="event-nova-draw-name" style={{ fontSize: '10px', color: '#111827', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: '0 0 2px' }}>
                       {draw.products?.name || '商品'}
                     </p>
-                    <p style={{ fontSize: '9px', color: '#9ca3af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p className="event-nova-draw-user" style={{ fontSize: '9px', color: '#9ca3af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {anonymizeUser(draw.user_id)}
                     </p>
-                    <p style={{ fontSize: '9px', color: '#d1d5db', margin: 0 }}>
+                    <p className="event-nova-draw-time" style={{ fontSize: '9px', color: '#d1d5db', margin: 0 }}>
                       {formatTimeAgo(draw.created_at)}
                     </p>
                   </div>
@@ -497,14 +495,14 @@ export default function EventDetailPage() {
 
         {/* 説明文 */}
         {event.description && (
-          <div style={{ marginTop: '32px', padding: '16px', background: '#f9fafb', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
+          <div className="event-nova-desc" style={{ marginTop: '32px', padding: '16px', background: '#f9fafb', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
             <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>オリパについて</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{event.description}</p>
           </div>
         )}
 
         {/* 注意事項 - オリパワン風 */}
-        <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="event-nova-terms" style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
             { title: '傷ありカード/ケースについて', body: 'オリパで排出されたカードや鑑定済みカード(ケース)には傷がある場合がございます。' },
             { title: '商品画像の注意', body: '商品画像はイメージであり、実際のカードの状態や排出状況を保証するものではありません。' },

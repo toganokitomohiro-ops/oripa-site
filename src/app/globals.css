@@ -173,3 +173,75 @@ body {
     background: #e5e7eb;
   }
 }
+
+/* lineup-divider: mobile base styles */
+.lineup-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #6b7280;
+}
+.lineup-divider::before, .lineup-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* info bar below mobile banner */
+.event-nova-info-bar {
+  background: #12141f;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* === Mobile Nova Gacha dark theme (max-width: 1023px) === */
+@media (max-width: 1023px) {
+  .event-nova-page { background: #0E0F1A !important; }
+
+  .event-nova-breadcrumb { background: #0E0F1A !important; border-bottom-color: rgba(255,255,255,0.08) !important; }
+  .event-nova-breadcrumb a { color: rgba(255,255,255,0.4) !important; }
+  .nova-bc-current { color: rgba(255,255,255,0.75) !important; }
+  .nova-bc-sep { color: rgba(255,255,255,0.25) !important; }
+
+  .event-nova-progress-wrap { background: #0E0F1A !important; border-bottom-color: rgba(255,255,255,0.08) !important; }
+
+  .lineup-divider { color: rgba(255,255,255,0.5) !important; }
+  .lineup-divider::before, .lineup-divider::after { background: rgba(255,255,255,0.1) !important; }
+
+  .event-nova-stats { background: #12141f !important; border-color: rgba(255,255,255,0.08) !important; }
+  .event-nova-stats-hdr { background: rgba(255,255,255,0.04) !important; border-bottom-color: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.08) !important; }
+  .event-nova-stats-title { color: rgba(255,255,255,0.85) !important; }
+  .event-nova-stats-col { color: rgba(255,255,255,0.45) !important; }
+  .event-nova-stats-row { background: transparent !important; border-bottom-color: rgba(255,255,255,0.06) !important; }
+  .event-nova-stats-val { color: rgba(255,255,255,0.75) !important; }
+  .event-nova-stats-sub { color: rgba(255,255,255,0.45) !important; }
+  .event-nova-stats-bar-track { background: rgba(255,255,255,0.1) !important; }
+
+  .event-nova-card-name { color: rgba(255,255,255,0.8) !important; }
+
+  .event-nova-history-title { color: rgba(255,255,255,0.9) !important; }
+  .event-nova-history-empty { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.1) !important; }
+  .event-nova-history-empty p { color: rgba(255,255,255,0.35) !important; }
+  .event-nova-draw-name { color: rgba(255,255,255,0.85) !important; }
+  .event-nova-draw-user { color: rgba(255,255,255,0.4) !important; }
+  .event-nova-draw-time { color: rgba(255,255,255,0.25) !important; }
+
+  .event-nova-desc { background: #12141f !important; border-color: rgba(255,255,255,0.08) !important; }
+  .event-nova-desc h3 { color: rgba(255,255,255,0.9) !important; }
+  .event-nova-desc p { color: rgba(255,255,255,0.55) !important; }
+
+  .event-nova-terms p { color: rgba(255,255,255,0.45) !important; }
+
+  .event-nova-error { background: rgba(220,38,38,0.15) !important; border-color: rgba(220,38,38,0.3) !important; color: #fca5a5 !important; }
+
+  .event-ceiling-mobile { background: rgba(59,130,246,0.1) !important; border-color: rgba(59,130,246,0.2) !important; }
+  .event-ceiling-mobile span { color: rgba(255,255,255,0.7) !important; }
+}
