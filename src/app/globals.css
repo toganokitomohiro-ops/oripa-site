@@ -84,7 +84,7 @@ body {
 .banner-outer { overflow: hidden; }
 .banner-slider { display: flex; transition: transform 0.4s ease; }
 .banner-item { flex-shrink: 0; width: 100%; }
-.oripa-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.oripa-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; }
 .oripa-card { transition: transform 0.2s, box-shadow 0.2s; }
 .oripa-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
 .gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
