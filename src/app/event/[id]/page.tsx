@@ -267,13 +267,13 @@ export default function EventDetailPage() {
 
       {/* モバイル: メイン画像（PC では非表示） */}
       <div className="event-image-mobile" style={{ width: '100%' }}>
-        <div style={{ position: 'relative', width: '100%', paddingBottom: '68%', background: '#0E0F1A', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', paddingBottom: '68%', background: '#f3f4f6', overflow: 'hidden' }}>
           {event.image_url
             ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
             : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
           }
           {/* 下部グラデーションオーバーレイ */}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%', background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%', background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)', pointerEvents: 'none' }} />
           {/* バナー下部: 価格・残り枚数 */}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px 14px 12px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
             <div>
@@ -293,8 +293,8 @@ export default function EventDetailPage() {
           </div>
         </div>
         {/* 残枚数プログレスバー */}
-        <div style={{ background: '#1a1a2e', padding: '6px 0' }}>
-          <div style={{ background: '#2a2a3e', height: '5px', margin: '0 14px', borderRadius: '999px', overflow: 'hidden' }}>
+        <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '6px 0' }}>
+          <div style={{ background: '#e5e7eb', height: '5px', margin: '0 14px', borderRadius: '999px', overflow: 'hidden' }}>
             <div style={{ background: remainingPercent > 20 ? 'linear-gradient(90deg, #22c55e, #4ade80)' : 'linear-gradient(90deg, #ef4444, #f87171)', height: '5px', borderRadius: '999px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
           </div>
         </div>
@@ -438,48 +438,62 @@ export default function EventDetailPage() {
           })}
         </div>
 
-        {/* 当選履歴タイムライン */}
-        {drawHistory.length > 0 && (
-          <div style={{ marginTop: '32px', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-              <span style={{ fontSize: '13px', fontWeight: '700', color: '#374151' }}>みんなの当選履歴</span>
-              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
-                LIVE
-              </span>
+        {/* 排出履歴 */}
+        <div style={{ marginTop: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <span style={{ fontSize: '14px', fontWeight: '800', color: '#111827' }}>排出履歴</span>
+            <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
+              LIVE
+            </span>
+          </div>
+          {drawHistory.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '32px 16px', background: '#f9fafb', borderRadius: '12px', border: '1px dashed #e5e7eb' }}>
+              <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>まだ排出履歴はありません</p>
             </div>
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
               {drawHistory.map((draw, i) => (
-                <div key={draw.id} style={{
-                  display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 14px',
-                  borderBottom: i < drawHistory.length - 1 ? '1px solid #f3f4f6' : 'none',
-                  background: i === 0 ? '#f0fdf4' : 'white'
-                }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '6px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
+                <div key={draw.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                  {/* カード画像 */}
+                  <div style={{
+                    position: 'relative', paddingBottom: '139.4%', borderRadius: '8px', overflow: 'hidden',
+                    background: '#f3f4f6',
+                    boxShadow: i === 0 ? '0 0 0 2px #f97316' : 'none',
+                  }}>
                     {draw.products?.image_url
-                      ? <img src={draw.products.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>🃏</div>
+                      ? <img src={draw.products.image_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🃏</div>
                     }
+                    {/* グレードバッジ */}
+                    <div style={{
+                      position: 'absolute', top: '4px', left: '4px',
+                      fontSize: '9px', fontWeight: '900', color: 'white',
+                      background: gradeColor[draw.grade] || '#6b7280',
+                      padding: '1px 5px', borderRadius: '3px', lineHeight: '14px'
+                    }}>{draw.grade}</div>
+                    {/* NEWバッジ */}
+                    {i === 0 && (
+                      <div style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', fontSize: '8px', fontWeight: '900', padding: '1px 4px', borderRadius: '3px', lineHeight: '14px' }}>NEW</div>
+                    )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                      <span style={{ fontSize: '11px', color: '#6b7280' }}>{anonymizeUser(draw.user_id)}</span>
-                      <span style={{
-                        fontSize: '10px', fontWeight: '800', color: 'white',
-                        background: gradeColor[draw.grade] || '#6b7280',
-                        padding: '1px 6px', borderRadius: '3px', flexShrink: 0
-                      }}>{draw.grade}</span>
-                    </div>
-                    <p style={{ fontSize: '12px', color: '#374151', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
+                  {/* 商品名・ユーザー・時刻 */}
+                  <div style={{ marginTop: '4px' }}>
+                    <p style={{ fontSize: '10px', color: '#111827', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: '0 0 2px' }}>
                       {draw.products?.name || '商品'}
                     </p>
+                    <p style={{ fontSize: '9px', color: '#9ca3af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {anonymizeUser(draw.user_id)}
+                    </p>
+                    <p style={{ fontSize: '9px', color: '#d1d5db', margin: 0 }}>
+                      {formatTimeAgo(draw.created_at)}
+                    </p>
                   </div>
-                  <span style={{ fontSize: '11px', color: '#9ca3af', flexShrink: 0 }}>{formatTimeAgo(draw.created_at)}</span>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* 説明文 */}
         {event.description && (
