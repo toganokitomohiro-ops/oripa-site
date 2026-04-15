@@ -315,16 +315,23 @@ export default function Home() {
                     {/* ガチャボタン */}
                     {isSoldOut ? (
                       <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0', borderRadius: '6px', color: '#999', fontSize: '13px', fontWeight: '700' }}>売り切れ</div>
-                    ) : sortedOptions.length > 0 ? (
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        {sortedOptions.map((opt) => (
-                          <button key={opt.id} className="gacha-card-btn" onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 {opt.label}</button>
-                        ))}
-                      </div>
                     ) : (
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button className="gacha-card-btn" onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: '#f97316', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 1回ガチャ</button>
-                      </div>
+                      <>
+                        {/* スマホ専用: ガチャ内容を見るボタン */}
+                        <a href={'/event/' + event.id} className="gacha-view-btn-mobile" style={{ display: 'block', textAlign: 'center', padding: '13px 0', background: 'linear-gradient(135deg, #f97316, #f5a623)', color: 'white', borderRadius: '999px', fontSize: '14px', fontWeight: '900', textDecoration: 'none', boxShadow: '0 3px 10px rgba(249,115,22,0.4)', letterSpacing: '0.02em' }}>
+                          ガチャ内容を見る →
+                        </a>
+                        {/* PC専用: ガチャボタン */}
+                        <div className="gacha-btns-pc" style={{ gap: '6px' }}>
+                          {sortedOptions.length > 0 ? (
+                            sortedOptions.map((opt) => (
+                              <button key={opt.id} className="gacha-card-btn" onClick={() => openConfirm(event, opt)} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: opt.color, color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 {opt.label}</button>
+                            ))
+                          ) : (
+                            <button className="gacha-card-btn" onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })} style={{ flex: 1, display: 'block', textAlign: 'center', padding: '13px 0', background: '#f97316', color: 'white', borderRadius: '8px', fontSize: '14px', fontWeight: '900', border: 'none', cursor: 'pointer' }}>🎰 1回ガチャ</button>
+                          )}
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>

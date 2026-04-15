@@ -600,7 +600,7 @@ export default function EventDetailPage() {
       </div>{/* end event-body */}
 
       {/* モバイル専用: 固定フッター（PCでは非表示） */}
-      <div className="event-mobile-footer" style={{ position: 'sticky', bottom: 0, background: 'white', borderRadius: '16px 16px 0 0', boxShadow: '0 -4px 16px rgba(0,0,0,0.12)', padding: '10px 12px 16px', zIndex: 50 }}>
+      <div className="event-mobile-footer" style={{ position: 'fixed', bottom: '72px', left: 0, right: 0, background: 'white', borderRadius: '16px 16px 0 0', boxShadow: '0 -4px 16px rgba(0,0,0,0.12)', padding: '10px 12px 16px', zIndex: 60 }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           {/* 価格・残り */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px', padding: '0 4px' }}>

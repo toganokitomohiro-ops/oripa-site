@@ -89,6 +89,9 @@ body {
 .oripa-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important; }
 .gacha-card-btn { transition: transform 0.1s, box-shadow 0.1s !important; }
 .gacha-card-btn:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+/* トップページ: スマホ専用「ガチャ内容を見る」/ PC専用ガチャボタン */
+.gacha-view-btn-mobile { display: block; }
+.gacha-btns-pc { display: none !important; }
 
 @media (min-width: 768px) {
   .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0 20px; overflow: hidden; position: relative; }
@@ -97,6 +100,8 @@ body {
   .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important; min-width: 200px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
   .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
   .oripa-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+  .gacha-view-btn-mobile { display: none !important; }
+  .gacha-btns-pc { display: flex !important; }
 }
 
 /* PC (≥1024px): larger, more impactful oripa cards */
