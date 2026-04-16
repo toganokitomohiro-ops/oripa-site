@@ -17,6 +17,9 @@ type Event = {
   image_url: string
   ceiling_count: number
   ceiling_grade: string
+  end_at?: string
+  max_count?: number
+  min_guarantee?: number
 }
 
 type Prize = {
@@ -37,37 +40,7 @@ type GachaOption = {
   is_active: boolean
 }
 
-type DrawHistory = {
-  id: string
-  user_id: string
-  grade: string
-  created_at: string
-  products: { name: string; image_url: string } | null
-}
-
 const gradeOrder = ['ラストワン賞', 'S賞', 'A賞', 'B賞', 'C賞']
-
-
-const gradeColor: Record<string, string> = {
-  'ラストワン賞': '#7c3aed',
-  'S賞': '#2563eb',
-  'A賞': '#d97706',
-  'B賞': '#dc2626',
-  'C賞': '#6b7280',
-}
-
-const formatTimeAgo = (dateStr: string) => {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const sec = Math.floor(diff / 1000)
-  if (sec < 60) return `${sec}秒前`
-  const min = Math.floor(sec / 60)
-  if (min < 60) return `${min}分前`
-  const hr = Math.floor(min / 60)
-  if (hr < 24) return `${hr}時間前`
-  return `${Math.floor(hr / 24)}日前`
-}
-
-const anonymizeUser = (userId: string) => `ユーザー****${userId.slice(-4)}`
 
 export default function EventDetailPage() {
   const params = useParams()
@@ -78,7 +51,6 @@ export default function EventDetailPage() {
   const [gachaOptions, setGachaOptions] = useState<GachaOption[]>([])
   const [userId, setUserId] = useState<string | null>(null)
   const [userPoints, setUserPoints] = useState(0)
-  const [userCeilingCount, setUserCeilingCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [showConfirm, setShowConfirm] = useState(false)
   const [confirmOption, setConfirmOption] = useState<GachaOption | null>(null)
@@ -87,24 +59,12 @@ export default function EventDetailPage() {
   const [pulling, setPulling] = useState(false)
   const [error, setError] = useState('')
   const [pendingDrawIds, setPendingDrawIds] = useState<string[]>([])
-  const [drawHistory, setDrawHistory] = useState<DrawHistory[]>([])
 
   useEffect(() => { fetchData() }, [])
 
   useEffect(() => {
     if (!params.id) return
     const eventId = params.id as string
-
-    const fetchDrawHistory = async () => {
-      const { data } = await supabase
-        .from('draws')
-        .select('id, user_id, grade, created_at, products(name, image_url)')
-        .eq('event_id', eventId)
-        .order('created_at', { ascending: false })
-        .limit(20)
-      if (data) setDrawHistory(data as unknown as DrawHistory[])
-    }
-    fetchDrawHistory()
 
     const prizeChannel = supabase.channel(`prizes-rt-${eventId}`)
       .on('postgres_changes', {
@@ -130,27 +90,9 @@ export default function EventDetailPage() {
       })
       .subscribe()
 
-    const drawChannel = supabase.channel(`draws-rt-${eventId}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'draws',
-        filter: `event_id=eq.${eventId}`,
-      }, async () => {
-        const { data } = await supabase
-          .from('draws')
-          .select('id, user_id, grade, created_at, products(name, image_url)')
-          .eq('event_id', eventId)
-          .order('created_at', { ascending: false })
-          .limit(20)
-        if (data) setDrawHistory(data as unknown as DrawHistory[])
-      })
-      .subscribe()
-
     return () => {
       supabase.removeChannel(prizeChannel)
       supabase.removeChannel(eventChannel)
-      supabase.removeChannel(drawChannel)
     }
   }, [params.id])
 
@@ -161,8 +103,6 @@ export default function EventDetailPage() {
       setUserId(session.user.id)
       const { data: profile } = await supabase.from('profiles').select('points').eq('id', session.user.id).single()
       if (profile) setUserPoints(profile.points)
-      const { data: ceiling } = await supabase.from('user_ceiling').select('count').eq('user_id', session.user.id).eq('event_id', params.id).single()
-      if (ceiling) setUserCeilingCount(ceiling.count)
     }
     const { data: eventData } = await supabase.from('events').select('*').eq('id', params.id).single()
     if (eventData) setEvent(eventData)
@@ -178,17 +118,6 @@ export default function EventDetailPage() {
     if (!gradeGroups[p.grade]) gradeGroups[p.grade] = []
     gradeGroups[p.grade].push(p)
   })
-
-  const totalPrizeCount = prizes.reduce((sum, p) => sum + p.count, 0)
-  const gradeStats = gradeOrder
-    .filter(g => gradeGroups[g])
-    .map(grade => {
-      const list = gradeGroups[grade]
-      const total = list.reduce((sum, p) => sum + p.count, 0)
-      const remaining = list.reduce((sum, p) => sum + p.remaining_count, 0)
-      const probability = totalPrizeCount > 0 ? (total / totalPrizeCount * 100) : 0
-      return { grade, total, remaining, probability }
-    })
 
   const getBestVideoUrl = (results: any[]) => {
     for (const grade of gradeOrder) {
@@ -211,7 +140,7 @@ export default function EventDetailPage() {
   const handleGacha = async () => {
     if (!userId || !event || !confirmOption) return
     const totalCost = event.price * confirmOption.count
-    if (userPoints < totalCost) { setError(`ポイントが不足しています`); setShowConfirm(false); return }
+    if (userPoints < totalCost) { setError('ポイントが不足しています'); setShowConfirm(false); return }
     setPulling(true)
     setShowConfirm(false)
     try {
@@ -224,7 +153,6 @@ export default function EventDetailPage() {
       if (!res.ok) { setError(data.error || 'エラーが発生しました'); setPulling(false); return }
       setUserPoints(data.remaining_points)
       setPendingDrawIds(data.draw_ids || [])
-      // APIが返すvideo_urlを優先、なければ旧ロジックにフォールバック
       const bestVideo = data.video_url || getBestVideoUrl(data.results)
       if (bestVideo) { setVideoUrl(bestVideo); setShowVideo(true) }
       else router.push('/gacha-result?draw_ids=' + (data.draw_ids || []).join(',') + '&event_id=' + event.id)
@@ -232,11 +160,16 @@ export default function EventDetailPage() {
     setPulling(false)
   }
 
+  const formatEndAt = (dateStr: string) => {
+    const d = new Date(dateStr)
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  }
+
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: '#f8f7f4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '800px', padding: '16px' }}>
-        <div style={{ width: '100%', paddingBottom: '65.6%', background: '#e5e7eb', borderRadius: '8px', animation: 'pulse 1.5s infinite' }} />
-        <div style={{ height: '200px', background: '#e5e7eb', borderRadius: '8px' }} />
+        <div style={{ width: '100%', paddingBottom: '68%', background: '#e5e7eb', borderRadius: '8px' }} />
+        <div style={{ height: '100px', background: '#e5e7eb', borderRadius: '8px' }} />
       </div>
     </div>
   )
@@ -250,185 +183,101 @@ export default function EventDetailPage() {
   const isSoldOut = event.remaining_count <= 0 || event.status !== 'active'
   const remainingPercent = Math.min(100, Math.round((event.remaining_count / event.total_count) * 100))
 
-  return (
-    <div className="has-bottom-nav event-nova-page" style={{ minHeight: '100vh', background: 'white', paddingBottom: '200px' }}>
+  // フッターボタン: 1000連以上は全幅赤ボタン、それ以外は3列
+  const regularOptions = gachaOptions.filter(o => o.count < 1000)
+  const bigOption = gachaOptions.find(o => o.count >= 1000)
+  const defaultOptions: GachaOption[] = [
+    { id: '1', label: '1回ガチャ', count: 1, color: 'linear-gradient(135deg,#f97316,#ea580c)', is_active: true },
+    { id: '10', label: '10連ガチャ', count: 10, color: 'linear-gradient(135deg,#22c55e,#16a34a)', is_active: true },
+    { id: '100', label: '100連ガチャ', count: 100, color: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', is_active: true },
+  ]
+  const footerOptions = regularOptions.length > 0 ? regularOptions.slice(0, 3) : defaultOptions
 
-      {/* ヘッダー */}
+  const gradeBadgeStyle = (grade: string): string => {
+    if (grade === 'S賞') return 'linear-gradient(131deg, rgb(45,1,210) 0%, rgb(1,255,255) 20%, rgb(123,254,122) 40%, rgb(253,255,14) 59%, rgb(243,1,1) 79%, rgb(112,1,104) 99%)'
+    if (grade === 'A賞') return 'linear-gradient(131deg, rgb(114,79,10) 0%, rgb(223,183,41) 20%, rgb(249,247,196) 40%, rgb(248,251,191) 59%, rgb(202,159,15) 79%, rgb(114,79,10) 99%)'
+    if (grade === 'B賞') return 'linear-gradient(130deg, rgb(183,0,0) 12%, rgb(250,1,1) 27%, rgb(253,142,134) 43%, rgb(253,142,134) 58%, rgb(250,1,1) 74%, rgb(183,0,0) 89%)'
+    if (grade === 'ラストワン賞') return 'linear-gradient(131deg, rgb(76,10,114) 0%, rgb(210,148,246) 20%, rgb(244,229,253) 40%, rgb(244,229,253) 59%, rgb(210,148,246) 79%, rgb(76,10,114) 99%)'
+    return 'linear-gradient(135deg, #9ca3af, #6b7280)'
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#f8f7f4', paddingBottom: '160px' }}>
       <Header />
 
-      {/* パンくずリスト */}
-      <div className="event-nova-breadcrumb" style={{ background: 'white', borderBottom: '1px solid #f3f4f6' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#9ca3af' }}>
-          <a href="/" style={{ color: '#9ca3af', textDecoration: 'none' }}>ガチャ一覧</a>
-          <span className="nova-bc-sep">›</span>
-          <span className="nova-bc-current" style={{ color: '#374151', fontWeight: '600' }}>{event.name}</span>
-        </div>
+      {/* バナー - 全幅 */}
+      <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+        {event.image_url
+          ? <img src={event.image_url} alt={event.name} style={{ width: '100%', display: 'block', aspectRatio: '970/660', objectFit: 'fill' }} />
+          : <div style={{ width: '100%', aspectRatio: '970/660', background: '#1f2937', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
+        }
       </div>
 
-      {/* モバイル: メイン画像（PC では非表示） */}
-      <div className="event-image-mobile" style={{ width: '100%' }}>
-        <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-          <div style={{ position: 'relative', width: '100%', aspectRatio: '970/660' }}>
-            {event.image_url
-              ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
-              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px', background: '#0E0F1A' }}>🎴</div>
-            }
-          </div>
-        </div>
-        {/* 価格・残り枚数バー（画像下に独立表示） */}
-        <div className="event-nova-info-bar">
-          <div>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>{event.name}</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-              <span style={{ fontSize: '22px', fontWeight: '900', color: '#f97316', lineHeight: 1 }}>{event.price.toLocaleString()}</span>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>コイン / 1回</span>
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>残り枚数</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
-              <span style={{ fontSize: '20px', fontWeight: '900', color: remainingPercent > 20 ? '#22c55e' : '#ef4444', lineHeight: 1 }}>{event.remaining_count.toLocaleString()}</span>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>/ {event.total_count.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-        {/* 残枚数プログレスバー */}
-        <div className="event-nova-progress-wrap" style={{ borderBottom: '1px solid #e5e7eb', padding: '6px 0' }}>
-          <div style={{ background: '#e5e7eb', height: '5px', margin: '0 14px', borderRadius: '999px', overflow: 'hidden' }}>
-            <div style={{ background: remainingPercent > 20 ? 'linear-gradient(90deg, #22c55e, #4ade80)' : 'linear-gradient(90deg, #ef4444, #f87171)', height: '5px', borderRadius: '999px', width: `${remainingPercent}%`, transition: 'width 0.5s' }} />
-          </div>
-        </div>
-      </div>
-
-      {/* 2カラム本体 */}
-      <div className="event-body">
-        {/* 左カラム: 賞品一覧 */}
-        <div className="event-col-main">
-      {/* 賞品一覧 - オリパワン完全再現 */}
-      <div style={{ padding: '16px' }}>
-
-        {error && (
-          <div className="event-nova-error" style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '10px 14px', marginBottom: '12px', color: '#dc2626', fontSize: '14px', textAlign: 'center' }}>{error}</div>
-        )}
-
-        {/* 天井カウンター（モバイルのみ。PCは右サイドバーに表示） */}
-        {event.ceiling_count > 0 && userId && (
-          <div className="event-ceiling-mobile" style={{ background: '#eff6ff', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', border: '1px solid #bfdbfe' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ fontSize: '13px', color: '#3b82f6', fontWeight: '700' }}>🔢 天井カウンター</span>
-              <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e40af' }}>{userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定</span>
-            </div>
-            <div style={{ background: '#dbeafe', borderRadius: '999px', height: '4px' }}>
-              <div style={{ background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', borderRadius: '999px', height: '4px', width: `${Math.min((userCeilingCount / event.ceiling_count) * 100, 100)}%`, transition: 'width 0.5s' }} />
-            </div>
-          </div>
-        )}
-
-        {/* グレード別賞品 - オリパワンそのまま */}
-        <div className="lineup-divider">ラインナップ</div>
-
-        {/* 賞別残数・当選確率 */}
-        {gradeStats.length > 0 && (
-          <div className="event-nova-stats" style={{ marginBottom: '20px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
-            <div className="event-nova-stats-hdr" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
-              <span className="event-nova-stats-title" style={{ fontSize: '13px', fontWeight: '700', color: '#374151' }}>賞別残数・当選確率</span>
-              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
-                LIVE
-              </span>
-            </div>
-            {/* テーブルヘッダー */}
-            <div className="event-nova-stats-hdr" style={{ display: 'flex', alignItems: 'center', padding: '5px 14px', borderBottom: '1px solid #f3f4f6', background: '#f3f4f6' }}>
-              <span className="event-nova-stats-col" style={{ width: '68px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>賞</span>
-              <span className="event-nova-stats-col" style={{ width: '110px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', flexShrink: 0 }}>残り / 合計</span>
-              <span className="event-nova-stats-col" style={{ width: '50px', fontSize: '11px', color: '#9ca3af', fontWeight: '700', textAlign: 'right', flexShrink: 0 }}>確率</span>
-              <span style={{ flex: 1 }} />
-            </div>
-            {gradeStats.map(({ grade, total, remaining, probability }, i) => (
-              <div key={grade} className="event-nova-stats-row" style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', borderBottom: i < gradeStats.length - 1 ? '1px solid #f3f4f6' : 'none', background: 'white' }}>
-                <span style={{
-                  width: '68px', fontSize: '12px', fontWeight: '800', color: 'white',
-                  background: gradeColor[grade] || '#6b7280',
-                  padding: '2px 0', borderRadius: '4px', textAlign: 'center', flexShrink: 0
-                }}>{grade}</span>
-                <span className="event-nova-stats-val" style={{ width: '110px', fontSize: '12px', color: '#374151', fontWeight: '600', flexShrink: 0, paddingLeft: '10px' }}>
-                  {remaining.toLocaleString()} / {total.toLocaleString()}
-                </span>
-                <span className="event-nova-stats-sub" style={{ width: '50px', fontSize: '12px', color: '#6b7280', fontWeight: '600', textAlign: 'right', flexShrink: 0 }}>
-                  {probability.toFixed(2)}%
-                </span>
-                <div style={{ flex: 1, paddingLeft: '10px' }}>
-                  <div className="event-nova-stats-bar-track" style={{ background: '#e5e7eb', borderRadius: '999px', height: '5px' }}>
-                    <div style={{
-                      background: gradeColor[grade] || '#6b7280',
-                      borderRadius: '999px', height: '5px',
-                      width: `${total > 0 ? Math.round(remaining / total * 100) : 0}%`,
-                      transition: 'width 0.5s'
-                    }} />
-                  </div>
-                </div>
+      {/* 情報エリア（ベージュ背景） */}
+      {(event.end_at || event.max_count != null || event.min_guarantee != null) && (
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '12px 16px 0' }}>
+          <div style={{ background: '#fef9f0', borderRadius: '12px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px', border: '1px solid #fde68a' }}>
+            {event.end_at && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#92400e', fontWeight: '800', background: '#fde68a', padding: '3px 8px', borderRadius: '4px', flexShrink: 0 }}>販売期限</span>
+                <span style={{ fontSize: '13px', color: '#78350f', fontWeight: '600' }}>{formatEndAt(event.end_at)}</span>
               </div>
-            ))}
+            )}
+            {event.max_count != null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#92400e', fontWeight: '800', background: '#fde68a', padding: '3px 8px', borderRadius: '4px', flexShrink: 0 }}>口数制限</span>
+                <span style={{ fontSize: '13px', color: '#78350f', fontWeight: '600' }}>残り{event.max_count.toLocaleString()}口</span>
+              </div>
+            )}
+            {event.min_guarantee != null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#92400e', fontWeight: '800', background: '#fde68a', padding: '3px 8px', borderRadius: '4px', flexShrink: 0 }}>最低保証</span>
+                <span style={{ fontSize: '13px', color: '#78350f', fontWeight: '600' }}>{event.min_guarantee.toLocaleString()}/回</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+      )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      {/* エラー表示 */}
+      {error && (
+        <div style={{ maxWidth: '800px', margin: '12px auto 0', padding: '0 16px' }}>
+          <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '10px 14px', color: '#dc2626', fontSize: '14px', textAlign: 'center' }}>{error}</div>
+        </div>
+      )}
+
+      {/* 賞品一覧 */}
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '16px 16px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {gradeOrder.filter(g => gradeGroups[g]).map(grade => {
             const prizeList = gradeGroups[grade]
-            const count = prizeList.length
-            // オリパワンと同じ列数ロジック
-            const colWidth = count <= 2 ? '50%' : count <= 4 ? '33.333%' : count <= 8 ? '25%' : '20%'
-
             return (
-              <div key={grade} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', animation: 'fadeIn 0.3s ease-out', background: 'rgba(0,0,0,0.06)', borderRadius: '24px', overflow: 'hidden', paddingBottom: '24px', marginBottom: '8px' }}>
-                {/* グレードバッジ - DOPA完全コピー */}
+              <div key={grade} style={{ background: 'rgba(0,0,0,0.06)', borderRadius: '20px', overflow: 'hidden', paddingBottom: '16px' }}>
+                {/* グレードバッジ - 全幅 */}
                 <div style={{
-                  width: '248px', height: '56px', borderRadius: '5px',
-                  background: grade === 'S賞'
-                    ? 'linear-gradient(131deg, rgb(45,1,210) 0%, rgb(1,255,255) 20%, rgb(123,254,122) 40%, rgb(253,255,14) 59%, rgb(243,1,1) 79%, rgb(112,1,104) 99%)'
-                    : grade === 'A賞'
-                      ? 'linear-gradient(131deg, rgb(114,79,10) 0%, rgb(223,183,41) 20%, rgb(249,247,196) 40%, rgb(248,251,191) 59%, rgb(202,159,15) 79%, rgb(114,79,10) 99%)'
-                      : grade === 'B賞'
-                        ? 'linear-gradient(130deg, rgb(183,0,0) 12%, rgb(250,1,1) 27%, rgb(253,142,134) 43%, rgb(253,142,134) 58%, rgb(250,1,1) 74%, rgb(183,0,0) 89%)'
-                        : grade === 'ラストワン賞'
-                          ? 'linear-gradient(131deg, rgb(76,10,114) 0%, rgb(210,148,246) 20%, rgb(244,229,253) 40%, rgb(244,229,253) 59%, rgb(210,148,246) 79%, rgb(76,10,114) 99%)'
-                          : 'linear-gradient(135deg, #9ca3af, #6b7280)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  width: '100%', height: '52px',
+                  background: gradeBadgeStyle(grade),
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: '12px',
                 }}>
-                  <div style={{
-                    width: 'calc(100% - 12px)', height: 'calc(100% - 12px)', borderRadius: '4px',
-                    background: grade === 'S賞'
-                      ? 'linear-gradient(131deg, rgb(45,1,210) 0%, rgb(1,255,255) 20%, rgb(123,254,122) 40%, rgb(253,255,14) 59%, rgb(243,1,1) 79%, rgb(112,1,104) 99%)'
-                      : grade === 'A賞'
-                        ? 'linear-gradient(131deg, rgb(114,79,10) 0%, rgb(223,183,41) 20%, rgb(249,247,196) 40%, rgb(248,251,191) 59%, rgb(202,159,15) 79%, rgb(114,79,10) 99%)'
-                        : grade === 'B賞'
-                          ? 'linear-gradient(130deg, rgb(183,0,0) 12%, rgb(250,1,1) 27%, rgb(253,142,134) 43%, rgb(253,142,134) 58%, rgb(250,1,1) 74%, rgb(183,0,0) 89%)'
-                          : grade === 'ラストワン賞'
-                            ? 'linear-gradient(131deg, rgb(76,10,114) 0%, rgb(210,148,246) 20%, rgb(244,229,253) 40%, rgb(244,229,253) 59%, rgb(210,148,246) 79%, rgb(76,10,114) 99%)'
-                            : 'linear-gradient(130deg, rgb(183,0,0) 12%, rgb(250,1,1) 27%, rgb(253,142,134) 43%, rgb(253,142,134) 58%, rgb(250,1,1) 74%, rgb(183,0,0) 89%)',
-                    boxShadow: 'inset 6px 6px 7.5px rgba(0,0,0,0.25)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <span style={{ color: 'white', fontWeight: '900', lineHeight: 1, WebkitTextStroke: '2px black', paintOrder: 'stroke fill' }}>
-                      <span style={{ fontSize: '32px' }}>{grade}</span>
-                    </span>
-                  </div>
+                  <span style={{ color: 'white', fontWeight: '900', fontSize: '26px', WebkitTextStroke: '1.5px rgba(0,0,0,0.5)', paintOrder: 'stroke fill' }}>{grade}</span>
                 </div>
 
-                {/* カードグリッド - ノヴァガチャ 2カラム固定 */}
-                <div style={{ width: '90%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {/* カード2カラムグリッド */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', padding: '0 10px' }}>
                   {prizeList.map(prize => (
                     <div key={prize.id} style={{ width: '50%', padding: '4px', boxSizing: 'border-box' }}>
                       <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '63/88', borderRadius: '8px', background: '#f3f4f6' }}>
                         {prize.products?.image_url
-                          ? <img src={prize.products.image_url} alt={prize.products.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
+                          ? <img src={prize.products.image_url} alt={prize.products?.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
                           : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', color: '#9ca3af' }}>🃏</div>
                         }
-                        <div style={{ position: 'absolute', bottom: '6px', right: '6px', background: '#000', color: '#fff', fontSize: '14px', fontWeight: '700', padding: '2px 8px', borderRadius: '6px', border: '1px solid #fff', zIndex: 20 }}>
-                          {prize.remaining_count}/{prize.count}
+                        {/* 残数バッジ ×N 形式 */}
+                        <div style={{ position: 'absolute', bottom: '6px', right: '6px', background: '#000', color: '#fff', fontSize: '13px', fontWeight: '700', padding: '2px 7px', borderRadius: '5px', zIndex: 20 }}>
+                          ×{prize.remaining_count}
                         </div>
                       </div>
-                      <p className="event-nova-card-name" style={{ fontSize: '11px', color: '#374151', fontWeight: '600', textAlign: 'center', marginTop: '4px', lineHeight: 1.3 }}>{prize.products?.name}</p>
+                      <p style={{ fontSize: '11px', color: '#374151', fontWeight: '600', textAlign: 'center', marginTop: '4px', lineHeight: 1.3 }}>{prize.products?.name}</p>
                     </div>
                   ))}
                 </div>
@@ -437,73 +286,16 @@ export default function EventDetailPage() {
           })}
         </div>
 
-        {/* 排出履歴 */}
-        <div style={{ marginTop: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span className="event-nova-history-title" style={{ fontSize: '14px', fontWeight: '800', color: '#111827' }}>排出履歴</span>
-            <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse 1.5s infinite' }} />
-              LIVE
-            </span>
-          </div>
-          {drawHistory.length === 0 ? (
-            <div className="event-nova-history-empty" style={{ textAlign: 'center', padding: '32px 16px', background: '#f9fafb', borderRadius: '12px', border: '1px dashed #e5e7eb' }}>
-              <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>まだ排出履歴はありません</p>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-              {drawHistory.map((draw, i) => (
-                <div key={draw.id} style={{ display: 'flex', flexDirection: 'column' }}>
-                  {/* カード画像 */}
-                  <div style={{
-                    position: 'relative', paddingBottom: '139.4%', borderRadius: '8px', overflow: 'hidden',
-                    background: '#f3f4f6',
-                    boxShadow: i === 0 ? '0 0 0 2px #f97316' : 'none',
-                  }}>
-                    {draw.products?.image_url
-                      ? <img src={draw.products.image_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🃏</div>
-                    }
-                    {/* グレードバッジ */}
-                    <div style={{
-                      position: 'absolute', top: '4px', left: '4px',
-                      fontSize: '9px', fontWeight: '900', color: 'white',
-                      background: gradeColor[draw.grade] || '#6b7280',
-                      padding: '1px 5px', borderRadius: '3px', lineHeight: '14px'
-                    }}>{draw.grade}</div>
-                    {/* NEWバッジ */}
-                    {i === 0 && (
-                      <div style={{ position: 'absolute', top: '4px', right: '4px', background: '#ef4444', color: 'white', fontSize: '8px', fontWeight: '900', padding: '1px 4px', borderRadius: '3px', lineHeight: '14px' }}>NEW</div>
-                    )}
-                  </div>
-                  {/* 商品名・ユーザー・時刻 */}
-                  <div style={{ marginTop: '4px' }}>
-                    <p className="event-nova-draw-name" style={{ fontSize: '10px', color: '#111827', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: '0 0 2px' }}>
-                      {draw.products?.name || '商品'}
-                    </p>
-                    <p className="event-nova-draw-user" style={{ fontSize: '9px', color: '#9ca3af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {anonymizeUser(draw.user_id)}
-                    </p>
-                    <p className="event-nova-draw-time" style={{ fontSize: '9px', color: '#d1d5db', margin: 0 }}>
-                      {formatTimeAgo(draw.created_at)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* 説明文 */}
         {event.description && (
-          <div className="event-nova-desc" style={{ marginTop: '32px', padding: '16px', background: '#f9fafb', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
+          <div style={{ marginTop: '24px', padding: '16px', background: '#f9fafb', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
             <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>オリパについて</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{event.description}</p>
           </div>
         )}
 
-        {/* 注意事項 - オリパワン風 */}
-        <div className="event-nova-terms" style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* 注意事項 */}
+        <div style={{ marginTop: '24px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
             { title: '傷ありカード/ケースについて', body: 'オリパで排出されたカードや鑑定済みカード(ケース)には傷がある場合がございます。' },
             { title: '商品画像の注意', body: '商品画像はイメージであり、実際のカードの状態や排出状況を保証するものではありません。' },
@@ -517,165 +309,57 @@ export default function EventDetailPage() {
           ))}
           <p style={{ fontSize: '11px', color: '#6b7280' }}>以上、ご了承の上お買い求めください。</p>
         </div>
-        </div>{/* end event-col-main */}
+      </div>
 
-        {/* 右カラム: PC専用 - ICHICAスタイル */}
-        <div className="event-col-side">
-          {/* イベント画像 */}
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '56%', overflow: 'hidden', background: '#f3f4f6' }}>
-            {event.image_url
-              ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>🎴</div>
-            }
-          </div>
-
-          {/* ガチャ操作パネル - ICHICA風ダーク */}
-          <div style={{ background: '#1c1f2e', padding: '16px 20px 20px', borderRadius: '0 0 16px 16px' }}>
-
-            {/* 天井カウンター */}
-            {event.ceiling_count > 0 && userId && (
-              <div style={{ background: 'rgba(59,130,246,0.15)', borderRadius: '8px', padding: '10px 14px', marginBottom: '14px', border: '1px solid rgba(59,130,246,0.3)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#60a5fa', fontWeight: '700' }}>🔢 天井</span>
-                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#93c5fd' }}>{userCeilingCount} / {event.ceiling_count}回で{event.ceiling_grade}確定</span>
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '4px' }}>
-                  <div style={{ background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)', borderRadius: '999px', height: '4px', width: `${Math.min((userCeilingCount / event.ceiling_count) * 100, 100)}%` }} />
-                </div>
+      {/* 画面下固定フッター */}
+      <div style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: '#111', zIndex: 60, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* コイン + 価格 / 残数 + プログレスバー */}
+          <div style={{ display: 'flex', alignItems: 'center', padding: '10px 16px 6px', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
+              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>C</span>
               </div>
-            )}
-
-            {/* 価格 + 残り */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5c518, #f97316)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ color: 'white', fontSize: '12px', fontWeight: '900' }}>C</span>
-                </div>
-                <span style={{ fontSize: '28px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.5px' }}>{event.price.toLocaleString()}</span>
-                <span style={{ fontSize: '13px', color: '#9ca3af' }}>pt</span>
-              </div>
-              <span style={{ fontSize: '13px', color: '#9ca3af', fontWeight: '600' }}>残り{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
+              <span style={{ fontSize: '20px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>/1回</span>
             </div>
-
-            {/* プログレスバー - ICHICAスタイル */}
-            <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '8px', marginBottom: '16px' }}>
-              <div style={{
-                background: remainingPercent > 20
-                  ? 'linear-gradient(90deg, #f97316, #ec4899)'
-                  : 'linear-gradient(90deg, #ef4444, #dc2626)',
-                borderRadius: '999px', height: '8px',
-                width: `${remainingPercent}%`, transition: 'width 0.5s'
-              }} />
-            </div>
-
-            {/* ガチャボタン */}
-            {isSoldOut ? (
-              <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', color: '#6b7280', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
-            ) : gachaOptions.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {gachaOptions.map(opt => (
-                  <button key={opt.id} className="gacha-btn" onClick={() => openConfirm(opt)} disabled={pulling}
-                    style={{ width: '100%', padding: '16px', background: pulling ? '#4b5563' : opt.color, color: 'white', border: 'none', borderRadius: '12px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', letterSpacing: '0.3px' }}>
-                    {pulling ? '処理中...' : `🎰 ${opt.label}`}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: 'linear-gradient(135deg,#f97316,#e63946)', is_active: true })}
-                  style={{ width: '100%', padding: '16px', background: 'linear-gradient(135deg, #f97316, #e63946)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: 'pointer', letterSpacing: '0.3px' }}>🎰 1回ガチャ</button>
-                <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#374151', is_active: true })}
-                  style={{ width: '100%', padding: '16px', background: '#374151', color: 'white', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', fontSize: '17px', fontWeight: '900', cursor: 'pointer' }}>✨ 10連ガチャ</button>
-              </div>
-            )}
-
-            {/* 当選確率 */}
-            {gradeStats.length > 0 && (
-              <div style={{ marginTop: '14px', padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '700', marginBottom: '8px', letterSpacing: '0.05em' }}>当選確率</div>
-                {gradeStats.map(({ grade, probability }) => (
-                  <div key={grade} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-                    <span style={{ fontSize: '12px', color: gradeColor[grade] || '#9ca3af', fontWeight: '700' }}>{grade}</span>
-                    <span style={{ fontSize: '12px', color: '#e5e7eb', fontWeight: '600' }}>{probability.toFixed(2)}%</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* 未ログイン */}
-            {!userId && (
-              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', marginTop: '12px' }}>
-                ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
-              </p>
-            )}
-
-            {/* コイン残高 */}
-            {userId && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '12px', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '50%' }} alt="コイン" />
-                <span style={{ fontSize: '16px', fontWeight: '900', color: '#f97316' }}>{userPoints.toLocaleString()}</span>
-                <span style={{ fontSize: '12px', color: '#6b7280' }}>コイン保有</span>
-              </div>
-            )}
-          </div>
-        </div>{/* end event-col-side */}
-      </div>{/* end event-body */}
-
-      {/* モバイル専用: 固定フッター - ノヴァガチャ完全再現 */}
-      <div className="event-mobile-footer" style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: '#000', zIndex: 60 }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-
-          {/* フレームエリア: 口数・コイン / 残数・プログレス */}
-          <div style={{ display: 'flex', alignItems: 'center', background: '#111', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '10px 16px 6px 10px', height: '56px' }}>
-            {/* 左: 1口 + コイン数 */}
-            <div style={{ display: 'flex', alignItems: 'baseline', flex: 1, gap: '4px' }}>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>1口</span>
-              <span style={{ fontSize: '20px', fontWeight: '700', color: '#fff', flex: 1, textAlign: 'right' }}>{event.price.toLocaleString()}</span>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: '#fff' }}>コイン</span>
-            </div>
-            <div style={{ width: '16px' }} />
-            {/* 右: 残数 + プログレスバー */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'flex-end', marginBottom: '4px', gap: '4px' }}>
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>残</span>
-                <span style={{ fontSize: '16px', color: '#fff', fontWeight: '600' }}>{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'baseline', gap: '3px', marginBottom: '3px' }}>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>残り</span>
+                <span style={{ fontSize: '14px', color: '#fff', fontWeight: '700' }}>{event.remaining_count.toLocaleString()}</span>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>/{event.total_count.toLocaleString()}</span>
               </div>
               <div style={{ background: '#374151', height: '4px', borderRadius: '6px', overflow: 'hidden' }}>
-                <div style={{ width: `${remainingPercent}%`, background: '#7c02d0', height: '100%', transition: 'width 0.5s' }} />
+                <div style={{ width: `${remainingPercent}%`, background: remainingPercent > 20 ? 'linear-gradient(90deg,#22c55e,#4ade80)' : 'linear-gradient(90deg,#ef4444,#f87171)', height: '100%', transition: 'width 0.5s' }} />
               </div>
             </div>
           </div>
 
-          {/* ガチャボタンエリア */}
-          <div style={{ padding: '4px 12px 6px' }}>
+          {/* ガチャボタン */}
+          <div style={{ padding: '4px 12px 8px' }}>
             {isSoldOut ? (
               <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
-            ) : gachaOptions.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <div style={{ display: 'flex', gap: '12px', height: '50px' }}>
-                  {gachaOptions.slice(0, 2).map(opt => (
-                    <button key={opt.id} className="gacha-btn" onClick={() => openConfirm(opt)} disabled={pulling}
-                      style={{ flex: 1, height: '50px', background: pulling ? '#374151' : opt.color, color: 'white', border: 'none', cursor: pulling ? 'not-allowed' : 'pointer', fontSize: '15px', fontWeight: '900', borderRadius: '8px' }}>
+            ) : (
+              <>
+                {/* 1〜100連: 横3列 */}
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${footerOptions.length}, 1fr)`, gap: '8px', marginBottom: bigOption ? '8px' : '0' }}>
+                  {footerOptions.map(opt => (
+                    <button key={opt.id} onClick={() => openConfirm(opt)} disabled={pulling}
+                      style={{ height: '48px', background: pulling ? '#374151' : opt.color, color: 'white', border: 'none', cursor: pulling ? 'not-allowed' : 'pointer', fontSize: '13px', fontWeight: '900', borderRadius: '8px' }}>
                       {pulling ? '処理中...' : opt.label}
                     </button>
                   ))}
                 </div>
-                {gachaOptions.length > 2 && (
-                  <button className="gacha-btn" onClick={() => openConfirm(gachaOptions[2])} disabled={pulling}
-                    style={{ width: '100%', height: '50px', background: pulling ? '#374151' : gachaOptions[2].color, color: 'white', border: 'none', cursor: pulling ? 'not-allowed' : 'pointer', fontSize: '15px', fontWeight: '900', borderRadius: '8px' }}>
-                    {pulling ? '処理中...' : gachaOptions[2].label}
+                {/* 1000連以上: 全幅赤 */}
+                {bigOption && (
+                  <button onClick={() => openConfirm(bigOption)} disabled={pulling}
+                    style={{ width: '100%', height: '48px', background: pulling ? '#374151' : '#dc2626', color: 'white', border: 'none', cursor: pulling ? 'not-allowed' : 'pointer', fontSize: '15px', fontWeight: '900', borderRadius: '8px' }}>
+                    {pulling ? '処理中...' : bigOption.label}
                   </button>
                 )}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: '12px', height: '50px' }}>
-                <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: 'linear-gradient(135deg,#f97316,#ea580c)', is_active: true })}
-                  style={{ flex: 1, height: '50px', background: 'linear-gradient(135deg,#f97316,#ea580c)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>1回ガチャ</button>
-                <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: 'linear-gradient(135deg,#22c55e,#16a34a)', is_active: true })}
-                  style={{ flex: 1, height: '50px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>10連ガチャ</button>
-              </div>
+              </>
             )}
-            {!userId && (
+            {!userId && !isSoldOut && (
               <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '4px 0 0' }}>
                 ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
               </p>
@@ -689,8 +373,7 @@ export default function EventDetailPage() {
       {/* 確認ポップアップ */}
       {showConfirm && confirmOption && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ background: 'white', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: '800px', overflow: 'hidden', animation: 'fadeIn 0.2s ease-out' }}>
-            {/* バナー画像 */}
+          <div style={{ background: 'white', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: '800px', overflow: 'hidden' }}>
             <div style={{ position: 'relative', width: '100%', paddingBottom: '40%', overflow: 'hidden', background: '#1f2937' }}>
               {event.image_url
                 ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -701,7 +384,6 @@ export default function EventDetailPage() {
               <p style={{ fontSize: '15px', color: '#374151', textAlign: 'center', marginBottom: '16px' }}>
                 コインを消費して、<span style={{ fontWeight: '900', color: '#e67e00' }}>{confirmOption.count}回</span>ガチャを引きますか？
               </p>
-              {/* コイン表示 */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', background: '#f9fafb', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -719,18 +401,12 @@ export default function EventDetailPage() {
                   </span>
                 </div>
               </div>
-              <button
-                className="gacha-btn"
-                onClick={handleGacha}
-                disabled={pulling}
-                style={{ width: '100%', padding: '18px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: '0 4px 14px rgba(245,197,24,0.5)' }}
-              >
+              <button onClick={handleGacha} disabled={pulling}
+                style={{ width: '100%', padding: '18px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: '0 4px 14px rgba(245,197,24,0.5)' }}>
                 {pulling ? '処理中...' : '🎰 ガチャを引く！'}
               </button>
-              <button
-                onClick={() => setShowConfirm(false)}
-                style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', cursor: 'pointer' }}
-              >
+              <button onClick={() => setShowConfirm(false)}
+                style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', cursor: 'pointer' }}>
                 キャンセル
               </button>
             </div>
@@ -747,7 +423,6 @@ export default function EventDetailPage() {
           </button>
         </div>
       )}
-    </div>
     </div>
   )
 }
