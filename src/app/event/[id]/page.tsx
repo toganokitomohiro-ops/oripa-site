@@ -203,7 +203,25 @@ export default function EventDetailPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f7f4', paddingBottom: '160px' }}>
-      <Header />
+      {/* スマホ専用ヘッダー */}
+      <div className="md:hidden" style={{ display: 'flex', alignItems: 'center', height: '52px', padding: '0 16px', background: '#ffffff', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 50 }}>
+        <button onClick={() => router.back()} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', background: '#f3f4f6', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
+          <span style={{ fontSize: '20px', color: '#374151', lineHeight: 1 }}>&#8592;</span>
+        </button>
+        <div style={{ flex: 1, textAlign: 'center', padding: '0 8px', overflow: 'hidden' }}>
+          <span style={{ fontSize: '15px', fontWeight: '700', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{event.name}</span>
+        </div>
+        <div style={{ width: '80px', flexShrink: 0, textAlign: 'right' }}>
+          {userId && (
+            <span style={{ fontSize: '13px', fontWeight: '700', color: '#f97316' }}>🪙 {userPoints.toLocaleString()}</span>
+          )}
+        </div>
+      </div>
+
+      {/* PC専用ヘッダー */}
+      <div className="hidden md:block">
+        <Header />
+      </div>
 
       {/* バナー - 全幅 */}
       <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
@@ -312,7 +330,7 @@ export default function EventDetailPage() {
       </div>
 
       {/* 画面下固定フッター */}
-      <div style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: '#111', zIndex: 60, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#ffffff', zIndex: 60, borderTop: '1px solid #e5e7eb' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           {/* コイン + 価格 / 残数 + プログレスバー */}
           <div style={{ display: 'flex', alignItems: 'center', padding: '10px 16px 6px', gap: '12px' }}>
@@ -321,15 +339,15 @@ export default function EventDetailPage() {
                 <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>C</span>
               </div>
               <span style={{ fontSize: '20px', fontWeight: '900', color: '#f97316' }}>{event.price.toLocaleString()}</span>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>/1回</span>
+              <span style={{ fontSize: '12px', color: '#9ca3af' }}>/1回</span>
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'baseline', gap: '3px', marginBottom: '3px' }}>
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>残り</span>
-                <span style={{ fontSize: '14px', color: '#fff', fontWeight: '700' }}>{event.remaining_count.toLocaleString()}</span>
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>/{event.total_count.toLocaleString()}</span>
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>残り</span>
+                <span style={{ fontSize: '14px', color: '#111827', fontWeight: '700' }}>{event.remaining_count.toLocaleString()}</span>
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>/{event.total_count.toLocaleString()}</span>
               </div>
-              <div style={{ background: '#374151', height: '4px', borderRadius: '6px', overflow: 'hidden' }}>
+              <div style={{ background: '#e5e7eb', height: '4px', borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{ width: `${remainingPercent}%`, background: remainingPercent > 20 ? 'linear-gradient(90deg,#22c55e,#4ade80)' : 'linear-gradient(90deg,#ef4444,#f87171)', height: '100%', transition: 'width 0.5s' }} />
               </div>
             </div>
@@ -338,7 +356,7 @@ export default function EventDetailPage() {
           {/* ガチャボタン */}
           <div style={{ padding: '4px 12px 8px' }}>
             {isSoldOut ? (
-              <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
+              <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(0,0,0,0.06)', borderRadius: '10px', color: '#9ca3af', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
             ) : (
               <>
                 {/* 1〜100連: 横3列 */}
@@ -360,7 +378,7 @@ export default function EventDetailPage() {
               </>
             )}
             {!userId && !isSoldOut && (
-              <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '4px 0 0' }}>
+              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af', margin: '4px 0 0' }}>
                 ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
               </p>
             )}
@@ -368,7 +386,6 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      <BottomNav />
 
       {/* 確認ポップアップ */}
       {showConfirm && confirmOption && (
