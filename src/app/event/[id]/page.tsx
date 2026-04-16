@@ -267,11 +267,13 @@ export default function EventDetailPage() {
 
       {/* モバイル: メイン画像（PC では非表示） */}
       <div className="event-image-mobile" style={{ width: '100%' }}>
-        <div style={{ position: 'relative', width: '100%', paddingBottom: '62.4%', background: '#0E0F1A', overflow: 'hidden' }}>
-          {event.image_url
-            ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-            : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>🎴</div>
-          }
+        <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '970/660' }}>
+            {event.image_url
+              ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
+              : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px', background: '#0E0F1A' }}>🎴</div>
+            }
+          </div>
         </div>
         {/* 価格・残り枚数バー（画像下に独立表示） */}
         <div className="event-nova-info-bar">
@@ -378,7 +380,7 @@ export default function EventDetailPage() {
             const colWidth = count <= 2 ? '50%' : count <= 4 ? '33.333%' : count <= 8 ? '25%' : '20%'
 
             return (
-              <div key={grade} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', animation: 'fadeIn 0.3s ease-out' }}>
+              <div key={grade} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', animation: 'fadeIn 0.3s ease-out', background: 'rgba(0,0,0,0.06)', borderRadius: '24px', overflow: 'hidden', paddingBottom: '24px', marginBottom: '8px' }}>
                 {/* グレードバッジ - DOPA完全コピー */}
                 <div style={{
                   width: '248px', height: '56px', borderRadius: '5px',
@@ -413,18 +415,17 @@ export default function EventDetailPage() {
                   </div>
                 </div>
 
-                {/* カードグリッド - オリパワンと同じ flex wrap */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+                {/* カードグリッド - ノヴァガチャ 2カラム固定 */}
+                <div style={{ width: '90%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                   {prizeList.map(prize => (
-                    <div key={prize.id} style={{ width: colWidth, maxWidth: '300px', padding: '8px', boxSizing: 'border-box' }}>
-                      <div style={{ position: 'relative', paddingBottom: '139.4%', background: '#f3f4f6', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div key={prize.id} style={{ width: '50%', padding: '4px', boxSizing: 'border-box' }}>
+                      <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '63/88', borderRadius: '8px', background: '#f3f4f6' }}>
                         {prize.products?.image_url
-                          ? <img src={prize.products.image_url} alt={prize.products.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ? <img src={prize.products.image_url} alt={prize.products.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
                           : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', color: '#9ca3af' }}>🃏</div>
                         }
-                        {/* ×枚数バッジ */}
-                        <div style={{ position: 'absolute', bottom: '6px', right: '6px', background: 'rgba(0,0,0,0.7)', color: 'white', fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '999px' }}>
-                          ×{prize.remaining_count}
+                        <div style={{ position: 'absolute', bottom: '6px', right: '6px', background: '#000', color: '#fff', fontSize: '14px', fontWeight: '700', padding: '2px 8px', borderRadius: '6px', border: '1px solid #fff', zIndex: 20 }}>
+                          {prize.remaining_count}/{prize.count}
                         </div>
                       </div>
                       <p className="event-nova-card-name" style={{ fontSize: '11px', color: '#374151', fontWeight: '600', textAlign: 'center', marginTop: '4px', lineHeight: 1.3 }}>{prize.products?.name}</p>
@@ -620,52 +621,66 @@ export default function EventDetailPage() {
         </div>{/* end event-col-side */}
       </div>{/* end event-body */}
 
-      {/* モバイル専用: 固定フッター（PCでは非表示） */}
-      <div className="event-mobile-footer" style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: '#0E0F1A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '10px 12px 12px', zIndex: 60 }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* 価格・残り（コンパクト1行） */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', padding: '0 2px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>1回</span>
-              <span style={{ fontSize: '18px', fontWeight: '900', color: '#f97316', lineHeight: 1 }}>{event.price.toLocaleString()}</span>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>コイン</span>
+      {/* モバイル専用: 固定フッター - ノヴァガチャ完全再現 */}
+      <div className="event-mobile-footer" style={{ position: 'fixed', bottom: '56px', left: 0, right: 0, background: '#000', zIndex: 60 }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+
+          {/* フレームエリア: 口数・コイン / 残数・プログレス */}
+          <div style={{ display: 'flex', alignItems: 'center', background: '#111', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '10px 16px 6px 10px', height: '56px' }}>
+            {/* 左: 1口 + コイン数 */}
+            <div style={{ display: 'flex', alignItems: 'baseline', flex: 1, gap: '4px' }}>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>1口</span>
+              <span style={{ fontSize: '20px', fontWeight: '700', color: '#fff', flex: 1, textAlign: 'right' }}>{event.price.toLocaleString()}</span>
+              <span style={{ fontSize: '12px', fontWeight: '700', color: '#fff' }}>コイン</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>残</span>
-              <span style={{ fontSize: '14px', fontWeight: '800', color: remainingPercent > 20 ? '#22c55e' : '#ef4444' }}>{event.remaining_count.toLocaleString()}</span>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>/ {event.total_count.toLocaleString()}</span>
+            <div style={{ width: '16px' }} />
+            {/* 右: 残数 + プログレスバー */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'flex-end', marginBottom: '4px', gap: '4px' }}>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>残</span>
+                <span style={{ fontSize: '16px', color: '#fff', fontWeight: '600' }}>{event.remaining_count.toLocaleString()}/{event.total_count.toLocaleString()}</span>
+              </div>
+              <div style={{ background: '#374151', height: '4px', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ width: `${remainingPercent}%`, background: '#7c02d0', height: '100%', transition: 'width 0.5s' }} />
+              </div>
             </div>
           </div>
 
-          {/* ガチャボタン */}
-          {isSoldOut ? (
-            <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold', fontSize: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>SOLD OUT</div>
-          ) : gachaOptions.length > 0 ? (
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {gachaOptions.map(opt => (
-                <button
-                  key={opt.id}
-                  className="gacha-btn"
-                  onClick={() => openConfirm(opt)}
-                  disabled={pulling}
-                  style={{ flex: 1, padding: '15px 4px', background: pulling ? '#374151' : `linear-gradient(135deg, ${opt.color}, ${opt.color}cc)`, color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', letterSpacing: '0.3px', boxShadow: pulling ? 'none' : `0 4px 15px ${opt.color}55` }}
-                >
-                  {pulling ? '処理中...' : `🎰 ${opt.label}`}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: '#f97316', is_active: true })} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #f97316, #ea580c)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(249,115,22,0.4)' }}>🎰 1回</button>
-              <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: '#e63946', is_active: true })} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #e63946, #c0392b)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(230,57,70,0.4)' }}>✨ 10連</button>
-            </div>
-          )}
-
-          {!userId && (
-            <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '8px' }}>
-              ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
-            </p>
-          )}
+          {/* ガチャボタンエリア */}
+          <div style={{ padding: '4px 12px 6px' }}>
+            {isSoldOut ? (
+              <div style={{ textAlign: 'center', padding: '14px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold', fontSize: '16px' }}>SOLD OUT</div>
+            ) : gachaOptions.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', gap: '12px', height: '50px' }}>
+                  {gachaOptions.slice(0, 2).map(opt => (
+                    <button key={opt.id} className="gacha-btn" onClick={() => openConfirm(opt)} disabled={pulling}
+                      style={{ flex: 1, height: '50px', background: pulling ? '#374151' : opt.color, color: 'white', border: 'none', cursor: pulling ? 'not-allowed' : 'pointer', fontSize: '15px', fontWeight: '900', borderRadius: '8px' }}>
+                      {pulling ? '処理中...' : opt.label}
+                    </button>
+                  ))}
+                </div>
+                {gachaOptions.length > 2 && (
+                  <button className="gacha-btn" onClick={() => openConfirm(gachaOptions[2])} disabled={pulling}
+                    style={{ width: '100%', height: '50px', background: pulling ? '#374151' : gachaOptions[2].color, color: 'white', border: 'none', cursor: pulling ? 'not-allowed' : 'pointer', fontSize: '15px', fontWeight: '900', borderRadius: '8px' }}>
+                    {pulling ? '処理中...' : gachaOptions[2].label}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: '12px', height: '50px' }}>
+                <button className="gacha-btn" onClick={() => openConfirm({ id: '1', label: '1回ガチャ', count: 1, color: 'linear-gradient(135deg,#f97316,#ea580c)', is_active: true })}
+                  style={{ flex: 1, height: '50px', background: 'linear-gradient(135deg,#f97316,#ea580c)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>1回ガチャ</button>
+                <button className="gacha-btn" onClick={() => openConfirm({ id: '10', label: '10連ガチャ', count: 10, color: 'linear-gradient(135deg,#22c55e,#16a34a)', is_active: true })}
+                  style={{ flex: 1, height: '50px', background: 'linear-gradient(135deg,#22c55e,#16a34a)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '900', cursor: 'pointer' }}>10連ガチャ</button>
+              </div>
+            )}
+            {!userId && (
+              <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '4px 0 0' }}>
+                ガチャを引くには<a href={`/auth/login?redirect=/event/${event.id}`} style={{ color: '#f97316', fontWeight: '700' }}>ログイン</a>が必要です
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
