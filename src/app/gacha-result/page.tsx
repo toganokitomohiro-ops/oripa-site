@@ -227,27 +227,31 @@ function GachaResultInner() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '12px 16px' }}>
         {/* フィルターバー */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+        <div style={{
+          display: 'flex', background: 'white',
+          borderRadius: '10px', border: '1px solid #e8e8e8',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+          overflow: 'hidden', marginBottom: '12px',
+        }}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '5px',
-            padding: '8px 16px', borderRadius: '999px',
-            background: '#2b2b2b', color: 'white',
-            fontSize: '13px', fontWeight: '700',
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+            padding: '10px 0', background: '#f5f5f5',
+            fontSize: '13px', fontWeight: '700', color: '#1a1a1a',
+            borderRight: '1px solid #e8e8e8',
           }}>
-            <span style={{ fontSize: '15px', lineHeight: 1 }}>≡</span>
+            <span style={{ fontSize: '14px' }}>≡</span>
             <span>リスト表示</span>
           </div>
           <button
             onClick={() => setSortMode(sortMode === 'high' ? 'low' : 'high')}
             style={{
-              display: 'flex', alignItems: 'center', gap: '4px',
-              padding: '8px 14px', borderRadius: '999px',
-              border: '1.5px solid #e0e0e0', background: 'white',
-              color: '#f97316', fontSize: '13px', fontWeight: '700',
-              cursor: 'pointer',
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+              padding: '10px 0', background: 'white',
+              fontSize: '13px', fontWeight: '700', color: '#f97316',
+              border: 'none', cursor: 'pointer',
             }}
           >
-            <span style={{ fontSize: '13px' }}>↑↓</span>
+            <span>↑↓</span>
             <span>{sortMode === 'high' ? 'コインが高い順' : 'コインが低い順'}</span>
           </button>
         </div>

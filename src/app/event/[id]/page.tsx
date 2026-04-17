@@ -2,7 +2,7 @@
 import Header from '@/components/Header'
 import BottomNav from '@/components/BottomNav'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -59,8 +59,15 @@ export default function EventDetailPage() {
   const [pulling, setPulling] = useState(false)
   const [error, setError] = useState('')
   const [pendingDrawIds, setPendingDrawIds] = useState<string[]>([])
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => { fetchData() }, [])
+
+  useEffect(() => {
+    if (showVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {})
+    }
+  }, [showVideo])
 
   useEffect(() => {
     if (!params.id) return
@@ -442,7 +449,7 @@ export default function EventDetailPage() {
       {/* 動画再生 */}
       {showVideo && videoUrl && (
         <div style={{ position: 'fixed', inset: 0, background: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
-          <video src={videoUrl} autoPlay playsInline onEnded={() => { setShowVideo(false); router.push('/gacha-result?draw_ids=' + pendingDrawIds.join(',') + '&event_id=' + event?.id) }} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+          <video ref={videoRef} src={videoUrl} playsInline onEnded={() => { setShowVideo(false); router.push('/gacha-result?draw_ids=' + pendingDrawIds.join(',') + '&event_id=' + event?.id) }} style={{ maxWidth: '100%', maxHeight: '100%' }} />
           <button onClick={() => { setShowVideo(false); router.push('/gacha-result?draw_ids=' + pendingDrawIds.join(',') + '&event_id=' + event?.id) }} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '999px', padding: '8px 16px', fontSize: '14px', cursor: 'pointer' }}>
             スキップ
           </button>
