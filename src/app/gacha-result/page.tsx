@@ -23,6 +23,7 @@ function GachaResultInner() {
 
   const [results, setResults] = useState<DrawResult[]>([])
   const [selected, setSelected] = useState<string[]>([])
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [sortMode, setSortMode] = useState<'high' | 'low'>('high')
   const [loading, setLoading] = useState(true)
   const [selling, setSelling] = useState(false)
@@ -219,7 +220,7 @@ function GachaResultInner() {
         <span style={{ fontSize: '16px', fontWeight: '700', color: '#1a1a1a' }}>ガチャ結果</span>
         <button
           onClick={() => router.push('/')}
-          style={{ position: 'absolute', right: '16px', background: 'none', border: 'none', fontSize: '14px', color: '#999', cursor: 'pointer', fontWeight: '700' }}
+          style={{ position: 'absolute', right: '16px', background: 'none', border: 'none', fontSize: '16px', color: '#555', cursor: 'pointer', fontWeight: '700' }}
         >
           あとで
         </button>
@@ -233,15 +234,18 @@ function GachaResultInner() {
           boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
           overflow: 'hidden', marginBottom: '12px',
         }}>
-          <div style={{
-            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-            padding: '10px 0', background: '#f5f5f5',
-            fontSize: '13px', fontWeight: '700', color: '#1a1a1a',
-            borderRight: '1px solid #e8e8e8',
-          }}>
-            <span style={{ fontSize: '14px' }}>≡</span>
-            <span>リスト表示</span>
-          </div>
+          <button
+            onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+            style={{
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+              padding: '10px 0', background: viewMode === 'list' ? '#f5f5f5' : 'white',
+              fontSize: '13px', fontWeight: '700', color: '#1a1a1a',
+              border: 'none', borderRight: '1px solid #e8e8e8', cursor: 'pointer',
+            }}
+          >
+            <span style={{ fontSize: '14px' }}>{viewMode === 'list' ? '≡' : '⊞'}</span>
+            <span>{viewMode === 'list' ? 'リスト表示' : 'グリッド表示'}</span>
+          </button>
           <button
             onClick={() => setSortMode(sortMode === 'high' ? 'low' : 'high')}
             style={{
@@ -256,77 +260,78 @@ function GachaResultInner() {
           </button>
         </div>
 
-        {/* カードリスト */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {sorted.map((result) => {
-            const isSelected = selected.includes(result.id)
-
-            return (
-              <div
-                key={result.id}
-                onClick={() => handleSelect(result.id)}
-                style={{
-                  background: 'white',
-                  borderRadius: '12px',
-                  padding: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  cursor: 'pointer',
-                  border: `2px solid ${isSelected ? '#f97316' : 'transparent'}`,
-                  position: 'relative',
-                }}
-              >
-                {/* 選択バッジ（右上） */}
-                <div style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '12px',
-                  fontWeight: '700',
-                  color: isSelected ? '#f97316' : '#aaa',
-                }}>
-                  <span>{isSelected ? '選択中' : '未選択'}</span>
-                  <div style={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    border: `2px solid ${isSelected ? '#f97316' : '#ccc'}`,
-                    background: isSelected ? '#f97316' : 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    {isSelected && <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>✓</span>}
+        {/* リスト表示 */}
+        {viewMode === 'list' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {sorted.map((result) => {
+              const isSelected = selected.includes(result.id)
+              return (
+                <div
+                  key={result.id}
+                  onClick={() => handleSelect(result.id)}
+                  style={{
+                    background: 'white', borderRadius: '12px', padding: '12px',
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    cursor: 'pointer', border: `2px solid ${isSelected ? '#f97316' : 'transparent'}`,
+                    position: 'relative',
+                  }}
+                >
+                  <div style={{ position: 'absolute', top: '10px', right: '12px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '700', color: isSelected ? '#f97316' : '#aaa' }}>
+                    <span>{isSelected ? '選択中' : '未選択'}</span>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${isSelected ? '#f97316' : '#ccc'}`, background: isSelected ? '#f97316' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {isSelected && <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>✓</span>}
+                    </div>
+                  </div>
+                  <div style={{ width: '72px', height: '96px', borderRadius: '6px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
+                    {result.product.image_url
+                      ? <img src={result.product.image_url} alt={result.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>🃏</div>
+                    }
+                  </div>
+                  <div style={{ flex: 1, paddingRight: '60px' }}>
+                    <div style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px', lineHeight: 1.3 }}>{result.product.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '18px', height: '18px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
+                      <span style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a' }}>{result.pt_exchange.toLocaleString()}</span>
+                      <span style={{ fontSize: '12px', color: '#888' }}>コイン</span>
+                    </div>
                   </div>
                 </div>
-
-                {/* 商品画像 */}
-                <div style={{ width: '72px', height: '96px', borderRadius: '6px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
-                  {result.product.image_url
-                    ? <img src={result.product.image_url} alt={result.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>🃏</div>
-                  }
-                </div>
-
-                {/* テキスト情報 */}
-                <div style={{ flex: 1, paddingRight: '60px' }}>
-                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px', lineHeight: 1.3 }}>
-                    {result.product.name}
+              )
+            })}
+          </div>
+        ) : (
+          /* グリッド表示 */
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            {sorted.map((result) => {
+              const isSelected = selected.includes(result.id)
+              return (
+                <div
+                  key={result.id}
+                  onClick={() => handleSelect(result.id)}
+                  style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', border: `2px solid ${isSelected ? '#f97316' : 'transparent'}`, position: 'relative' }}
+                >
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', width: '22px', height: '22px', borderRadius: '50%', border: `2px solid ${isSelected ? '#f97316' : '#ccc'}`, background: isSelected ? '#f97316' : 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+                    {isSelected && <span style={{ color: 'white', fontSize: '12px', fontWeight: '900' }}>✓</span>}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '18px', height: '18px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
-                    <span style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a' }}>{result.pt_exchange.toLocaleString()}</span>
-                    <span style={{ fontSize: '12px', color: '#888' }}>コイン</span>
+                  <div style={{ aspectRatio: '3/4', background: '#f3f4f6', overflow: 'hidden' }}>
+                    {result.product.image_url
+                      ? <img src={result.product.image_url} alt={result.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>🃏</div>
+                    }
+                  </div>
+                  <div style={{ padding: '8px 10px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '600', color: '#1a1a1a', marginBottom: '4px', lineHeight: 1.3 }}>{result.product.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                      <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '14px', height: '14px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
+                      <span style={{ fontSize: '13px', fontWeight: '800', color: '#1a1a1a' }}>{result.pt_exchange.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* 固定フッターアクションバー */}
