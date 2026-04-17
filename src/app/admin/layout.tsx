@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { href: '/admin/orders', icon: '📦', label: '配送管理' },
         { href: '/admin/customers', icon: '👥', label: '顧客管理' },
+        { href: '/admin/gacha-logs', icon: '🎲', label: 'ガチャ排出履歴' },
       ]
     },
     {
@@ -164,6 +165,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                pathname.startsWith('/admin/events') ? 'オリパ管理' :
                pathname.startsWith('/admin/orders') ? '配送管理' :
                pathname.startsWith('/admin/customers') ? '顧客管理' :
+               pathname.startsWith('/admin/gacha-logs') ? 'ガチャ排出履歴' :
                pathname.startsWith('/admin/banners') ? 'バナー管理' :
                pathname.startsWith('/admin/marketing') ? 'マーケティング' :
                pathname.startsWith('/admin/settings') ? '設定' : 'ページ'}
