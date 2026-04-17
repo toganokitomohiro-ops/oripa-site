@@ -213,7 +213,10 @@ export default function EventDetailPage() {
         </div>
         <div style={{ width: '80px', flexShrink: 0, textAlign: 'right' }}>
           {userId && (
-            <span style={{ fontSize: '13px', fontWeight: '700', color: '#f97316' }}>🪙 {userPoints.toLocaleString()}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '13px', fontWeight: '700', color: '#f97316' }}>
+              <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '16px', height: '16px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
+              {userPoints.toLocaleString()}
+            </span>
           )}
         </div>
       </div>
@@ -389,43 +392,48 @@ export default function EventDetailPage() {
 
       {/* 確認ポップアップ */}
       {showConfirm && confirmOption && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 100 }}>
-          <div style={{ background: 'white', borderRadius: '20px 20px 0 0', width: '100%', maxWidth: '800px', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', width: '100%', paddingBottom: '40%', overflow: 'hidden', background: '#1f2937' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '24px' }}>
+          <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '400px', overflow: 'hidden' }}>
+            {/* バナー（余白あり） */}
+            <div style={{ padding: '16px 16px 0' }}>
               {event.image_url
-                ? <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>🎴</div>
+                ? <img src={event.image_url} alt={event.name} style={{ width: '100%', borderRadius: '10px', display: 'block' }} />
+                : <div style={{ width: '100%', height: '160px', background: '#f3f4f6', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>🎴</div>
               }
             </div>
-            <div style={{ padding: '20px 20px 32px' }}>
-              <p style={{ fontSize: '15px', color: '#374151', textAlign: 'center', marginBottom: '16px' }}>
-                コインを消費して、<span style={{ fontWeight: '900', color: '#e67e00' }}>{confirmOption.count}回</span>ガチャを引きますか？
+
+            <div style={{ padding: '18px 20px 24px' }}>
+              {/* 説明文 */}
+              <p style={{ fontSize: '14px', color: '#374151', textAlign: 'center', marginBottom: '16px', lineHeight: 1.6 }}>
+                {(event.price * confirmOption.count).toLocaleString()}コインを消費して{confirmOption.count}回引きます。<br />よろしいですか？
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', background: '#f9fafb', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>C</span>
-                  </div>
-                  <span style={{ fontSize: '20px', fontWeight: '700', color: '#f59e0b' }}>{userPoints.toLocaleString()}</span>
+
+              {/* コイン変化 */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', background: '#f5f5f5', borderRadius: '12px', padding: '14px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '26px', height: '26px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
+                  <span style={{ fontSize: '22px', fontWeight: '900', color: '#1a1a1a' }}>{userPoints.toLocaleString()}</span>
                 </div>
-                <span style={{ color: '#9ca3af', fontSize: '20px' }}>→</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c518,#e67e00)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'white', fontSize: '11px', fontWeight: '900' }}>C</span>
-                  </div>
-                  <span style={{ fontSize: '20px', fontWeight: '700', color: (userPoints - event.price * confirmOption.count) < 0 ? '#ef4444' : '#1f2937' }}>
+                <span style={{ color: '#aaa', fontSize: '20px', fontWeight: 'bold' }}>›</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '26px', height: '26px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
+                  <span style={{ fontSize: '22px', fontWeight: '900', color: (userPoints - event.price * confirmOption.count) < 0 ? '#ef4444' : '#f97316' }}>
                     {(userPoints - event.price * confirmOption.count).toLocaleString()}
                   </span>
                 </div>
               </div>
-              <button onClick={handleGacha} disabled={pulling}
-                style={{ width: '100%', padding: '18px', background: '#f5c518', color: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '18px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer', marginBottom: '10px', boxShadow: '0 4px 14px rgba(245,197,24,0.5)' }}>
-                {pulling ? '処理中...' : '🎰 ガチャを引く！'}
-              </button>
-              <button onClick={() => setShowConfirm(false)}
-                style={{ width: '100%', padding: '14px', background: 'white', color: '#6b7280', border: '1px solid #e5e7eb', borderRadius: '12px', fontSize: '15px', cursor: 'pointer' }}>
-                キャンセル
-              </button>
+
+              {/* ボタン */}
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={() => setShowConfirm(false)}
+                  style={{ flex: 1, padding: '15px', background: '#f3f4f6', color: '#6b7280', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '700', cursor: 'pointer' }}>
+                  キャンセル
+                </button>
+                <button onClick={handleGacha} disabled={pulling}
+                  style={{ flex: 1, padding: '15px', background: pulling ? '#fca5a5' : '#ef4444', color: 'white', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '900', cursor: pulling ? 'not-allowed' : 'pointer' }}>
+                  {pulling ? '処理中...' : 'ガチャを引く'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

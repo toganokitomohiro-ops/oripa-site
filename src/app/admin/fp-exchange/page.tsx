@@ -257,7 +257,7 @@ export default function AdminFpExchangePage() {
   return (
     <div style={{ padding: '24px', maxWidth: '1100px', margin: '0 auto', background: '#f8f8f8', minHeight: '100vh' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1f2937' }}>🪙 FPコイン交換所 管理</h1>
+        <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#1f2937', display: 'flex', alignItems: 'center', gap: '6px' }}><img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '24px', height: '24px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" /> FPコイン交換所 管理</h1>
         <a href="/fp-exchange" target="_blank" style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>フロント確認 →</a>
       </div>
 
@@ -389,7 +389,7 @@ export default function AdminFpExchangePage() {
                       }}>{item.is_active ? '公開' : '非公開'}</span>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#6b7280', marginBottom: '12px' }}>
-                      <span style={{ background: '#fff7ed', color: '#f97316', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>🪙 {item.fp_price.toLocaleString()} FP</span>
+                      <span style={{ background: '#fff7ed', color: '#f97316', fontWeight: '700', padding: '2px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}><img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '14px', height: '14px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" /> {item.fp_price.toLocaleString()} FP</span>
                       <span>在庫: {item.remaining_stock}/{item.stock}</span>
                       {item.fp_exchange_categories && <span>{item.fp_exchange_categories.name}</span>}
                     </div>
@@ -462,7 +462,7 @@ export default function AdminFpExchangePage() {
                       </div>
                       <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px' }}>
                         👤 {order.profiles?.email || order.user_id}
-                        <span style={{ marginLeft: '12px', color: '#f97316', fontWeight: '700' }}>🪙 {order.fp_used?.toLocaleString()} FP</span>
+                        <span style={{ marginLeft: '12px', color: '#f97316', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}><img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '14px', height: '14px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" /> {order.fp_used?.toLocaleString()} FP</span>
                       </p>
                       {order.name && (
                         <div style={{ fontSize: '13px', color: '#374151', background: '#f9fafb', borderRadius: '8px', padding: '10px 14px', marginTop: '8px' }}>
@@ -586,7 +586,7 @@ export default function AdminFpExchangePage() {
         <div style={{ maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* FP還元率 */}
           <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '28px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>🪙 FPコイン還元率設定</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '18px', height: '18px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" /> FPコイン還元率設定</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '24px' }}>ガチャ消費コイン100に対して何FPを付与するか設定します</p>
             <div style={{ background: '#f9fafb', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>

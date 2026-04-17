@@ -186,7 +186,7 @@ export default function FpExchangeDetailPage() {
 
           {/* FP価格 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff7ed', border: '2px solid #fed7aa', borderRadius: '12px', padding: '14px 20px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '24px' }}>🪙</span>
+            <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '28px', height: '28px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
             <span style={{ fontSize: '28px', fontWeight: '900', color: '#f97316' }}>{item.fp_price.toLocaleString()}</span>
             <span style={{ fontSize: '16px', color: '#9a3412', fontWeight: '700' }}>FP</span>
           </div>
@@ -254,7 +254,7 @@ export default function FpExchangeDetailPage() {
             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#1f2937', textAlign: 'center', marginBottom: '8px' }}>交換の確認</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', textAlign: 'center', marginBottom: '20px' }}>{item.name}</p>
             <div style={{ background: '#fff7ed', borderRadius: '10px', padding: '14px', textAlign: 'center', marginBottom: '20px' }}>
-              <span style={{ fontSize: '22px' }}>🪙</span>
+              <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '26px', height: '26px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
               <span style={{ fontSize: '24px', fontWeight: '900', color: '#f97316', marginLeft: '6px' }}>{item.fp_price.toLocaleString()} FP</span>
               <p style={{ fontSize: '12px', color: '#9a3412', marginTop: '4px' }}>残り {(userFp - item.fp_price).toLocaleString()} FP</p>
             </div>
