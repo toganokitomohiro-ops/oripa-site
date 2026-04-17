@@ -1,8 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+
+type PokemonCard = {
+  id: string
+  name: string
+  imageSmall: string
+  imageLarge: string
+  setName: string
+  series: string
+  number: string
+  rarity: string
+}
 
 export default function AdminProductNewPage() {
   const router = useRouter()
@@ -13,6 +24,13 @@ export default function AdminProductNewPage() {
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  // カード検索
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<PokemonCard[]>([])
+  const [searching, setSearching] = useState(false)
+  const [searchError, setSearchError] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const categories = [
     { value: 'pokemon', label: 'ポケモンカード' },
     { value: 'onepiece', label: 'ワンピース' },
@@ -21,6 +39,49 @@ export default function AdminProductNewPage() {
   ]
 
   const psaGrades = ['PSA10', 'PSA9', 'PSA8', 'PSA7', 'PSA6']
+
+  const handleSearch = useCallback(async (q: string) => {
+    if (q.trim().length < 2) {
+      setSearchResults([])
+      return
+    }
+    setSearching(true)
+    setSearchError('')
+    try {
+      const res = await fetch(`/api/pokemon-search?q=${encodeURIComponent(q)}`)
+      const json = await res.json()
+      if (json.error) {
+        setSearchError('検索に失敗しました')
+        setSearchResults([])
+      } else {
+        setSearchResults(json.data ?? [])
+      }
+    } catch {
+      setSearchError('通信エラーが発生しました')
+      setSearchResults([])
+    } finally {
+      setSearching(false)
+    }
+  }, [])
+
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const q = e.target.value
+    setSearchQuery(q)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => handleSearch(q), 500)
+  }
+
+  const handleSelectCard = (card: PokemonCard) => {
+    setForm((prev) => ({
+      ...prev,
+      name: card.name,
+      image_url: card.imageLarge,
+      card_set: card.setName,
+      tcg_id: card.id,
+    }))
+    setSearchQuery('')
+    setSearchResults([])
+  }
 
   const handleUpload = async (file: File) => {
     setUploading(true)
@@ -66,6 +127,77 @@ export default function AdminProductNewPage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
+        {/* ポケモンカード検索 */}
+        {form.category === 'pokemon' && (
+          <div style={{ background: 'white', border: '2px solid #3b82f6', borderRadius: '12px', padding: '24px' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#1f2937', marginBottom: '6px' }}>
+              🔍 ポケモンカード検索
+            </h2>
+            <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '16px' }}>
+              カード名を入力すると自動で画像・セット名が入力されます
+            </p>
+            <div style={{ position: 'relative' }}>
+              <input
+                style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: '8px', padding: '10px 12px', fontSize: '14px', boxSizing: 'border-box' }}
+                value={searchQuery}
+                onChange={handleSearchInput}
+                placeholder="例：リザードン、ピカチュウ、Charizard..."
+              />
+              {searching && (
+                <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280', fontSize: '12px' }}>
+                  検索中...
+                </div>
+              )}
+            </div>
+
+            {searchError && (
+              <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '8px' }}>{searchError}</p>
+            )}
+
+            {searchResults.length > 0 && (
+              <div style={{ marginTop: '12px', maxHeight: '320px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+                {searchResults.map((card) => (
+                  <button
+                    key={card.id}
+                    onClick={() => handleSelectCard(card)}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '10px 12px', background: 'white', border: 'none',
+                      borderBottom: '1px solid #f3f4f6', cursor: 'pointer', textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = '#eff6ff')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'white')}
+                  >
+                    <img
+                      src={card.imageSmall}
+                      alt={card.name}
+                      style={{ width: '40px', height: '56px', objectFit: 'contain', flexShrink: 0, borderRadius: '4px' }}
+                    />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {card.name}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                        {card.setName} · {card.series}
+                      </div>
+                      {card.rarity && (
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '1px' }}>
+                          {card.rarity} · #{card.number}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#3b82f6', flexShrink: 0 }}>選択 →</div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {searchQuery.length >= 2 && !searching && searchResults.length === 0 && !searchError && (
+              <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px' }}>該当するカードが見つかりませんでした</p>
+            )}
+          </div>
+        )}
+
         {/* 基本情報 */}
         <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
           <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#1f2937', marginBottom: '20px' }}>基本情報</h2>
@@ -85,7 +217,7 @@ export default function AdminProductNewPage() {
                 <select
                   style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: '8px', padding: '10px 12px', fontSize: '14px', background: 'white', boxSizing: 'border-box' }}
                   value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  onChange={(e) => { setForm({ ...form, category: e.target.value }); setSearchResults([]) }}
                 >
                   {categories.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
@@ -139,7 +271,7 @@ export default function AdminProductNewPage() {
               <>
                 <div style={{ fontSize: '32px', marginBottom: '8px' }}>🖼️</div>
                 <div style={{ fontSize: '14px', color: '#374151', fontWeight: '500' }}>クリックまたはドラッグ&ドロップ</div>
-                <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>PNG・JPG対応</div>
+                <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>PNG・JPG対応（カード検索で自動入力も可）</div>
               </>
             )}
           </div>
