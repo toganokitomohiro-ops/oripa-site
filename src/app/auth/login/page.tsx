@@ -47,13 +47,8 @@ export default function LoginPage() {
       <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 16px 40px' }}>
         <div style={{ width: '100%', maxWidth: '400px' }}>
 
-          {/* キャラクター + キャッチコピー */}
+          {/* キャッチコピー */}
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <img
-              src="/characters/arukun-greeting.png"
-              alt="あーるくん"
-              style={{ width: '180px', height: 'auto', mixBlendMode: 'multiply', display: 'inline-block' }}
-            />
             <p style={{ fontSize: '17px', fontWeight: '800', color: '#1f2937', marginTop: '4px', letterSpacing: '-0.3px' }}>
               歩いてポケカを引こう！🏃‍♂️
             </p>

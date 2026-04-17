@@ -264,7 +264,6 @@ export default function Home() {
       <div className="oripa-list-wrap" style={{ padding: '10px 8px 80px' }}>
         {filteredEvents.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 24px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-            <img src="/characters/arukun-greeting.png" alt="あーるくん" style={{ width: '180px', height: 'auto', marginBottom: '12px', mixBlendMode: 'multiply' }} />
             <div style={{ fontSize: '15px', fontWeight: '700', color: '#1f2937', marginBottom: '4px' }}>現在開催中のオリパはありません</div>
             <div style={{ fontSize: '13px', color: '#9ca3af' }}>近日公開予定！お楽しみに！</div>
           </div>
