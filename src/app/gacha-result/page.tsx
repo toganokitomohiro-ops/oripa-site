@@ -8,7 +8,6 @@ type DrawResult = {
   grade: string
   status: string
   pt_exchange: number
-  coin_exchange_deadline?: string
   product: {
     name: string
     image_url: string
@@ -50,20 +49,19 @@ function GachaResultInner() {
 
     const { data } = await supabase
       .from('draws')
-      .select('*, prizes(pt_exchange, coin_exchange_deadline), products(name, image_url, market_value)')
+      .select('*, prizes(pt_exchange), products(name, image_url, market_value)')
       .in('id', drawIds)
 
     if (data) {
-      setResults(data.map((d: Record<string, unknown>) => ({
-        id: d.id as string,
-        grade: d.grade as string,
-        status: d.status as string,
-        pt_exchange: (d.prizes as Record<string, unknown>)?.pt_exchange as number || 0,
-        coin_exchange_deadline: (d.prizes as Record<string, unknown>)?.coin_exchange_deadline as string | undefined,
+      setResults(data.map((d: any) => ({
+        id: d.id,
+        grade: d.grade,
+        status: d.status,
+        pt_exchange: d.prizes?.pt_exchange || 0,
         product: {
-          name: (d.products as Record<string, unknown>)?.name as string || '',
-          image_url: (d.products as Record<string, unknown>)?.image_url as string || '',
-          market_value: (d.products as Record<string, unknown>)?.market_value as number || 0,
+          name: d.products?.name || '',
+          image_url: d.products?.image_url || '',
+          market_value: d.products?.market_value || 0,
         }
       })))
     }
@@ -221,7 +219,7 @@ function GachaResultInner() {
         <span style={{ fontSize: '16px', fontWeight: '700', color: '#1a1a1a' }}>ガチャ結果</span>
         <button
           onClick={() => router.push('/')}
-          style={{ position: 'absolute', right: '16px', background: 'none', border: 'none', fontSize: '14px', color: '#999', cursor: 'pointer', fontWeight: '500' }}
+          style={{ position: 'absolute', right: '16px', background: 'none', border: 'none', fontSize: '14px', color: '#999', cursor: 'pointer', fontWeight: '700' }}
         >
           あとで
         </button>
@@ -230,15 +228,27 @@ function GachaResultInner() {
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '12px 16px' }}>
         {/* フィルターバー */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '999px', background: '#1a1a1a', color: 'white', fontSize: '13px', fontWeight: '600' }}>
-            <span>≡</span>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '5px',
+            padding: '8px 16px', borderRadius: '999px',
+            background: '#2b2b2b', color: 'white',
+            fontSize: '13px', fontWeight: '700',
+          }}>
+            <span style={{ fontSize: '15px', lineHeight: 1 }}>≡</span>
             <span>リスト表示</span>
           </div>
           <button
             onClick={() => setSortMode(sortMode === 'high' ? 'low' : 'high')}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 14px', borderRadius: '999px', border: '1px solid #e0e0e0', background: 'white', color: '#f97316', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              padding: '8px 14px', borderRadius: '999px',
+              border: '1.5px solid #e0e0e0', background: 'white',
+              color: '#f97316', fontSize: '13px', fontWeight: '700',
+              cursor: 'pointer',
+            }}
           >
-            {sortMode === 'high' ? '↑↓ コインが高い順' : '↑↓ コインが低い順'}
+            <span style={{ fontSize: '13px' }}>↑↓</span>
+            <span>{sortMode === 'high' ? 'コインが高い順' : 'コインが低い順'}</span>
           </button>
         </div>
 
@@ -246,9 +256,6 @@ function GachaResultInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {sorted.map((result) => {
             const isSelected = selected.includes(result.id)
-            const deadline = result.coin_exchange_deadline
-              ? new Date(result.coin_exchange_deadline).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/')
-              : null
 
             return (
               <div
@@ -306,11 +313,6 @@ function GachaResultInner() {
                   <div style={{ fontSize: '15px', fontWeight: '700', color: '#1a1a1a', marginBottom: '4px', lineHeight: 1.3 }}>
                     {result.product.name}
                   </div>
-                  {deadline && (
-                    <div style={{ fontSize: '12px', color: '#f97316', marginBottom: '6px' }}>
-                      交換期限:{deadline}
-                    </div>
-                  )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <img src="https://hnmcipstsnrgcfusxjst.supabase.co/storage/v1/object/public/images/grok-image-ea8b89e3-0e81-4e12-8f3e-d58ea76bd706.png" style={{ width: '18px', height: '18px', objectFit: 'contain', mixBlendMode: 'multiply' }} alt="コイン" />
                     <span style={{ fontSize: '16px', fontWeight: '800', color: '#1a1a1a' }}>{result.pt_exchange.toLocaleString()}</span>
