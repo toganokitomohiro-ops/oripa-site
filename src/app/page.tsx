@@ -17,6 +17,7 @@ type Event = {
   status: string
   category: string
   created_at: string
+  min_guarantee_rate?: number
   gacha_options?: { id: string; label: string; color: string; count: number; sort_order: number }[]
 }
 
@@ -273,6 +274,8 @@ export default function Home() {
               const remainingPercent = Math.round((event.remaining_count / event.total_count) * 100)
               const isSoldOut = event.remaining_count <= 0
               const sortedOptions = event.gacha_options ? [...event.gacha_options].sort((a, b) => a.sort_order - b.sort_order) : []
+              const regularOpts = sortedOptions.filter(opt => opt.count < 1000)
+              const bigOpts = sortedOptions.filter(opt => opt.count >= 1000)
               return (
                 <div key={event.id} className="oripa-card" style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                   {/* バナー画像 */}
@@ -281,6 +284,12 @@ export default function Home() {
                       <img src={event.image_url} alt={event.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', opacity: 0.15 }}>🎴</div>
+                    )}
+                    {/* 最低保証率バッジ（スマホのみ） */}
+                    {event.min_guarantee_rate != null && (
+                      <div className="dopa-guarantee-badge" style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: 'white', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '4px', boxShadow: '0 1px 4px rgba(0,0,0,0.35)', letterSpacing: '0.02em', lineHeight: 1.4 }}>
+                        最低保証率 {event.min_guarantee_rate}%
+                      </div>
                     )}
                     {isSoldOut && (
                       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -317,10 +326,45 @@ export default function Home() {
                       <div style={{ textAlign: 'center', padding: '10px', background: '#f0f0f0', borderRadius: '6px', color: '#999', fontSize: '13px', fontWeight: '700' }}>売り切れ</div>
                     ) : (
                       <>
-                        {/* スマホ専用: ガチャ内容を見るボタン */}
-                        <a href={'/event/' + event.id} className="gacha-view-btn-mobile" style={{ display: 'block', textAlign: 'center', padding: '13px 0', background: 'linear-gradient(135deg, #f97316, #f5a623)', color: 'white', borderRadius: '999px', fontSize: '14px', fontWeight: '900', textDecoration: 'none', boxShadow: '0 3px 10px rgba(249,115,22,0.4)', letterSpacing: '0.02em' }}>
-                          ガチャ内容を見る →
-                        </a>
+                        {/* スマホ専用: DOPAスタイルボタン */}
+                        <div className="dopa-btns-area-mobile">
+                          {sortedOptions.length > 0 ? (
+                            <>
+                              {regularOpts.length > 0 && (
+                                <div style={{ display: 'flex', gap: '6px', marginBottom: bigOpts.length > 0 ? '6px' : '0' }}>
+                                  {regularOpts.map((opt, i) => {
+                                    const isHighlight = regularOpts.length === 1 || i === 1
+                                    return (
+                                      <button
+                                        key={opt.id}
+                                        onClick={() => openConfirm(event, opt)}
+                                        style={{ flex: 1, padding: '10px 2px', fontSize: regularOpts.length > 2 ? '11px' : '12px', fontWeight: '800', background: isHighlight ? '#f97316' : 'white', color: isHighlight ? 'white' : '#1a1a1a', border: isHighlight ? 'none' : '1.5px solid #d1d5db', borderRadius: '8px', cursor: 'pointer', lineHeight: 1.3 }}
+                                      >
+                                        {opt.label}
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+                              )}
+                              {bigOpts.map(opt => (
+                                <button
+                                  key={opt.id}
+                                  onClick={() => openConfirm(event, opt)}
+                                  style={{ width: '100%', padding: '11px', fontSize: '13px', fontWeight: '800', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => openConfirm(event, { count: 1, label: '1回ガチャ' })}
+                              style={{ width: '100%', padding: '11px', background: '#f97316', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '800', cursor: 'pointer' }}
+                            >
+                              1回ガチャ
+                            </button>
+                          )}
+                        </div>
                         {/* PC専用: ガチャボタン */}
                         <div className="gacha-btns-pc" style={{ gap: '6px' }}>
                           {sortedOptions.length > 0 ? (
