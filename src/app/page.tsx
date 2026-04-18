@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
 import Header from '@/components/Header'
@@ -43,6 +43,26 @@ export default function Home() {
   const [pendingDrawIds, setPendingDrawIds] = useState<string[]>([])
   const [points, setPoints] = useState(0)
   const [currentBanner, setCurrentBanner] = useState(0)
+  const sliderRef = useRef<HTMLDivElement>(null)
+
+  const handleBannerNav = (dir: 'prev' | 'next') => {
+    const slider = sliderRef.current
+    if (!slider) return
+    const isPC = window.innerWidth >= 768
+    if (isPC) {
+      const items = slider.querySelectorAll<HTMLElement>('.banner-item')
+      if (items.length === 0) return
+      const itemW = items[0].offsetWidth + 10
+      const maxScroll = slider.scrollWidth - slider.clientWidth
+      if (dir === 'next') {
+        slider.scrollTo({ left: slider.scrollLeft >= maxScroll - 5 ? 0 : slider.scrollLeft + itemW, behavior: 'smooth' })
+      } else {
+        slider.scrollTo({ left: slider.scrollLeft <= 5 ? maxScroll : slider.scrollLeft - itemW, behavior: 'smooth' })
+      }
+    } else {
+      setCurrentBanner(prev => dir === 'next' ? (prev + 1) % banners.length : (prev - 1 + banners.length) % banners.length)
+    }
+  }
   const [activeCategory, setActiveCategory] = useState('all')
   const [sortFilter, setSortFilter] = useState('')
 
@@ -178,19 +198,19 @@ export default function Home() {
           {/* 左矢印 */}
           {banners.length > 1 && (
             <button
-              onClick={() => setCurrentBanner(prev => (prev - 1 + banners.length) % banners.length)}
-              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.45)', color: '#333', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '22px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', fontWeight: 'bold', lineHeight: 1 }}
+              onClick={() => handleBannerNav('prev')}
+              style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', fontSize: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >‹</button>
           )}
           {/* 右矢印 */}
           {banners.length > 1 && (
             <button
-              onClick={() => setCurrentBanner(prev => (prev + 1) % banners.length)}
-              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.45)', color: '#333', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '22px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', fontWeight: 'bold', lineHeight: 1 }}
+              onClick={() => handleBannerNav('next')}
+              style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(0,0,0,0.4)', color: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', fontSize: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >›</button>
           )}
           {/* バナー本体 */}
-          <div className='banner-slider' style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)` }}>
+          <div ref={sliderRef} className='banner-slider' style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBanner * 100}%)` }}>
             {/* 最後のバナーを先頭に */}
             {banners.length > 0 && (
               <div style={{ display: 'none' }}>
