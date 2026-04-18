@@ -179,14 +179,14 @@ export default function Home() {
           {banners.length > 1 && (
             <button
               onClick={() => setCurrentBanner(prev => (prev - 1 + banners.length) % banners.length)}
-              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.45)', color: '#333', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '22px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', fontWeight: 'bold', lineHeight: 1 }}
+              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', color: '#333', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '22px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', fontWeight: 'bold', lineHeight: 1 }}
             >‹</button>
           )}
           {/* 右矢印 */}
           {banners.length > 1 && (
             <button
               onClick={() => setCurrentBanner(prev => (prev + 1) % banners.length)}
-              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.45)', color: '#333', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '22px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', fontWeight: 'bold', lineHeight: 1 }}
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', color: '#333', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '22px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.25)', fontWeight: 'bold', lineHeight: 1 }}
             >›</button>
           )}
           {/* バナー本体 */}
