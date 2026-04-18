@@ -95,10 +95,9 @@ body {
 .gacha-btns-pc { display: none !important; }
 
 @media (min-width: 768px) {
-  .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0 20px; overflow: hidden; position: relative; }
-  .banner-slider { display: flex !important; gap: 10px; transform: none !important; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; flex-wrap: nowrap; }
-  .banner-slider::-webkit-scrollbar { display: none; }
-  .banner-item { flex-shrink: 0 !important; width: 28vw !important; max-width: 340px !important; min-width: 200px !important; display: block !important; scroll-snap-align: start; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); cursor: pointer; }
+  .banner-outer { max-width: 1280px; margin: 12px auto; padding: 0; overflow: hidden; position: relative; }
+  .banner-slider { display: flex !important; overflow: hidden; flex-wrap: nowrap; }
+  .banner-item { flex-shrink: 0 !important; width: 100% !important; display: block !important; border-radius: 0; overflow: hidden; }
   .banner-item img { width: 100% !important; height: auto !important; aspect-ratio: 16/5 !important; object-fit: cover !important; display: block !important; }
   .oripa-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
   .dopa-btns-area-mobile { display: none !important; }
